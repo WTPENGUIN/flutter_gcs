@@ -5,11 +5,17 @@ import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_ti
 import 'package:latlong2/latlong.dart';
 import 'package:peachgs_flutter/utils/comm_utils.dart';
 
-class MainPage extends StatelessWidget {
-  MainPage({Key? key}) : super(key: key);
+class MainPage extends StatefulWidget {
+  const MainPage({Key? key}) : super(key: key);
 
+  @override
+  State<MainPage> createState() => _MainPageState();
+}
+
+class _MainPageState extends State<MainPage> {
   final TextEditingController _serverAddressController = TextEditingController();
   final TextEditingController _serverPortController = TextEditingController();
+  final ValueNotifier<String> _selectedProtocol = ValueNotifier<String>('UDP');
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +44,31 @@ class MainPage extends StatelessWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Radio(
+                              value: 'UDP',
+                              groupValue: _selectedProtocol.value,
+                              onChanged: (value) {
+                                setState(() {
+                                  _selectedProtocol.value = value as String;
+                                });
+                              },
+                            ),
+                            const Text('UDP'),
+                            Radio(
+                              value: 'TCP',
+                              groupValue: _selectedProtocol.value,
+                              onChanged: (value) {
+                                setState(() {
+                                  _selectedProtocol.value = value as String;
+                                });
+                              },
+                            ),
+                            const Text('TCP'),
+                          ],
+                        ),
                         TextField(
                           controller: _serverAddressController,
                           decoration: const InputDecoration(labelText: 'Server Address'),
@@ -54,8 +85,11 @@ class MainPage extends StatelessWidget {
                             final int serverPort = int.tryParse(_serverPortController.text) ?? 0;
 
                             if (serverAddress.isNotEmpty && serverPort > 0) {
-                              await Provider.of<CommUtils>(context, listen: false).initializeUdpSocket(serverAddress, serverPort);
-                              //await Provider.of<CommUtils>(context, listen: false).initializeTcpSocket(serverAddress, serverPort);
+                              if (_selectedProtocol.value == 'TCP') {
+                                await Provider.of<CommUtils>(context, listen: false).initializeTcpSocket(serverAddress, serverPort);
+                              } else {
+                                await Provider.of<CommUtils>(context, listen: false).initializeUdpSocket(serverAddress, serverPort);
+                              }
                             }
                           },
                           child: const Text('포트 개방')

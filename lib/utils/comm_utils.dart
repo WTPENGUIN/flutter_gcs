@@ -31,31 +31,31 @@ class CommUtils extends ChangeNotifier {
     });
   }
 
-  // Future<void> initializeTcpSocket(String serverAddress, int serverPort) async {
-  //   _tcpSocket = await Socket.connect(serverAddress, serverPort);
-  //   _tcpSocket.listen(
-  //     (List<int> data) {
-  //       _handleTcpData(data);
-  //     },
-  //     onDone: () {
-  //       print('TCP Socket Closed');
-  //     },
-  //     onError: (error) {
-  //       print('TCP Socket Error: $error');
-  //     },
-  //     cancelOnError: true,
-  //   );
-  // }
+  Future<void> initializeTcpSocket(String serverAddress, int serverPort) async {
+    _tcpSocket = await Socket.connect(serverAddress, serverPort);
+    _tcpSocket.listen(
+      (List<int> data) {
+        _handleTcpData(data);
+      },
+      onDone: () {
+        print('TCP Socket Closed');
+      },
+      onError: (error) {
+        print('TCP Socket Error: $error');
+      },
+      cancelOnError: true,
+    );
+  }
 
   void _handleUdpData(Datagram event) {
     _mavlinkParser.parse(event.data);
   }
 
-  // void _handleTcpData(List<int> data) {
-  //   Uint8List converted = Uint8List.fromList(data);
+  void _handleTcpData(List<int> data) {
+    Uint8List converted = Uint8List.fromList(data);
 
-  //   _mavlinkParser.parse(converted);
-  // }
+    _mavlinkParser.parse(converted);
+  }
 
   void _mavlinkParsing(MavlinkFrame frm) {
     switch (frm.message.runtimeType) {
