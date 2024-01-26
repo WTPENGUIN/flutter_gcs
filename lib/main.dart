@@ -1,19 +1,21 @@
+import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
-import 'package:peachgs_flutter/screens/main_root_windows.dart';
+import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+import 'package:peachgs_flutter/utils/comm_utils.dart';
+import 'package:peachgs_flutter/screens/map_page.dart';
 
 void main() {
-  runApp(const Root());
-}
+  WidgetsFlutterBinding.ensureInitialized();
 
-class Root extends StatelessWidget {
-  const Root({super.key});
-
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: MainRootWindow(),
-      debugShowCheckedModeBanner: false,
-    );
+  if(Platform.isAndroid) {
+    SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeRight]);
   }
+
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => CommUtils(),
+      child: MainPage(),
+    ),
+  );
 }
