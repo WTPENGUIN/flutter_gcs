@@ -66,27 +66,11 @@ class MultiVehicle extends ChangeNotifier {
   // 그 밖의 메세지 처리
   void processMavlink(MavlinkFrame frame) {
     Vehicle? vehicle = idSelectVehicle(frame.systemId);
-
-    if(vehicle == null) return;
-
-    switch (frame.message.runtimeType) {
-      case GlobalPositionInt:
-        var positionInt = frame.message as GlobalPositionInt;
-        vehicle.latitude = (positionInt.lat / 10e6);
-        vehicle.longitude = (positionInt.lon / 10e6);
-        vehicle.relativeAltitude = (positionInt.relativeAlt);
-        break;
-      case Attitude:
-        var attitude = frame.message as Attitude;
-        vehicle.roll = attitude.roll;
-        vehicle.pitch = attitude.pitch;
-        vehicle.yaw = attitude.yaw;
-        break;
-      case GpsRawInt:
-        break;
-      default:
-        break;
+    if(vehicle == null) {
+      return;
+    } else {
+      vehicle.mavlinkParsing(frame);
+      notifyListeners();
     }
-    notifyListeners();
   }
 }
