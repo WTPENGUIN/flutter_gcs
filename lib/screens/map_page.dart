@@ -3,7 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:peachgs_flutter/utils/comm_utils.dart';
+import 'package:peachgs_flutter/utils/linkmanager.dart';
+import 'package:peachgs_flutter/model/multivehicle.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({Key? key}) : super(key: key);
@@ -24,7 +25,7 @@ class _MainPageState extends State<MainPage> {
         body: SafeArea(
           child: Stack(
             children: [
-              Consumer<CommUtils>(
+              Consumer<MultiVehicle>(
                 builder: (context, provider, child) {
                   return _buildMap(provider);
                 },
@@ -86,9 +87,9 @@ class _MainPageState extends State<MainPage> {
 
                             if (serverAddress.isNotEmpty && serverPort > 0) {
                               if (_selectedProtocol.value == 'TCP') {
-                                await Provider.of<CommUtils>(context, listen: false).initializeTcpSocket(serverAddress, serverPort);
+                                await Provider.of<LinkTaskManager>(context, listen: false).startTCPTask(serverAddress, serverPort);
                               } else {
-                                await Provider.of<CommUtils>(context, listen: false).initializeUdpSocket(serverAddress, serverPort);
+                                await Provider.of<LinkTaskManager>(context, listen: false).startUDPTask(serverAddress, serverPort);
                               }
                             }
                           },
@@ -106,7 +107,25 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  Widget _buildMap(CommUtils provider) {
+  List<Marker> vehiclesPosition() {
+    List<Marker> markers = [];
+
+    for(var vehicle in MultiVehicle().allVehicles()) {
+      markers.add(
+        Marker(
+          point: LatLng(vehicle.latitude, vehicle.longitude),
+          child: const Icon(
+            Icons.location_on,
+            color: Colors.red,
+          )
+        )
+      );
+    }
+
+    return markers;
+  }
+
+  Widget _buildMap(MultiVehicle provider) {
     return FlutterMap(
       options: const MapOptions(
         initialCenter: LatLng(34.610040, 127.20674),
@@ -118,15 +137,7 @@ class _MainPageState extends State<MainPage> {
           tileProvider: CancellableNetworkTileProvider()
         ),
         MarkerLayer(
-          markers: [
-            Marker(
-              point: LatLng(provider.vehicle.latitude, provider.vehicle.longitude),
-              child: const Icon(
-                Icons.location_on,
-                color: Colors.red,
-              )
-            )
-          ]
+          markers: vehiclesPosition()
         )
       ]
     );

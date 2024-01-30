@@ -2,7 +2,8 @@ import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:peachgs_flutter/utils/comm_utils.dart';
+import 'package:peachgs_flutter/model/multivehicle.dart';
+import 'package:peachgs_flutter/utils/linkmanager.dart';
 import 'package:peachgs_flutter/screens/map_page.dart';
 
 void main() {
@@ -13,9 +14,12 @@ void main() {
   }
 
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => CommUtils(),
-      child: MainPage(),
-    ),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => MultiVehicle()),
+        ChangeNotifierProvider(create: (_) => LinkTaskManager())
+      ],
+      child: const MainPage(),
+    )
   );
 }
