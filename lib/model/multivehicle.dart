@@ -46,7 +46,7 @@ class MultiVehicle extends ChangeNotifier {
     MavAutopilot autopilot = heartbeat.autopilot;
 
     // 고정익, 회전익만 허용
-    if(type == mavTypeFixedWing || type == mavTypeQuadrotor || type == mavTypeHexarotor || type == mavTypeOctorotor || type == mavTypeGenericMultirotor) {
+    if(type == mavTypeFixedWing || type == mavTypeQuadrotor || type == mavTypeHexarotor || type == mavTypeOctorotor || type == mavTypeGenericMultirotor || type == mavTypeDodecarotor) {
       if(_vehicles.isEmpty) {
         Vehicle vehicle = Vehicle(id, type, autopilot);
         _vehiclesId.add(id);
@@ -81,6 +81,8 @@ class MultiVehicle extends ChangeNotifier {
         vehicle.roll = attitude.roll;
         vehicle.pitch = attitude.pitch;
         vehicle.yaw = attitude.yaw;
+        break;
+      case GpsRawInt:
         break;
       default:
         break;
