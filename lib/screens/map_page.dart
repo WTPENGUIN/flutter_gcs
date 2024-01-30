@@ -20,9 +20,10 @@ class _MapWidgetState extends State<MapWidget> {
       markers.add(
         Marker(
           point: LatLng(vehicle.latitude, vehicle.longitude),
-          child: const SVGImage(
-            route: 'assets/VehicleIcon.svg',
-            size: Size(50,50)
+          child: SVGImage(
+            route: 'assets/svg/VehicleIcon.svg',
+            size: const Size(100,100),
+            radians: vehicle.yaw,
           )
         )
       );
