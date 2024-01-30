@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:peachgs_flutter/screens/map_page.dart';
-import 'package:peachgs_flutter/widget/floatingbuttons.dart';
+import 'package:peachgs_flutter/widget/floating_buttons.dart';
 
 class MainRootWindow extends StatelessWidget {
   const MainRootWindow({Key? key}) : super(key: key);

@@ -2,9 +2,9 @@ import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:peachgs_flutter/model/multivehicle.dart';
-import 'package:peachgs_flutter/utils/linkmanager.dart';
-import 'package:peachgs_flutter/screens/mainrootwindow.dart';
+import 'package:peachgs_flutter/model/multi_vehicle_manage.dart';
+import 'package:peachgs_flutter/utils/link_manage.dart';
+import 'package:peachgs_flutter/screens/main_root_window.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
