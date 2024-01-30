@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:peachgs_flutter/model/multivehicle.dart';
 import 'package:peachgs_flutter/utils/linkmanager.dart';
-import 'package:peachgs_flutter/screens/map_page.dart';
+import 'package:peachgs_flutter/screens/mainrootwindow.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,7 +19,10 @@ void main() {
         ChangeNotifierProvider(create: (_) => MultiVehicle()),
         ChangeNotifierProvider(create: (_) => LinkTaskManager())
       ],
-      child: const MainPage(),
+      child: const MaterialApp(
+        home: MainRootWindow(),
+        debugShowCheckedModeBanner: false,
+      ),
     )
   );
 }
