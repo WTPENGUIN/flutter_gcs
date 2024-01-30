@@ -2,6 +2,8 @@ import 'package:dart_mavlink/dialects/common.dart';
 import 'package:dart_mavlink/mavlink.dart';
 import 'package:dart_mavlink/types.dart';
 
+const uint16_t uint16max = 65535;
+
 class Vehicle {
   // 기체 정보
   int          vehicleId = 0;
@@ -19,8 +21,8 @@ class Vehicle {
   float yaw = 0.0;
 
   // GPSRawInt(HDOP, VDOP)
-  uint16_t eph = 0; // HDOP
-  uint16_t epv = 0; // VDOP
+  double eph = 0; // HDOP
+  double epv = 0; // VDOP
 
   // 생성자
   Vehicle(int id, MavType type, MavAutopilot autoType) {
@@ -45,6 +47,9 @@ class Vehicle {
       yaw = attitude.yaw;
       break;
     case GpsRawInt:
+      var gpsrawint = frame.message as GpsRawInt;
+      eph = (gpsrawint.eph == uint16max ? double.nan : (gpsrawint.eph / 100.0));
+      epv = (gpsrawint.epv == uint16max ? double.nan : (gpsrawint.epv / 100.0));
       break;
     default:
       break;
