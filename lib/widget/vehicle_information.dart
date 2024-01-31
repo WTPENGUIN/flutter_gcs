@@ -17,19 +17,17 @@ class _VehicleInfoStete extends State<VehicleInfo> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 100 * scaleSmallDevice(context),
-      width: 300 * scaleSmallDevice(context),
-      margin: const EdgeInsets.all(5),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(15.0),
-        color: const Color(0x99808080)
+      height: 80 * scaleSmallDevice(context),
+      width: MediaQuery.of(context).size.width,
+      decoration: const BoxDecoration(
+        color: Colors.black38
       ),
-      child: Selector<MultiVehicle, int>(
-        selector: (_, active) => active.getActiveId,
-        builder: (_, activeID, __) {
-          Vehicle? activeVehicle = manager.activeVehicle();
+      child: Consumer<MultiVehicle>(
+        builder: (_, multiManager, __) {
+          Vehicle? activeVehicle = multiManager.activeVehicle();
           return Row(
             children: [
+              const Spacer(),
               Row(
                 children: [
                   Text(
@@ -53,7 +51,7 @@ class _VehicleInfoStete extends State<VehicleInfo> {
               Row(
                 children: [
                   Text(
-                    'HDOP',
+                    'GroundSpeed',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 12 * scaleSmallDevice(context)
@@ -61,7 +59,7 @@ class _VehicleInfoStete extends State<VehicleInfo> {
                   ),
                   const Padding(padding: EdgeInsets.only(left: 10)),
                   Text(
-                    (activeVehicle != null ? activeVehicle.eph.toStringAsFixed(1) : '100.0'),
+                    (activeVehicle != null ? '${activeVehicle.groundSpeed.toStringAsFixed(1)} m/s' : '0.0 m/s'),
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 12 * scaleSmallDevice(context)
@@ -70,25 +68,6 @@ class _VehicleInfoStete extends State<VehicleInfo> {
                 ],
               ),
               const Padding(padding: EdgeInsets.only(left: 20)),
-              Row(
-                children: [
-                  Text(
-                    'VDOP',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12 * scaleSmallDevice(context)
-                    ),
-                  ),
-                  const Padding(padding: EdgeInsets.only(left: 10)),
-                  Text(
-                    (activeVehicle != null ? activeVehicle.epv.toStringAsFixed(1) : '100.0'),
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12 * scaleSmallDevice(context)
-                    ),
-                  )
-                ],
-              ),
             ],
           );
         },

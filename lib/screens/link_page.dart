@@ -13,8 +13,8 @@ class LinkSettingWindow extends StatefulWidget {
 class _LinkSettingWindowState extends State<LinkSettingWindow> {
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      child: Center(
+    return Scaffold(
+      body: Center(
         child: Column(
         children: [
           ElevatedButton(

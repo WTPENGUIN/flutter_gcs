@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:peachgs_flutter/screens/map_page.dart';
 import 'package:peachgs_flutter/widget/floating_buttons.dart';
 import 'package:peachgs_flutter/widget/vehicle_information.dart';
+import 'package:peachgs_flutter/screens/video_page.dart';
 
 class MainRootWindow extends StatelessWidget {
   const MainRootWindow({Key? key}) : super(key: key);
@@ -14,10 +15,14 @@ class MainRootWindow extends StatelessWidget {
         child: Stack(
           children: [
             MapWindow(),
-            Align(
-              alignment: Alignment.bottomCenter,
+            Positioned(
+              top: 0,
               child: VehicleInfo()
             ),
+            Positioned(
+              bottom: 0,
+              child: VideoPage()
+            )
           ],
         )
       ),

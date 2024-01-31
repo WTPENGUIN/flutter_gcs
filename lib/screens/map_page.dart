@@ -44,13 +44,13 @@ class _MapWindowState extends State<MapWindow> {
   @override
   Widget build(BuildContext context) {
     return Consumer<MultiVehicle>(
-      builder: (context, provider, child) {
-        return _buildMap(provider);
+      builder: (_, multiManager, __) {
+        return _buildMap(multiManager);
       }
     );
   }
 
-  Widget _buildMap(MultiVehicle provider) {
+  Widget _buildMap(MultiVehicle multiManager) {
     return FlutterMap(
       options: MapOptions(
         initialCenter: const LatLng(34.610040, 127.20674),
@@ -65,7 +65,7 @@ class _MapWindowState extends State<MapWindow> {
           tileProvider: CancellableNetworkTileProvider()
         ),
         MarkerLayer(
-          markers: vehiclesPosition(provider)
+          markers: vehiclesPosition(multiManager)
         )
       ]
     );
