@@ -43,29 +43,25 @@ class _MapWindowState extends State<MapWindow> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<MultiVehicle>(
-      builder: (_, multiManager, __) {
-        return _buildMap(multiManager);
-      }
-    );
-  }
-
-  Widget _buildMap(MultiVehicle multiManager) {
     return FlutterMap(
       options: MapOptions(
         initialCenter: const LatLng(34.610040, 127.20674),
         initialZoom: 15,
         onTap: (TapPosition tapPosition, LatLng coord) {
-
+          
         },
       ),
       children: [
         TileLayer(
           urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-          tileProvider: CancellableNetworkTileProvider()
+          tileProvider: CancellableNetworkTileProvider(),
         ),
-        MarkerLayer(
-          markers: vehiclesPosition(multiManager)
+        Consumer<MultiVehicle>(
+          builder:(_, multiManager, __) {
+            return MarkerLayer(
+              markers: vehiclesPosition(multiManager)
+            );
+          },
         )
       ]
     );
