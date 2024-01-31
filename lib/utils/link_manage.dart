@@ -45,24 +45,42 @@ class LinkTaskManager extends ChangeNotifier {
   }
 
   void stopUDPTask(String host, int port) {
-    for(var task in _taskList) {
-      if(task.getProtocol() == udpProtocol) continue;
+    LinkTask? removedTask;
 
-      if(task.getHost() == host || task.getPortNum() == port) {
+    for(var task in _taskList) {
+      if(task.getProtocol() != udpProtocol) continue;
+
+      if(task.getHost() == host && task.getPortNum() == port) {
         task.receivePort.sendPort.send(disconnectUDPMessage);
-        _taskList.remove(task);
+        removedTask = task;
+        break;
       }
-    } 
+    }
+
+    if(removedTask == null) {
+      return;
+    } else {
+      _taskList.remove(removedTask);
+    }
   }
 
   void stopTCPTask(String host, int port) {
-    for(var task in _taskList) {
-      if(task.getProtocol() == tcpProtocol) continue;
+    LinkTask? removedTask;
 
-      if(task.getHost() == host || task.getPortNum() == port) {
+    for(var task in _taskList) {
+      if(task.getProtocol() != tcpProtocol) continue;
+
+      if(task.getHost() == host && task.getPortNum() == port) {
         task.receivePort.sendPort.send(disconnectTCPMessage);
-        _taskList.remove(task);
+        removedTask = task;
+        break;
       }
+    }
+
+    if(removedTask == null) {
+      return;
+    } else {
+      _taskList.remove(removedTask);
     }
   }
 

@@ -13,7 +13,7 @@ class MainRootWindow extends StatelessWidget {
       body: SafeArea(
         child: Stack(
           children: [
-            MapWidget(),
+            MapWindow(),
             Align(
               alignment: Alignment.bottomCenter,
               child: VehicleInfo()

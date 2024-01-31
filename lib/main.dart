@@ -1,10 +1,10 @@
-import 'dart:io' show Platform;
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:peachgs_flutter/model/multi_vehicle_manage.dart';
 import 'package:peachgs_flutter/utils/link_manage.dart';
-import 'package:peachgs_flutter/screens/main_root_window.dart';
+import 'package:peachgs_flutter/router.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,8 +19,8 @@ void main() {
         ChangeNotifierProvider(create: (_) => MultiVehicle()),
         ChangeNotifierProvider(create: (_) => LinkTaskManager())
       ],
-      child: const MaterialApp(
-        home: MainRootWindow(),
+      child: MaterialApp.router(
+        routerConfig: router,
         debugShowCheckedModeBanner: false,
       ),
     )
