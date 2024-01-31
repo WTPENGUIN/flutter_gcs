@@ -13,7 +13,7 @@ class Vehicle {
   // GlobalPositionInt
   double latitude = 0.0;
   double longitude = 0.0;
-  int relativeAltitude = 0;
+  double relativeAltitude = 0.0;
   double hdg = 0.0;
 
   // Attitude
@@ -24,6 +24,11 @@ class Vehicle {
   // GPSRawInt(HDOP, VDOP)
   double eph = 0; // HDOP
   double epv = 0; // VDOP
+  GpsFixType gpsfixType = gpsFixTypeNoGps;
+
+  // VRF_HUD
+  float climbRate = 0.0;
+  float groundSpeed = 0.0;
 
   // 생성자
   Vehicle(int id, MavType type, MavAutopilot autoType) {
@@ -39,7 +44,7 @@ class Vehicle {
       var positionInt = frame.message as GlobalPositionInt;
       latitude = (positionInt.lat / 10e6);
       longitude = (positionInt.lon / 10e6);
-      relativeAltitude = (positionInt.relativeAlt);
+      relativeAltitude = (positionInt.relativeAlt / 1000.0);
       hdg = (positionInt.hdg / 100.0);
       break;
     case Attitude:
@@ -52,6 +57,12 @@ class Vehicle {
       var gpsrawint = frame.message as GpsRawInt;
       eph = (gpsrawint.eph == uint16max ? double.nan : (gpsrawint.eph / 100.0));
       epv = (gpsrawint.epv == uint16max ? double.nan : (gpsrawint.epv / 100.0));
+      gpsfixType = gpsrawint.fixType;
+      break;
+    case VfrHud:
+      var vfrhud = frame.message as VfrHud;
+      climbRate = vfrhud.climb;
+      groundSpeed = vfrhud.groundspeed;
       break;
     default:
       break;

@@ -14,14 +14,22 @@ class MultiVehicle extends ChangeNotifier {
   }
 
   int _activeVehicle = 1;
-  set setActice(int number) => _activeVehicle = number;
-  int get getActive             => _activeVehicle;
+  set setActiceId(int number) => _activeVehicle = number;
+  int get getActiveId         => _activeVehicle;
 
   final List<Vehicle> _vehicles   = [];
   final List<int>     _vehiclesId = [];
 
   int countVehicle() {
     return _vehicles.length;
+  }
+
+  Vehicle? activeVehicle() {
+    if(_vehicles.isEmpty) {
+      return null;
+    } else {
+      return idSelectVehicle(_activeVehicle);
+    }
   }
 
   Vehicle? idSelectVehicle(int id) {
@@ -55,6 +63,7 @@ class MultiVehicle extends ChangeNotifier {
         Vehicle vehicle = Vehicle(id, type, autopilot);
         _vehiclesId.add(id);
         _vehicles.add(vehicle);
+        _activeVehicle = id;
       } else {
         if(_vehiclesId.contains(id) || _vehicles.length >= 10) return; // 동일 번호의 기체가 있으면 연결 하지 않음(10대 이상 연결 허용 하지 않음)
 

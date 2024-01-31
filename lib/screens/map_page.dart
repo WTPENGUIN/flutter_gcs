@@ -29,11 +29,11 @@ class _MapWidgetState extends State<MapWidget> {
               route: 'assets/svg/VehicleIcon.svg',
               radians: vehicle.yaw,
               vehicleId: vehicle.vehicleId,
-              outlineColor: (multiVehicleManager.getActive == vehicle.vehicleId ? Colors.redAccent : Colors.grey),
+              outlineColor: (multiVehicleManager.getActiveId == vehicle.vehicleId ? Colors.redAccent : Colors.grey),
             ),
             onTap: () {
-              if(multiVehicleManager.getActive == vehicle.vehicleId) return;
-              multiVehicleManager.setActice = vehicle.vehicleId;
+              if(multiVehicleManager.getActiveId == vehicle.vehicleId) return;
+              multiVehicleManager.setActiceId = vehicle.vehicleId;
             },
           ),
         )
