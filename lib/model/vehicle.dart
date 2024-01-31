@@ -14,6 +14,7 @@ class Vehicle {
   double latitude = 0.0;
   double longitude = 0.0;
   int relativeAltitude = 0;
+  double hdg = 0.0;
 
   // Attitude
   float roll = 0.0;
@@ -39,6 +40,7 @@ class Vehicle {
       latitude = (positionInt.lat / 10e6);
       longitude = (positionInt.lon / 10e6);
       relativeAltitude = (positionInt.relativeAlt);
+      hdg = (positionInt.hdg / 100.0);
       break;
     case Attitude:
       var attitude = frame.message as Attitude;
