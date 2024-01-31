@@ -4,7 +4,9 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:peachgs_flutter/model/multi_vehicle_manage.dart';
-import 'package:peachgs_flutter/widget/svg_image.dart';
+import 'package:peachgs_flutter/widget/vehicle_marker.dart';
+import 'package:peachgs_flutter/utils/utils.dart';
+
 
 class MapWidget extends StatefulWidget {
   const MapWidget({Key? key}) : super(key: key);
@@ -14,17 +16,26 @@ class MapWidget extends StatefulWidget {
 }
 
 class _MapWidgetState extends State<MapWidget> {
-  List<Marker> vehiclesPosition() {
+  List<Marker> vehiclesPosition(MultiVehicle multiVehicleManager) {
     List<Marker> markers = [];
     for(var vehicle in MultiVehicle().allVehicles()) {
       markers.add(
         Marker(
           point: LatLng(vehicle.latitude, vehicle.longitude),
-          child: SVGImage(
-            route: 'assets/svg/VehicleIcon.svg',
-            size: const Size(100,100),
-            radians: vehicle.yaw,
-          )
+          width: 70 * scaleSmallDevice(context),
+          height: 70 * scaleSmallDevice(context),
+          child: GestureDetector(
+            child: VehicleMarker(
+              route: 'assets/svg/VehicleIcon.svg',
+              radians: vehicle.yaw,
+              vehicleId: vehicle.vehicleId,
+              outlineColor: (multiVehicleManager.getActive == vehicle.vehicleId ? Colors.redAccent : Colors.grey),
+            ),
+            onTap: () {
+              if(multiVehicleManager.getActive == vehicle.vehicleId) return;
+              multiVehicleManager.setActice = vehicle.vehicleId;
+            },
+          ),
         )
       );
     }
@@ -42,9 +53,12 @@ class _MapWidgetState extends State<MapWidget> {
 
   Widget _buildMap(MultiVehicle provider) {
     return FlutterMap(
-      options: const MapOptions(
-        initialCenter: LatLng(34.610040, 127.20674),
+      options: MapOptions(
+        initialCenter: const LatLng(34.610040, 127.20674),
         initialZoom: 15,
+        onTap: (TapPosition tapPosition, LatLng coord) {
+
+        },
       ),
       children: [
         TileLayer(
@@ -52,7 +66,7 @@ class _MapWidgetState extends State<MapWidget> {
           tileProvider: CancellableNetworkTileProvider()
         ),
         MarkerLayer(
-          markers: vehiclesPosition()
+          markers: vehiclesPosition(provider)
         )
       ]
     );

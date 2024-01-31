@@ -13,6 +13,10 @@ class MultiVehicle extends ChangeNotifier {
     return _instance;
   }
 
+  int _activeVehicle = 1;
+  set setActice(int number) => _activeVehicle = number;
+  int get getActive             => _activeVehicle;
+
   final List<Vehicle> _vehicles   = [];
   final List<int>     _vehiclesId = [];
 

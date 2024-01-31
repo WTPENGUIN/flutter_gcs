@@ -7,12 +7,24 @@ class MainRootWindow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      floatingActionButton: FloatingButtons(),
+    return Scaffold(
+      floatingActionButton: const FloatingButtons(),
       body: SafeArea(
         child: Stack(
           children: [
-            MapWidget(),
+            const MapWidget(),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                height: 100,
+                width: 300,
+                margin: const EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15.0),
+                  color: const Color(0x99808080)
+                )
+              ),
+            )
           ],
         )
       ),
