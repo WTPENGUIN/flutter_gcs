@@ -29,6 +29,7 @@ class _MapWindowState extends State<MapWindow> {
               radians: vehicle.yaw,
               vehicleId: vehicle.vehicleId,
               flightMode: vehicle.flightMode,
+              armed: vehicle.armed,
               outlineColor: (multiVehicleManager.getActiveId == vehicle.vehicleId ? Colors.redAccent : Colors.grey),
             ),
             onTap: () {

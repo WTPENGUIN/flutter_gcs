@@ -18,6 +18,7 @@ class Vehicle {
   uint8_t  baseMode = 0;
   uint32_t customMode = 0;
   String   flightMode = '';
+  bool     armed = false;
 
   // GlobalPositionInt
   double latitude = 0.0;
@@ -69,6 +70,7 @@ class Vehicle {
       baseMode = heartbeat.baseMode;
       customMode = heartbeat.customMode;
       flightMode = flightModes(baseMode, customMode);
+      armed = (heartbeat.baseMode & mavModeFlagDecodePositionSafety) == 0 ? false : true;
       break;
     case GlobalPositionInt:
       var positionInt = frame.message as GlobalPositionInt;

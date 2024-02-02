@@ -9,6 +9,7 @@ class VehicleMarker extends StatelessWidget {
   final int    vehicleId;
   final Color  outlineColor;
   final String flightMode;
+  final bool   armed;
 
   const VehicleMarker({
     required this.route,
@@ -16,6 +17,7 @@ class VehicleMarker extends StatelessWidget {
     required this.vehicleId,
     required this.outlineColor,
     required this.flightMode,
+    required this.armed,
     Key? key
   }) : super(key: key);
 
@@ -38,16 +40,16 @@ class VehicleMarker extends StatelessWidget {
             alignment: Alignment.bottomCenter,
             child: OutlineText(
               Text(
-                '기체 $vehicleId',
+                '기체 $vehicleId(${armed ? '시동' : '꺼짐'})',
                 style: TextStyle(
                   fontWeight: FontWeight.w300,
-                  fontSize: 12 * scaleSmallDevice(context)
+                  fontSize: 10 * scaleSmallDevice(context)
                 ),
               ),
               strokeWidth: 1,
               strokeColor: outlineColor,
               overflow: TextOverflow.ellipsis,
-            )
+            ),
           ),
           Align(
             alignment: Alignment.topCenter,
