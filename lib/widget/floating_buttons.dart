@@ -50,7 +50,11 @@ class _FloatingButtonsState extends State<FloatingButtons> {
           backgroundColor: pBlue,
           labelBackgroundColor: pBlue,
           onTap: () async {
+            if(!mounted) return;
             await Provider.of<LinkTaskManager>(context, listen: false).startUDPTask('0.0.0.0', 15000);
+
+            if(!mounted) return;
+            await Provider.of<LinkTaskManager>(context, listen: false).startTCPTask('192.168.0.35', 8888);
           }
         ),
         SpeedDialChild(
@@ -65,6 +69,7 @@ class _FloatingButtonsState extends State<FloatingButtons> {
           labelBackgroundColor: pBlue,
           onTap: () {
             Provider.of<LinkTaskManager>(context, listen: false).stopUDPTask('0.0.0.0', 15000);
+            Provider.of<LinkTaskManager>(context, listen: false).stopTCPTask('192.168.0.35', 8888);
           }
         ),
         SpeedDialChild(
