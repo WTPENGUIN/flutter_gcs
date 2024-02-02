@@ -159,8 +159,8 @@ class UdpTask extends LinkTask {
   void processMessage(dynamic message) {
     if(message == disconnectUDPMessage) {
       stopTask();
-    } else if (message is String) {
-      // Send UDP Message
+    } else {
+      logger.i(message);
     }
   }
 }
@@ -195,6 +195,10 @@ class TcpTask extends LinkTask {
       cancelOnError: true
     );
 
+    receivePort.listen((dynamic message) {
+      processMessage(message);
+    });
+
     logger.i('start tcp task');
   }
 
@@ -219,8 +223,8 @@ class TcpTask extends LinkTask {
   void processMessage(dynamic message) {
     if(message == disconnectTCPMessage) {
       stopTask();
-    } else if (message is String) {
-      // Send TCP Packet
+    } else {
+      logger.i(message);
     }
   }
 }

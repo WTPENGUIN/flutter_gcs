@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:provider/provider.dart';
+import 'package:peachgs_flutter/utils/link_manage.dart';
 
 Color pBlue  = const Color(0xFF41B6E6);
 Color pPeach = const Color(0xffFA828F);
@@ -40,7 +41,21 @@ class _FloatingButtonsState extends State<FloatingButtons> {
         ),
         SpeedDialChild(
           child: const Icon(Icons.work_history, color: Colors.white),
-          label: "연결 링크 설정",
+          label: "테스트 링크 연결",
+          labelStyle: const TextStyle(
+            fontWeight: FontWeight.w500,
+            color: Colors.white,
+            fontSize: 13.0
+          ),
+          backgroundColor: pBlue,
+          labelBackgroundColor: pBlue,
+          onTap: () async {
+            await Provider.of<LinkTaskManager>(context, listen: false).startUDPTask('0.0.0.0', 15000);
+          }
+        ),
+        SpeedDialChild(
+          child: const Icon(Icons.work_history, color: Colors.white),
+          label: "테스트 링크 해제",
           labelStyle: const TextStyle(
             fontWeight: FontWeight.w500,
             color: Colors.white,
@@ -49,7 +64,7 @@ class _FloatingButtonsState extends State<FloatingButtons> {
           backgroundColor: pBlue,
           labelBackgroundColor: pBlue,
           onTap: () {
-            GoRouter.of(context).push('/link');
+            Provider.of<LinkTaskManager>(context, listen: false).stopUDPTask('0.0.0.0', 15000);
           }
         ),
         SpeedDialChild(
