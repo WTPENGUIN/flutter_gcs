@@ -11,7 +11,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   if(Platform.isAndroid) {
-    SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeRight]);
+    SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeRight, DeviceOrientation.landscapeLeft]);
   }
 
   if(Platform.isWindows) {
