@@ -7,13 +7,15 @@ class VehicleMarker extends StatelessWidget {
   final String route;
   final double radians;
   final int    vehicleId;
-  final Color outlineColor; 
+  final Color  outlineColor;
+  final String flightMode;
 
   const VehicleMarker({
     required this.route,
     required this.radians,
     required this.vehicleId,
     required this.outlineColor,
+    required this.flightMode,
     Key? key
   }) : super(key: key);
 
@@ -46,7 +48,22 @@ class VehicleMarker extends StatelessWidget {
               strokeColor: outlineColor,
               overflow: TextOverflow.ellipsis,
             )
-          )
+          ),
+          Align(
+            alignment: Alignment.topCenter,
+            child: OutlineText(
+              Text(
+                flightMode,
+                style: TextStyle(
+                  fontWeight: FontWeight.w300,
+                  fontSize: 12 * scaleSmallDevice(context)
+                ),
+              ),
+              strokeWidth: 1,
+              strokeColor: outlineColor,
+              overflow: TextOverflow.ellipsis,
+            )
+          ),
         ],
       ),
     );

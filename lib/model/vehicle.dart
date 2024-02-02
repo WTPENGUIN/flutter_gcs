@@ -1,14 +1,23 @@
-import 'package:dart_mavlink/dialects/common.dart';
 import 'package:dart_mavlink/mavlink.dart';
 import 'package:dart_mavlink/types.dart';
+import 'package:dart_mavlink/dialects/ardupilotmega.dart';
+import 'package:logger/logger.dart';
+import 'package:peachgs_flutter/model/autopilot_flight_mode.dart';
 
 const uint16_t uint16max = 65535;
 
 class Vehicle {
+  Logger logger = Logger();
+
   // 기체 정보
   int          vehicleId = 0;
   MavType      vehicleType = mavTypeGeneric;
   MavAutopilot autopilotType = mavAutopilotGeneric;
+
+  // heartbeat
+  uint8_t  baseMode = 0;
+  uint32_t customMode = 0;
+  String   flightMode = '';
 
   // GlobalPositionInt
   double latitude = 0.0;
@@ -37,9 +46,30 @@ class Vehicle {
     autopilotType = autoType;
   }
 
+  String flightModes(uint8_t baseMode, uint32_t customMode) {
+    String flightMode = 'Unknown';
+
+    bool flag = (baseMode & mavModeFlagCustomModeEnabled) == 0 ? false : true;
+    if(flag) {
+      if(autopilotType == mavAutopilotArdupilotmega) {
+        flightMode = apmGetFlightModeName(customMode);
+      } else { // PX4
+        flightMode = px4GetFlightModeName(customMode);
+      }
+    }
+
+    return flightMode;
+  }
+
   // Mavlink 처리
   void mavlinkParsing(MavlinkFrame frame) {
     switch (frame.message.runtimeType) {
+    case Heartbeat:
+      var heartbeat = frame.message as Heartbeat;
+      baseMode = heartbeat.baseMode;
+      customMode = heartbeat.customMode;
+      flightMode = flightModes(baseMode, customMode);
+      break;
     case GlobalPositionInt:
       var positionInt = frame.message as GlobalPositionInt;
       latitude = (positionInt.lat / 10e6);

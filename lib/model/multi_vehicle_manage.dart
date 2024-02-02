@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:dart_mavlink/dialects/common.dart';
 import 'package:dart_mavlink/mavlink.dart';
+import 'package:dart_mavlink/dialects/ardupilotmega.dart';
 import 'package:peachgs_flutter/model/vehicle.dart';
 
 class MultiVehicle extends ChangeNotifier {
@@ -50,40 +50,37 @@ class MultiVehicle extends ChangeNotifier {
     return vehicles;
   }
 
-  // 하트비트 처리
-  void processHeartBeat(MavlinkFrame frame) {
-    var heartbeat = frame.message as Heartbeat;
-    int id = frame.systemId;
-    MavType type = heartbeat.type;
-    MavAutopilot autopilot = heartbeat.autopilot;
+  void processHeartBeat(int id, Heartbeat msg) {
+    // 이미 연결 된 system id는 무시, 동시 연결 기체 10대 제한
+    if(_vehiclesId.contains(id) || _vehicles.length >= 10) return;
+    
+    MavType type = msg.type;
+    MavAutopilot autopilot = msg.autopilot;
 
     // 고정익, 회전익만 허용
     if(type == mavTypeFixedWing || type == mavTypeQuadrotor || type == mavTypeHexarotor || type == mavTypeOctorotor || type == mavTypeGenericMultirotor || type == mavTypeDodecarotor) {
-      if(_vehicles.isEmpty) {
-        Vehicle vehicle = Vehicle(id, type, autopilot);
-        _vehiclesId.add(id);
-        _vehicles.add(vehicle);
-        _activeVehicle = id;
-      } else {
-        if(_vehiclesId.contains(id) || _vehicles.length >= 10) return; // 동일 번호의 기체가 있으면 연결 하지 않음(10대 이상 연결 허용 하지 않음)
+      if(_vehicles.isEmpty) _activeVehicle = id; // 처음 연결된 기체를 액티브 기체로 설정
 
-        Vehicle vehicle = Vehicle(id, type, autopilot);
-        _vehiclesId.add(id);
-        _vehicles.add(vehicle);
-      }
+      // 기체 추가
+      _vehiclesId.add(id);
+
+      Vehicle vehicle = Vehicle(id, type, autopilot);
+      _vehicles.add(vehicle);
     }
-
-    notifyListeners();
   }
 
-  // 그 밖의 메세지 처리
-  void processMavlink(MavlinkFrame frame) {
-    Vehicle? vehicle = idSelectVehicle(frame.systemId);
-    if(vehicle == null) {
-      return;
-    } else {
-      vehicle.mavlinkParsing(frame);
-      notifyListeners();
+  // Mavlink 메세지 처리
+  void mavlinkProcessing(MavlinkFrame frame) {
+    if(frame.message.runtimeType == Heartbeat) {
+      var heartbeat = frame.message as Heartbeat;
+      processHeartBeat(frame.systemId, heartbeat);
     }
+
+    // Mavlink 메세지 전송
+    Vehicle? vehicle = idSelectVehicle(frame.systemId);
+    if(vehicle == null) return;
+    vehicle.mavlinkParsing(frame);
+
+    notifyListeners();
   }
 }

@@ -28,6 +28,7 @@ class _MapWindowState extends State<MapWindow> {
               route: 'assets/svg/VehicleIcon.svg',
               radians: vehicle.yaw,
               vehicleId: vehicle.vehicleId,
+              flightMode: vehicle.flightMode,
               outlineColor: (multiVehicleManager.getActiveId == vehicle.vehicleId ? Colors.redAccent : Colors.grey),
             ),
             onTap: () {
