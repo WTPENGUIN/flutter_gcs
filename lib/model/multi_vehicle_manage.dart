@@ -5,24 +5,28 @@ import 'package:dart_mavlink/dialects/ardupilotmega.dart';
 import 'package:peachgs_flutter/model/vehicle.dart';
 
 const int heartbeatMaxElpasedMSecs = 3500;
+const int gcsTempSystemNumber      = 200;
 
 class MultiVehicle extends ChangeNotifier {
   // 싱글톤 패턴
-  MultiVehicle._privateConstructor();
-  static final MultiVehicle _instance = MultiVehicle._privateConstructor();
-  factory MultiVehicle() {
-    return _instance;
+  static MultiVehicle? _instance;
+  MultiVehicle._privateConstructor() {
+    // 연결 끊어짐 타이머 초기화
+    _disconnectTimer = Timer.periodic(const Duration(seconds: 4), (_) {
+      checkDisconnectedVehicle();
+    });
   }
+  factory MultiVehicle() => _instance ??= MultiVehicle._privateConstructor();
 
   int _activeVehicle = 1;
   set setActiceId(int number) => _activeVehicle = number;
   int get getActiveId         => _activeVehicle;
 
+  // 기체 목록 리스트
   final List<Vehicle> _vehicles = [];
 
-  // 타이머
-  Timer? disconnectTimer;
-  bool   _isTimerActive = false;
+  // 연결 끊어짐 감지 코드 실행 타이머
+  Timer? _disconnectTimer;
 
   int countVehicle() {
     return _vehicles.length;
@@ -63,7 +67,6 @@ class MultiVehicle extends ChangeNotifier {
     notifyListeners();
   }
 
-  // 하트비트가 4초 이상 들어오지 않았을 시, 연결이 끊겼다고 가정하여 연결 해제
   void checkDisconnectedVehicle() {
     List<Vehicle> removeVehicles = [];
     for(Vehicle vehicle in _vehicles) {
@@ -87,13 +90,6 @@ class MultiVehicle extends ChangeNotifier {
     // 고정익, 회전익만 허용
     if(type == mavTypeFixedWing || type == mavTypeQuadrotor || type == mavTypeHexarotor || type == mavTypeOctorotor || type == mavTypeGenericMultirotor || type == mavTypeDodecarotor) {
       if(_vehicles.isEmpty) {
-        // TODO : 클래스 초기화때 타이머도 같이 초기화
-        if(_isTimerActive == false) {
-          disconnectTimer = Timer.periodic(const Duration(seconds: 4), (_) {
-            checkDisconnectedVehicle();
-          });
-          _isTimerActive = true;
-        }
         _activeVehicle = id; // 처음 연결된 기체를 액티브 기체로 설정
       }
 
@@ -120,7 +116,7 @@ class MultiVehicle extends ChangeNotifier {
 
   @override
   void dispose() {
-    if(disconnectTimer != null) disconnectTimer!.cancel();
+    if(_disconnectTimer != null) _disconnectTimer!.cancel();
     super.dispose();
   }
 }
