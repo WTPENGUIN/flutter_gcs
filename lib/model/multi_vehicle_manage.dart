@@ -5,7 +5,6 @@ import 'package:dart_mavlink/dialects/ardupilotmega.dart';
 import 'package:peachgs_flutter/model/vehicle.dart';
 
 const int heartbeatMaxElpasedMSecs = 3500;
-const int gcsTempSystemNumber      = 200;
 
 class MultiVehicle extends ChangeNotifier {
   // 싱글톤 패턴

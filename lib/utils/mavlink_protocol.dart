@@ -16,5 +16,16 @@ class MavlinkProtocol {
   factory MavlinkProtocol() => _instance ??= MavlinkProtocol._();
 
   // parser get 함수
-  MavlinkParser get parser => _mavlinkParser; 
+  MavlinkParser get parser => _mavlinkParser;
+
+  // GCS의 시스템 ID 반환
+  // TODO : 사용자가 직접 설정 가능하게 변경
+  int getSystemId() {
+    return 200;
+  }
+
+  // GCS의 컴포넌트 ID 반환
+  int getComponentId() {
+    return mavCompIdMissionplanner;
+  }
 }
