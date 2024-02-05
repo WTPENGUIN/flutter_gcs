@@ -20,7 +20,11 @@ class _VehicleInfoStete extends State<VehicleInfo> {
       height: 80 * scaleSmallDevice(context),
       width: MediaQuery.of(context).size.width,
       decoration: const BoxDecoration(
-        color: Colors.black38
+        gradient: LinearGradient(
+          colors: [Colors.black45, Colors.black26],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight
+        ),
       ),
       child: Consumer<MultiVehicle>(
         builder: (_, multiManager, __) {
@@ -39,7 +43,7 @@ class _VehicleInfoStete extends State<VehicleInfo> {
                   ),
                   const Padding(padding: EdgeInsets.only(left: 10)),
                   Text(
-                    (activeVehicle != null ? '${activeVehicle.relativeAltitude.toStringAsFixed(1)} m' : '0.0 m'),
+                    (activeVehicle != null ? '${activeVehicle.vehicleRelativeAltitude.toStringAsFixed(1)} m' : '0.0 m'),
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 12 * scaleSmallDevice(context)

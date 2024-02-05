@@ -8,13 +8,11 @@ class MavlinkProtocol {
 
   // 싱글톤 패턴(처음 생성 시, parser stream은 활성화 필요)
   static MavlinkProtocol? _instance;
-
   MavlinkProtocol._() {
     _mavlinkParser.stream.listen((MavlinkFrame frame) {
       _multiVehicle.mavlinkProcessing(frame);
     });
   }
-
   factory MavlinkProtocol() => _instance ??= MavlinkProtocol._();
 
   // parser get 함수

@@ -27,6 +27,13 @@ abstract class LinkTask {
 }
 
 class LinkTaskManager extends ChangeNotifier {
+  // 싱글톤 패턴
+  LinkTaskManager._privateConstructor();
+  static final LinkTaskManager _instance = LinkTaskManager._privateConstructor();
+  factory LinkTaskManager() {
+    return _instance;
+  }
+  
   final List<LinkTask> _taskList = [];
   final Logger logger = Logger();
 
@@ -94,6 +101,25 @@ class LinkTaskManager extends ChangeNotifier {
     }
 
     _taskList.clear();
+  }
+
+  ReceivePort? getTaskPort(String host, int port) {
+    LinkTask? task;
+
+    for(var currentTask in _taskList) {
+      if(currentTask.getProtocol() != tcpProtocol) continue;
+
+      if(currentTask.getHost() == host && currentTask.getPortNum() == port) {
+        task = currentTask;
+        break;
+      }
+    }
+    
+    if(task == null) {
+      return null;
+    } else {
+      return task.receivePort;
+    }
   }
 
   @override

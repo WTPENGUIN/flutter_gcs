@@ -20,7 +20,7 @@ class _MapWindowState extends State<MapWindow> {
     for(var vehicle in MultiVehicle().allVehicles()) {
       markers.add(
         Marker(
-          point: LatLng(vehicle.latitude, vehicle.longitude),
+          point: LatLng(vehicle.vehicleLat, vehicle.vehicleLon),
           width: 70 * scaleSmallDevice(context),
           height: 70 * scaleSmallDevice(context),
           child: GestureDetector(
