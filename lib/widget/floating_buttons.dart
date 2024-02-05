@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:provider/provider.dart';
 import 'package:peachgs_flutter/utils/link_manage.dart';
+import 'package:peachgs_flutter/widget/modal/link_create_modal.dart';
 
 Color pBlue  = const Color(0xFF41B6E6);
 Color pPeach = const Color(0xffFA828F);
@@ -50,11 +51,23 @@ class _FloatingButtonsState extends State<FloatingButtons> {
           backgroundColor: pBlue,
           labelBackgroundColor: pBlue,
           onTap: () async {
-            if(!mounted) return;
-            await Provider.of<LinkTaskManager>(context, listen: false).startUDPTask('0.0.0.0', 15000);
+            var link = await showLinkCreateModal(context);
+            if(link.isEmpty || !mounted) return;
 
-            if(!mounted) return;
-            await Provider.of<LinkTaskManager>(context, listen: false).startTCPTask('192.168.0.35', 8888);
+            String protocol = link[0];
+            String host = link[1];
+            int port = int.parse(link[2]);
+
+            switch (protocol) {
+              case 'TCP':
+                Provider.of<LinkTaskManager>(context, listen: false).startTCPTask(host, port);
+                break;
+              case 'UDP':
+                Provider.of<LinkTaskManager>(context, listen: false).startUDPTask(host, port);
+                break;
+              default:
+                return;
+            }
           }
         ),
         SpeedDialChild(
@@ -68,8 +81,7 @@ class _FloatingButtonsState extends State<FloatingButtons> {
           backgroundColor: pBlue,
           labelBackgroundColor: pBlue,
           onTap: () {
-            Provider.of<LinkTaskManager>(context, listen: false).stopUDPTask('0.0.0.0', 15000);
-            Provider.of<LinkTaskManager>(context, listen: false).stopTCPTask('192.168.0.35', 8888);
+            Provider.of<LinkTaskManager>(context, listen: false).stopAllTask();
           }
         ),
         SpeedDialChild(
