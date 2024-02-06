@@ -2,6 +2,7 @@ import 'package:dart_mavlink/mavlink.dart';
 import 'package:dart_mavlink/types.dart';
 import 'package:dart_mavlink/dialects/ardupilotmega.dart';
 import 'package:logger/logger.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:peachgs_flutter/model/autopilot_flight_mode.dart';
 
 const uint16_t uint16max = 65535;
@@ -30,8 +31,10 @@ class Vehicle {
   double homeLat = 0.0;
   double homeLon = 0.0;
   double homeAlt = 0.0;
-  double distanceToHome = 0.0;
 
+  // distance to home
+  double distanceToHome = 0.0;
+  
   // Attitude
   float roll = 0.0;
   float pitch = 0.0;
@@ -73,49 +76,96 @@ class Vehicle {
     return flightMode;
   }
 
-  // Mavlink Parsing
-  void mavlinkParsing(MavlinkFrame frame) {
+  // Mavlink message receive
+  void mavlinkMessageReceived(MavlinkFrame frame) {
     switch (frame.message.runtimeType) {
     case Heartbeat:
-      var heartbeat = frame.message as Heartbeat;
-      baseMode = heartbeat.baseMode;
-      customMode = heartbeat.customMode;
-      flightMode = getFlightModes(baseMode, customMode);
-      armed = (heartbeat.baseMode & mavModeFlagDecodePositionSafety) == 0 ? false : true;
-      heartbeatElapsedTimer.reset(); // 하트비트 도착할 때마다 하트비트 타이머 리셋
+      _handleHeartBeat(frame);
       break;
     case GlobalPositionInt:
-      var positionInt = frame.message as GlobalPositionInt;
-      vehicleLat = (positionInt.lat == 0) ? 0.0 : (positionInt.lat / 1e7);
-      vehicleLon = (positionInt.lon == 0) ? 0.0 : (positionInt.lon / 1e7);
-      vehicleRelativeAltitude = (positionInt.relativeAlt / 1000.0);
-      vehicleHeading = (positionInt.hdg / 100.0);
+      _handleGlobalPositionInt(frame);
       break;
     case Attitude:
-      var attitude = frame.message as Attitude;
-      roll = attitude.roll;
-      pitch = attitude.pitch;
-      yaw = attitude.yaw;
+      _handleAttitude(frame);
       break;
     case GpsRawInt:
-      var gpsrawint = frame.message as GpsRawInt;
-      eph = (gpsrawint.eph == uint16max ? double.nan : (gpsrawint.eph / 100.0));
-      epv = (gpsrawint.epv == uint16max ? double.nan : (gpsrawint.epv / 100.0));
-      gpsfixType = gpsrawint.fixType;
+      _handleGpsRawInt(frame);
       break;
     case VfrHud:
-      var vfrhud = frame.message as VfrHud;
-      climbRate = vfrhud.climb;
-      groundSpeed = vfrhud.groundspeed;
+      _handleVfrHud(frame);
       break;
     case HomePosition:
-      var homeposition = frame.message as HomePosition;
-      homeLat = (homeposition.latitude  / 1e7);
-      homeLon = (homeposition.longitude / 1e7);
-      homeAlt = (homeposition.altitude  / 1000.0);
+      _handleHomePosition(frame);
       break;
     default:
       break;
     }
+  }
+
+  void _handleHeartBeat(MavlinkFrame frame) {
+    var heartbeat = frame.message as Heartbeat;
+
+    baseMode = heartbeat.baseMode;
+    customMode = heartbeat.customMode;
+    
+    // 하트비트에서 비행 모드 추출
+    flightMode = getFlightModes(baseMode, customMode);
+    
+    // 하트비트에서 시동 여부 추출
+    armed = (heartbeat.baseMode & mavModeFlagDecodePositionSafety) == 0 ? false : true;
+    
+    // 하트비트 도착할 때마다 하트비트 타이머 리셋
+    heartbeatElapsedTimer.reset(); 
+  }
+
+  void _handleGlobalPositionInt(MavlinkFrame frame) {
+    var positionInt = frame.message as GlobalPositionInt;
+
+    vehicleLat = (positionInt.lat == 0) ? 0.0 : (positionInt.lat / 1e7);
+    vehicleLon = (positionInt.lon == 0) ? 0.0 : (positionInt.lon / 1e7);
+    vehicleRelativeAltitude = (positionInt.relativeAlt / 1000.0);
+    vehicleHeading = (positionInt.hdg / 100.0);
+
+    // 홈과 현재 사이 거리 구하기
+    if((vehicleLat != 0 && vehicleLon != 0) && (homeLat != 0 && homeLon != 0)) {
+      const Distance distance = Distance();
+
+      distanceToHome = distance.as(
+        LengthUnit.Meter,
+        LatLng(vehicleLat, vehicleLon),
+        LatLng(homeLat, homeLon)
+      );
+    }
+  }
+
+  void _handleAttitude(MavlinkFrame frame) {
+    var attitude = frame.message as Attitude;
+
+    roll = attitude.roll;
+    pitch = attitude.pitch;
+    yaw = attitude.yaw;
+  }
+
+  void _handleGpsRawInt(MavlinkFrame frame) {
+    var gpsrawint = frame.message as GpsRawInt;
+
+    eph = (gpsrawint.eph == uint16max ? double.nan : (gpsrawint.eph / 100.0));
+    epv = (gpsrawint.epv == uint16max ? double.nan : (gpsrawint.epv / 100.0));
+    gpsfixType = gpsrawint.fixType;
+  }
+
+  void _handleVfrHud(MavlinkFrame frame) {
+    var vfrhud = frame.message as VfrHud;
+    
+    climbRate = vfrhud.climb;
+    groundSpeed = vfrhud.groundspeed;
+  }
+
+  void _handleHomePosition(MavlinkFrame frame) {
+    var homeposition = frame.message as HomePosition;
+
+    homeLat = (homeposition.latitude  / 1e7);
+    homeLon = (homeposition.longitude / 1e7);
+    homeAlt = (homeposition.altitude  / 1000.0);
   }
 }

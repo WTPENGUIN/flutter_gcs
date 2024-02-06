@@ -108,7 +108,7 @@ class MultiVehicle extends ChangeNotifier {
     // Mavlink 메세지 전송
     Vehicle? vehicle = idSelectVehicle(frame.systemId);
     if(vehicle == null) return;
-    vehicle.mavlinkParsing(frame);
+    vehicle.mavlinkMessageReceived(frame);
 
     notifyListeners();
   }
