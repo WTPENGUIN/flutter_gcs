@@ -178,8 +178,10 @@ class UdpTask extends LinkTask {
 
   @override
   void stopTask() {
-    udpSocket!.close();
-    logger.i('stop udp task');
+    if(udpSocket != null) {
+      udpSocket!.close();
+      logger.i('stop udp task');
+    }
   }
 
   @override
@@ -243,8 +245,11 @@ class TcpTask extends LinkTask {
 
   @override
   void stopTask() {
-    tcpSocket!.close();
-    logger.i('stop tcp task');
+    if(tcpSocket != null) {
+      tcpSocket!.close();
+      tcpSocket!.destroy();
+      logger.i('stop tcp task');
+    }
   }
 
   @override
