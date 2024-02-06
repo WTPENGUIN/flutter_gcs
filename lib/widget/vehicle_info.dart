@@ -40,7 +40,7 @@ class _VehicleInfoStete extends State<VehicleInfo> {
                 mainAxisSpacing: 4.0,
                 childAspectRatio: 5.0,
                 children: [
-                  InfoTile(value: (activeVehicle != null ? activeVehicle.vehicleRelativeAltitude.toStringAsFixed(1) : '0.0'), prefix: 'D', suffix: 'm',   screenWidth: widgetWidth),
+                  InfoTile(value: (activeVehicle != null ? activeVehicle.distanceToHome.toStringAsFixed(0)          : '0'  ), prefix: 'D', suffix: 'm',   screenWidth: widgetWidth),
                   InfoTile(value: (activeVehicle != null ? activeVehicle.vehicleRelativeAltitude.toStringAsFixed(1) : '0.0'), prefix: 'A', suffix: 'm',   screenWidth: widgetWidth),
                   InfoTile(value: (activeVehicle != null ? activeVehicle.groundSpeed.toStringAsFixed(1)             : '0.0'), prefix: 'H', suffix: 'm/s', screenWidth: widgetWidth),
                   InfoTile(value: (activeVehicle != null ? activeVehicle.climbRate.toStringAsFixed(1)               : '0.0'), prefix: 'V', suffix: 'm/s', screenWidth: widgetWidth),
