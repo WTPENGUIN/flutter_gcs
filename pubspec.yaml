@@ -98,3 +98,14 @@ flutter:
           weight: 700
         - asset: assets/font/NanumGothicExtraBold.otf
           weight: 800
+
+    - family: Orbitron
+      fonts:
+        - asset: assets/font/OrbitronLight.otf
+          weight: 300
+        - asset: assets/font/Orbitron.otf
+          weight: 400
+        - asset: assets/font/OrbitronBold.otf
+          weight: 700
+        - asset: assets/font/OrbitronExtraBold.otf
+          weight: 800          
