@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:provider/provider.dart';
-import 'package:peachgs_flutter/utils/link_manage.dart';
+import 'package:peachgs_flutter/utils/connection_manager.dart';
 import 'package:peachgs_flutter/widget/modal/link_create_modal.dart';
 
 Color pBlue  = const Color(0xFF41B6E6);
@@ -62,9 +62,12 @@ class _FloatingButtonsState extends State<FloatingButtons> {
               case 'TCP':
                 Provider.of<LinkTaskManager>(context, listen: false).startTCPTask(host, port);
                 break;
-              case 'UDP':
-                Provider.of<LinkTaskManager>(context, listen: false).startUDPTask(host, port);
+              case 'UDP(S)':
+                Provider.of<LinkTaskManager>(context, listen: false).startUDPServerTask(port);
                 break;
+              case 'UDP':
+                Provider.of<LinkTaskManager>(context, listen: false).startUDPClientTask(host, port);
+                break;                
               default:
                 return;
             }

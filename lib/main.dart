@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:peachgs_flutter/model/multi_vehicle_manage.dart';
-import 'package:peachgs_flutter/utils/link_manage.dart';
+import 'package:peachgs_flutter/utils/connection_manager.dart';
 import 'package:peachgs_flutter/router.dart';
 
 void main() async {

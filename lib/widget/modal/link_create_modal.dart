@@ -5,7 +5,7 @@ Future<List<String>> showLinkCreateModal(BuildContext context) async {
   List<String> linkConfigure = [];
   final formKey = GlobalKey<FormState>();
 
-  String selectedProtocol = 'UDP';
+  String selectedProtocol = 'UDP(S)';
   String hostName = '';
   String portNumber = '';
   
@@ -51,7 +51,7 @@ Future<List<String>> showLinkCreateModal(BuildContext context) async {
                       onChanged: (String? value) {
                         selectedProtocol = value!;
                       },
-                      items: <String>['UDP', 'TCP'].map((String value) {
+                      items: <String>['UDP(S)', 'UDP', 'TCP'].map((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
                           child: Text(value),
