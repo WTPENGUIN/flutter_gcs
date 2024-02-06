@@ -18,9 +18,13 @@ class _MapWindowState extends State<MapWindow> {
   List<Marker> vehiclesPosition(MultiVehicle multiVehicleManager) {
     List<Marker> markers = [];
     for(var vehicle in MultiVehicle().allVehicles()) {
+      double markerLat = vehicle.vehicleLat;
+      double markerLon = vehicle.vehicleLon;
+
+      if((markerLat == 0) || (markerLon == 0)) continue;
       markers.add(
         Marker(
-          point: LatLng(vehicle.vehicleLat, vehicle.vehicleLon),
+          point: LatLng(markerLat, markerLon),
           width: 70 * scaleSmallDevice(context),
           height: 70 * scaleSmallDevice(context),
           child: GestureDetector(
