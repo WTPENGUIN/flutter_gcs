@@ -30,6 +30,7 @@ class Vehicle {
   double homeLat = 0.0;
   double homeLon = 0.0;
   double homeAlt = 0.0;
+  double distanceToHome = 0.0;
 
   // Attitude
   float roll = 0.0;
@@ -85,8 +86,8 @@ class Vehicle {
       break;
     case GlobalPositionInt:
       var positionInt = frame.message as GlobalPositionInt;
-      vehicleLat = (positionInt.lat / 10e6);
-      vehicleLon = (positionInt.lon / 10e6);
+      vehicleLat = (positionInt.lat == 0) ? 0.0 : (positionInt.lat / 1e7);
+      vehicleLon = (positionInt.lon == 0) ? 0.0 : (positionInt.lon / 1e7);
       vehicleRelativeAltitude = (positionInt.relativeAlt / 1000.0);
       vehicleHeading = (positionInt.hdg / 100.0);
       break;
@@ -109,8 +110,8 @@ class Vehicle {
       break;
     case HomePosition:
       var homeposition = frame.message as HomePosition;
-      homeLat = (homeposition.latitude  / 10e6);
-      homeLon = (homeposition.longitude / 10e6);
+      homeLat = (homeposition.latitude  / 1e7);
+      homeLon = (homeposition.longitude / 1e7);
       homeAlt = (homeposition.altitude  / 1000.0);
       break;
     default:
