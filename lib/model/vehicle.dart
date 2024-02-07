@@ -1,9 +1,13 @@
-import 'package:dart_mavlink/mavlink.dart';
-import 'package:dart_mavlink/types.dart';
-import 'package:dart_mavlink/dialects/ardupilotmega.dart';
+import 'dart:typed_data';
 import 'package:logger/logger.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:peachgs_flutter/model/autopilot_flight_mode.dart';
+import 'package:dart_mavlink/types.dart';
+import 'package:dart_mavlink/mavlink.dart';
+import 'package:dart_mavlink/dialects/ardupilotmega.dart';
+import 'package:peachgs_flutter/model/px4.dart';
+import 'package:peachgs_flutter/model/ardupilot.dart';
+import 'package:peachgs_flutter/utils/connection_manager.dart';
+import 'package:peachgs_flutter/utils/mavlink_protocol.dart';
 
 const uint16_t uint16max = 65535;
 
@@ -41,6 +45,7 @@ class Vehicle {
   float yaw = 0.0;
 
   // GPS_Raw_Int(HDOP, VDOP)
+  double altitudeMSL = double.nan;
   double eph = 0; // HDOP
   double epv = 0; // VDOP
   GpsFixType gpsfixType = gpsFixTypeNoGps;
@@ -49,10 +54,10 @@ class Vehicle {
   float climbRate = 0.0;
   float groundSpeed = 0.0;
 
-  // Heartbeat timer
+  // Heartbeat 타이머
   final heartbeatElapsedTimer = Stopwatch();
 
-  // Vehicle Constructor
+  // Vehicle 생성자
   Vehicle(int id, MavType type, MavAutopilot autoType) {
     vehicleId = id;
     vehicleType = type;
@@ -60,7 +65,7 @@ class Vehicle {
     heartbeatElapsedTimer.start(); // 하트비트 타이머 시작
   }
 
-  // Get flight mode name
+  // 현재 비행모드 파싱
   String getFlightModes(uint8_t baseMode, uint32_t customMode) {
     String flightMode = 'Unknown';
 
@@ -76,7 +81,162 @@ class Vehicle {
     return flightMode;
   }
 
-  // Mavlink message receive
+  // 시동 명령어 전송
+  void vehicleArm(bool armed) {
+    ConnectionManager link = ConnectionManager();
+
+    var command = CommandLong(
+      param1: (armed) ? 1 : 0,
+      param2: 0,
+      param3: 0,
+      param4: 0,
+      param5: 0,
+      param6: 0,
+      param7: 0,
+      command: mavCmdComponentArmDisarm,
+      targetSystem: vehicleId,
+      targetComponent: mavCompIdAll,
+      confirmation: 0
+    );
+    
+    var mavlinkFrame = MavlinkFrame.v2(0, MavlinkProtocol.getSystemId(), MavlinkProtocol.getComponentId(), command);
+    link.writeMessageLink(mavlinkFrame);
+  }
+
+  // 이륙 명령어
+  void vehicleTakeOff(double alt) {
+    // AMSL 고도가 잡히지 않으면(GPS 미수신) 이륙 거부
+    if(altitudeMSL.isNaN) {
+      // TODO : 이륙 거부 메세지
+      return;
+    }
+    
+    // 펌웨어에 따라 이륙 명령어 작성
+    ConnectionManager link = ConnectionManager();
+    switch (autopilotType) {
+      case mavAutopilotArdupilotmega:
+        _ardupilotSetFlightMode("GUIDED"); // 모드 변경
+        vehicleArm(true);                  // 시동 걸기
+        var command = CommandLong(
+          param1: 0.0,
+          param2: 0.0,
+          param3: 0.0,
+          param4: 0.0,
+          param5: 0.0,
+          param6: 0.0,
+          param7: (alt > 10) ? alt : 10,
+          command: mavCmdNavTakeoff,
+          targetSystem: vehicleId,
+          targetComponent: mavCompIdAll,
+          confirmation: 0
+        );
+
+        MavlinkFrame mavlinkFrame = MavlinkFrame.v2(0, MavlinkProtocol.getSystemId(), MavlinkProtocol.getComponentId(), command);
+        link.writeMessageLink(mavlinkFrame);     
+        break;
+      case mavAutopilotPx4:
+        var command = CommandLong(
+          param1: -1,
+          param2: 0,
+          param3: 0,
+          param4: double.nan,
+          param5: double.nan,
+          param6: double.nan,
+          param7: alt,
+          command: mavCmdNavTakeoff,
+          targetSystem: vehicleId,
+          targetComponent: mavCompIdAll,
+          confirmation: 0
+        );
+
+        MavlinkFrame mavlinkFrame = MavlinkFrame.v2(0, MavlinkProtocol.getSystemId(), MavlinkProtocol.getComponentId(), command);
+        link.writeMessageLink(mavlinkFrame);
+        break;
+      default:
+        // TODO : 미지원 펌웨어 이륙 명령어 예외 처리
+    }    
+  }
+
+  // 착륙 명령어
+  void vehicleLand() {
+    switch (autopilotType) {
+      case mavAutopilotArdupilotmega:
+        _ardupilotSetFlightMode("LAND");
+        break;
+      case mavAutopilotPx4:
+        _px4SetFlightMode("Land");
+        break;
+      default:
+        // TODO : 미지원 펌웨어 이륙 명령어 예외 처리
+    } 
+  }
+
+  // PX4 펌웨어 비행모드 전환 명령어
+  void _px4SetFlightMode(String flightMode) {
+    PX4FlightMode? mode = findPX4FlightMode(flightMode);
+
+    if(mode == null) {
+      logger.e('Unknown flight Mode : $flightMode');
+      return;
+    }
+
+    uint8_t setBaseMode = mavModeFlagCustomModeEnabled;
+    uint8_t newBaseMode = baseMode & ~mavModeFlagDecodePositionCustomMode;
+    newBaseMode |= setBaseMode;
+    
+    // PX4 메인모드, 서브모드를 비트연산으로 커스텀 모드에 정보 담기
+    Uint8List list = Uint8List(4)
+      ..[3] = mode.subMode
+      ..[2] = mode.mainMode
+      ..[1] = 0
+      ..[0] = 0;
+    uint32_t newCustomMode = list.buffer.asByteData().getUint32(0, Endian.little);
+
+    // PX4 not support MAV_CMD_DO_SET_MODE command
+    var command = SetMode(
+      customMode: newCustomMode,
+      targetSystem: vehicleId,
+      baseMode: newBaseMode
+    );
+
+    ConnectionManager link = ConnectionManager();
+    MavlinkFrame mavlinkFrame = MavlinkFrame.v2(0, MavlinkProtocol.getSystemId(), MavlinkProtocol.getComponentId(), command);
+    link.writeMessageLink(mavlinkFrame);
+  }
+
+  // Ardupilot 펌웨어 비행모드 전환 명령어
+  void _ardupilotSetFlightMode(String flightMode) {
+    ArdupilotFlightMode? mode = findArduFlightMode(flightMode); // 전환 가능 모드 탐색
+
+    if(mode == null) {
+      logger.e('Unknown flight Mode : $flightMode');
+      return;
+    }
+
+    uint8_t baseMode = mavModeFlagCustomModeEnabled;
+    uint8_t customMode = mode.customMode;
+
+    // Ardupilot support MAV_CMD_DO_SET_MODE command
+    var command = CommandLong(
+      param1: baseMode.toDouble(),
+      param2: customMode.toDouble(),
+      param3: 0.0,
+      param4: 0.0,
+      param5: 0.0,
+      param6: 0.0,
+      param7: 0.0,
+      command: mavCmdDoSetMode,
+      targetSystem: vehicleId,
+      targetComponent: mavCompIdAll,
+      confirmation: 0
+    );
+
+    ConnectionManager link = ConnectionManager();
+    MavlinkFrame mavlinkFrame = MavlinkFrame.v2(0, MavlinkProtocol.getSystemId(), MavlinkProtocol.getComponentId(), command);
+    link.writeMessageLink(mavlinkFrame);
+  }
+
+  // 수신한 Mavlink 메세지 처리
   void mavlinkMessageReceived(MavlinkFrame frame) {
     switch (frame.message.runtimeType) {
     case Heartbeat:
@@ -96,6 +256,9 @@ class Vehicle {
       break;
     case HomePosition:
       _handleHomePosition(frame);
+      break;
+    case CommandAck:
+      _handleCommandAck(frame);
       break;
     default:
       break;
@@ -152,6 +315,10 @@ class Vehicle {
     eph = (gpsrawint.eph == uint16max ? double.nan : (gpsrawint.eph / 100.0));
     epv = (gpsrawint.epv == uint16max ? double.nan : (gpsrawint.epv / 100.0));
     gpsfixType = gpsrawint.fixType;
+
+    if(gpsfixType > gpsFixType3dFix) {
+      altitudeMSL = gpsrawint.alt / 1000.0;
+    }
   }
 
   void _handleVfrHud(MavlinkFrame frame) {
@@ -167,5 +334,9 @@ class Vehicle {
     homeLat = (homeposition.latitude  / 1e7);
     homeLon = (homeposition.longitude / 1e7);
     homeAlt = (homeposition.altitude  / 1000.0);
+  }
+
+  void _handleCommandAck(MavlinkFrame frame) {
+    //var commandack = frame.message as CommandAck;
   }
 }

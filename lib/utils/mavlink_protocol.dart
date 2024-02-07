@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:isolate';
 import 'package:dart_mavlink/mavlink.dart';
 import 'package:dart_mavlink/dialects/ardupilotmega.dart';
 import 'package:peachgs_flutter/model/multi_vehicle_manage.dart';
@@ -16,7 +15,7 @@ class MavlinkProtocol {
       _multiVehicle.mavlinkProcessing(frame);
     });
 
-    _sendGCSAllTask();
+    _sendGCSHeartBeat();
   }
   factory MavlinkProtocol() => _instance ??= MavlinkProtocol._();
 
@@ -25,27 +24,19 @@ class MavlinkProtocol {
 
   // GCS의 시스템 ID 반환
   // TODO : 사용자가 직접 설정 가능하게 변경
-  int getSystemId() {
+  static int getSystemId() {
     return 200;
   }
 
   // GCS의 컴포넌트 ID 반환
-  int getComponentId() {
+  static int getComponentId() {
     return mavCompIdMissionplanner;
   }
 
-  void writeToTask(String host, int port, dynamic data) {
-    LinkTaskManager link = LinkTaskManager();
-    
-    ReceivePort? taskPort = link.getTaskPort(host, port);
-    if(taskPort == null) return;
-    taskPort.sendPort.send(data);
-  }
-
-  void _sendGCSAllTask() {
+  // GCS 하트비트 전송
+  void _sendGCSHeartBeat() {
     Timer.periodic(const Duration(seconds: 1), (timer) {
-      LinkTaskManager link = LinkTaskManager();
-      List<ReceivePort> list = link.getAllTaskPort();
+      ConnectionManager link = ConnectionManager();
 
       var gcsHeartBeat = Heartbeat(
         customMode: 0,
@@ -57,11 +48,7 @@ class MavlinkProtocol {
       );
 
       var mavlinkframe = MavlinkFrame.v2(0, getSystemId(), getComponentId(), gcsHeartBeat);
-
-      if(list.isEmpty) return;
-      for(ReceivePort port in list) {
-        port.sendPort.send(mavlinkframe);
-      }
+      link.writeMessageLink(mavlinkframe);
     });
   }
 }

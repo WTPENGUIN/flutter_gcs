@@ -7,17 +7,21 @@ import 'package:peachgs_flutter/utils/tcp_connector.dart';
 import 'package:peachgs_flutter/utils/udp_server_connector.dart';
 import 'package:peachgs_flutter/utils/udp_client_connector.dart';
 
-class LinkTaskManager extends ChangeNotifier {
+class ConnectionManager extends ChangeNotifier {
   // 싱글톤 패턴
-  LinkTaskManager._privateConstructor();
-  static final LinkTaskManager _instance = LinkTaskManager._privateConstructor();
-  factory LinkTaskManager() {
+  ConnectionManager._privateConstructor();
+  static final ConnectionManager _instance = ConnectionManager._privateConstructor();
+  factory ConnectionManager() {
     return _instance;
   }
   
-  final List<LinkTask> _taskList = [];
+  // Logger
   final Logger logger = Logger();
 
+  // Task 리스트
+  final List<LinkTask> _taskList = [];
+
+  // UDP 서버(임무 컴퓨터에 연결) 태스크 시작
   Future<void> startUDPServerTask(int port) async {
     UdpServerTask task = UdpServerTask(ReceivePort());
 
@@ -25,6 +29,7 @@ class LinkTaskManager extends ChangeNotifier {
     task.startTask('0.0.0.0', port);
   }
 
+  // UDP 클라이언트(GCS가 서버) 태스크 시작
   Future<void> startUDPClientTask(String host, int port) async {
     UdpClientTask task = UdpClientTask(ReceivePort());
 
@@ -32,6 +37,7 @@ class LinkTaskManager extends ChangeNotifier {
     task.startTask(host, port);
   }  
 
+  // TCP 태스크 시작
   Future<void> startTCPTask(String host, int port) async {
     TcpTask task = TcpTask(ReceivePort());
 
@@ -39,6 +45,7 @@ class LinkTaskManager extends ChangeNotifier {
     task.startTask(host, port);
   }
 
+  // UDP 서버(임무 컴퓨터에 연결) 태스크 정지
   void stopUDPServerTask(String host, int port) {
     LinkTask? removedTask;
 
@@ -59,6 +66,7 @@ class LinkTaskManager extends ChangeNotifier {
     }
   }
 
+  // UDP 클라이언트(GCS가 서버) 태스크 시작
   void stopUDPClientTask(String host, int port) {
     LinkTask? removedTask;
 
@@ -79,6 +87,7 @@ class LinkTaskManager extends ChangeNotifier {
     }
   }  
 
+  // TCP 태스크 정지
   void stopTCPTask(String host, int port) {
     LinkTask? removedTask;
 
@@ -99,6 +108,7 @@ class LinkTaskManager extends ChangeNotifier {
     }
   }
 
+  // 모든 태스크 정지
   void stopAllTask() {
     for(var task in _taskList) {
       if(task.getProtocol() == tcpProtocol) {
@@ -113,7 +123,8 @@ class LinkTaskManager extends ChangeNotifier {
     _taskList.clear();
   }
 
-  List<ReceivePort> getAllTaskPort() {
+  // 태스크 데이터 전달용 포트 리스트 반환
+  List<ReceivePort> _getAllTaskPort() {
     List<ReceivePort> list = [];
 
     for(var currentTask in _taskList) {
@@ -123,6 +134,7 @@ class LinkTaskManager extends ChangeNotifier {
     return list;
   }
 
+  // 특정 링크의 데이터 전달용 포트 반환
   ReceivePort? getTaskPort(String host, int port) {
     LinkTask? task;
 
@@ -139,6 +151,15 @@ class LinkTaskManager extends ChangeNotifier {
       return null;
     } else {
       return task.receivePort;
+    }
+  }
+
+  // 연결 링크에 메세지 쓰기
+  void writeMessageLink(dynamic message) {
+    if(_taskList.isEmpty) return;
+
+    for(ReceivePort sendPort in _getAllTaskPort()) {
+      sendPort.sendPort.send(message);
     }
   }
 

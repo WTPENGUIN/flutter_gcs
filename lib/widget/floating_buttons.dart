@@ -60,13 +60,13 @@ class _FloatingButtonsState extends State<FloatingButtons> {
 
             switch (protocol) {
               case 'TCP':
-                Provider.of<LinkTaskManager>(context, listen: false).startTCPTask(host, port);
+                Provider.of<ConnectionManager>(context, listen: false).startTCPTask(host, port);
                 break;
               case 'UDP(S)':
-                Provider.of<LinkTaskManager>(context, listen: false).startUDPServerTask(port);
+                Provider.of<ConnectionManager>(context, listen: false).startUDPServerTask(port);
                 break;
               case 'UDP':
-                Provider.of<LinkTaskManager>(context, listen: false).startUDPClientTask(host, port);
+                Provider.of<ConnectionManager>(context, listen: false).startUDPClientTask(host, port);
                 break;                
               default:
                 return;
@@ -84,7 +84,7 @@ class _FloatingButtonsState extends State<FloatingButtons> {
           backgroundColor: pBlue,
           labelBackgroundColor: pBlue,
           onTap: () {
-            Provider.of<LinkTaskManager>(context, listen: false).stopAllTask();
+            Provider.of<ConnectionManager>(context, listen: false).stopAllTask();
           }
         ),
         SpeedDialChild(

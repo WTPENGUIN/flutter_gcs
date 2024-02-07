@@ -66,6 +66,7 @@ class MultiVehicle extends ChangeNotifier {
     notifyListeners();
   }
 
+  // 연결 끊어진 기체 탐색
   void checkDisconnectedVehicle() {
     List<Vehicle> removeVehicles = [];
     for(Vehicle vehicle in _vehicles) {
@@ -98,7 +99,7 @@ class MultiVehicle extends ChangeNotifier {
     }
   }
 
-  // Mavlink 메세지 처리
+  // 수신된 Mavlink 메세지 처리
   void mavlinkProcessing(MavlinkFrame frame) {
     if(frame.message.runtimeType == Heartbeat) {
       var heartbeat = frame.message as Heartbeat;

@@ -30,7 +30,7 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => MultiVehicle()),
-        ChangeNotifierProvider(create: (_) => LinkTaskManager())
+        ChangeNotifierProvider(create: (_) => ConnectionManager())
       ],
       child: MaterialApp.router(
         routerConfig: router,

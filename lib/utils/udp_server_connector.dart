@@ -19,6 +19,8 @@ class UdpServerTask extends LinkTask {
 
   UdpServerTask(ReceivePort receivePort) : super(receivePort);
 
+  final List<InternetAddress> clientAddress = [];
+
   @override
   void startTask(String host, int port) async {
     hostName = host; // Not Used.
@@ -33,6 +35,9 @@ class UdpServerTask extends LinkTask {
         return;
       } else {
         mavlink.parser.parse(frame.data);
+        if(!clientAddress.contains(frame.address)) {
+          clientAddress.add(frame.address);
+        }
       }
     });
 
@@ -68,7 +73,10 @@ class UdpServerTask extends LinkTask {
     if(message == disconnectUDPServerMessage) {
       stopTask();
     } else if(message.runtimeType == MavlinkFrame) {
-      // Send Mavlink Message to socket
+      MavlinkFrame frame = message as MavlinkFrame;
+      for(InternetAddress address in clientAddress) {
+        udpSocket!.send(frame.serialize(), address, portNum);
+      }
     } else {
       logger.i(message);
     }
