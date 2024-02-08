@@ -20,10 +20,11 @@ class Vehicle {
   MavAutopilot autopilotType = mavAutopilotGeneric;
 
   // HeartBeat
-  uint8_t  baseMode = 0;
+  uint8_t  baseMode   = 0;
   uint32_t customMode = 0;
   String   flightMode = '';
-  bool     armed = false;
+  bool     armed      = false;
+  bool     isFlying   = false;
 
   // Global Position Int
   double vehicleLat = 0.0;
@@ -142,7 +143,7 @@ class Vehicle {
           param4: double.nan,
           param5: double.nan,
           param6: double.nan,
-          param7: alt,
+          param7: alt + altitudeMSL,
           command: mavCmdNavTakeoff,
           targetSystem: vehicleId,
           targetComponent: mavCompIdAll,
@@ -260,6 +261,9 @@ class Vehicle {
     case CommandAck:
       _handleCommandAck(frame);
       break;
+    case ExtendedSysState:
+    _handleExtendedSysState(frame);
+      break;
     default:
       break;
     }
@@ -276,6 +280,20 @@ class Vehicle {
     
     // 하트비트에서 시동 여부 추출
     armed = (heartbeat.baseMode & mavModeFlagDecodePositionSafety) == 0 ? false : true;
+
+    // 기체가 비행 중인지 추출(Ardupilot만 해당)
+    if(autopilotType == mavAutopilotArdupilotmega) {
+      bool flying = false;
+
+      if(armed) {
+        flying = heartbeat.systemStatus == mavStateActive;
+
+        if(!flying && isFlying) {
+          flying = ((heartbeat.systemStatus == mavStateCritical) && (heartbeat.systemStatus == mavStateEmergency));
+        } 
+      }
+      isFlying = flying;
+    }
     
     // 하트비트 도착할 때마다 하트비트 타이머 리셋
     heartbeatElapsedTimer.reset(); 
@@ -316,7 +334,7 @@ class Vehicle {
     epv = (gpsrawint.epv == uint16max ? double.nan : (gpsrawint.epv / 100.0));
     gpsfixType = gpsrawint.fixType;
 
-    if(gpsfixType > gpsFixType3dFix) {
+    if(gpsfixType >= gpsFixType3dFix) {
       altitudeMSL = gpsrawint.alt / 1000.0;
     }
   }
@@ -338,5 +356,22 @@ class Vehicle {
 
   void _handleCommandAck(MavlinkFrame frame) {
     //var commandack = frame.message as CommandAck;
+  }
+
+  void _handleExtendedSysState(MavlinkFrame frame) {
+    var extendedSysState = frame.message as ExtendedSysState;
+
+    switch (extendedSysState.landedState) {
+      case mavLandedStateOnGround:
+        isFlying = false;
+        break;
+      case mavLandedStateTakeoff:
+      case mavLandedStateInAir:
+        isFlying = true;
+      case mavLandedStateLanding:
+        isFlying = false;
+      default:
+        break;
+    }
   }
 }
