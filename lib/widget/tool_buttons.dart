@@ -35,14 +35,14 @@ class _ToolButtonsState extends State<ToolButtons> {
       height: getPosition(context),
       child: Consumer<MultiVehicle>(
         builder: (_, multiManager, __) {
-        bool armed = (multiManager.activeVehicle() != null && multiManager.activeVehicle()!.armed) ? true : false;
+          bool armed = (multiManager.activeVehicle() != null && multiManager.activeVehicle()!.armed) ? true : false;
           bool isFlying = (multiManager.activeVehicle() != null && multiManager.activeVehicle()!.isFlying) ? true : false;
 
           return Row(
             children: [
               CustomButton(
                 icon: armed ? Icons.highlight_off : Icons.power_settings_new,
-                submit: () {
+                submit: (multiManager.activeVehicle() != null) ?() {
                   Vehicle? vehicle = multiManager.activeVehicle();
                   if(vehicle == null) return;
 
@@ -51,7 +51,7 @@ class _ToolButtonsState extends State<ToolButtons> {
                   } else {
                     vehicle.vehicleArm(true);
                   }
-                },
+                } : null,
               ),
               const SizedBox(width: 10),
               CustomButton(
@@ -74,18 +74,19 @@ class _ToolButtonsState extends State<ToolButtons> {
                 } : null
               ),
               const SizedBox(width: 10),
-              CustomButton(
+              const CustomButton(
                 icon: Icons.play_arrow,
-                submit: () {
-
-                },
+                submit: null,
               ),
               const SizedBox(width: 10),
               CustomButton(
-                icon: Icons.home,
-                submit: () {
-                  
-                },
+                icon: Icons.keyboard_return,
+                submit: (isFlying && armed) ? () {
+                  Vehicle? vehicle = multiManager.activeVehicle();
+                  if(vehicle == null) return;
+
+                  //vehicle.vehicleLand();
+                } : null,
               ),
             ],
           );

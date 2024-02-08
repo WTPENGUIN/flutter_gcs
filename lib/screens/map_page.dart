@@ -29,7 +29,7 @@ class _MapWindowState extends State<MapWindow> {
           height: 70 * scaleSmallDevice(context),
           child: GestureDetector(
             child: VehicleMarker(
-              route: 'assets/svg/VehicleIcon.svg',
+              route: 'assets/image/VehicleIcon.svg',
               radians: vehicle.yaw,
               vehicleId: vehicle.vehicleId,
               flightMode: vehicle.flightMode,
@@ -59,7 +59,11 @@ class _MapWindowState extends State<MapWindow> {
       ),
       children: [
         TileLayer(
-          urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+          wmsOptions: WMSTileLayerOptions(
+            baseUrl: 'https://{s}.s2maps-tiles.eu/wms/?',
+            layers: const ['s2cloudless-2021_3857'],
+          ),
+          subdomains: const ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'],
           tileProvider: CancellableNetworkTileProvider(),
         ),
         Consumer<MultiVehicle>(

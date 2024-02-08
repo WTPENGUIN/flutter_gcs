@@ -23,8 +23,12 @@ class _FloatingButtonsState extends State<FloatingButtons> {
       curve: Curves.bounceIn,
       overlayColor: Colors.transparent,
       overlayOpacity: 0.0,
-      backgroundColor: pBlue,
-      activeBackgroundColor: pPeach,
+      backgroundColor: pPeach,
+      activeBackgroundColor: pBlue,
+      direction: SpeedDialDirection.down,
+      buttonSize: const Size(40,40),
+      childrenButtonSize: const Size(40, 40),
+      spacing: 10,
       children: [
         SpeedDialChild(
           child: const Icon(Icons.work_history, color: Colors.white),
@@ -41,8 +45,8 @@ class _FloatingButtonsState extends State<FloatingButtons> {
           }
         ),
         SpeedDialChild(
-          child: const Icon(Icons.work_history, color: Colors.white),
-          label: "테스트 링크 연결",
+          child: const Icon(Icons.link, color: Colors.white),
+          label: "링크 연결",
           labelStyle: const TextStyle(
             fontWeight: FontWeight.w500,
             color: Colors.white,
@@ -74,8 +78,8 @@ class _FloatingButtonsState extends State<FloatingButtons> {
           }
         ),
         SpeedDialChild(
-          child: const Icon(Icons.work_history, color: Colors.white),
-          label: "테스트 링크 해제",
+          child: const Icon(Icons.link_off, color: Colors.white),
+          label: "링크 해제",
           labelStyle: const TextStyle(
             fontWeight: FontWeight.w500,
             color: Colors.white,
@@ -88,8 +92,8 @@ class _FloatingButtonsState extends State<FloatingButtons> {
           }
         ),
         SpeedDialChild(
-          child: const Icon(Icons.work_history, color: Colors.white),
-          label: "어플리케이션 설정",
+          child: const Icon(Icons.settings, color: Colors.white),
+          label: "설정",
           labelStyle: const TextStyle(
             fontWeight: FontWeight.w500,
             color: Colors.white,

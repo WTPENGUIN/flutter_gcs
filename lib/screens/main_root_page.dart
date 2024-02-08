@@ -2,8 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:peachgs_flutter/screens/map_page.dart';
 import 'package:peachgs_flutter/screens/video_page.dart';
-import 'package:peachgs_flutter/widget/floating_buttons.dart';
-import 'package:peachgs_flutter/widget/toolbar.dart';
+import 'package:peachgs_flutter/widget/top_bar.dart';
 import 'package:peachgs_flutter/widget/vehicle_info.dart';
 import 'package:peachgs_flutter/widget/tool_buttons.dart';
 
@@ -15,12 +14,16 @@ class MainRootWindow extends StatelessWidget {
     final screenSize = MediaQuery.of(context).size;
 
     return Scaffold(
-      appBar: const ToolBar(),
-      floatingActionButton: const FloatingButtons(),
       body: SafeArea(
         child: Stack(
           children: [
             const MapWindow(),
+            const Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: ToolBar()
+            ),
             if(Platform.isAndroid)
             Positioned(
               bottom: screenSize.height * 0.15,
@@ -33,6 +36,7 @@ class MainRootWindow extends StatelessWidget {
               right: 0,
               child: VehicleInfo()
             ),
+            // TODO : 반응형 위치 구현
             Positioned(
               bottom: screenSize.height * 0.075,
               left: screenSize.width * 0.01,
