@@ -1,64 +1,90 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:peachgs_flutter/model/multi_vehicle_manage.dart';
 import 'package:peachgs_flutter/model/vehicle.dart';
+import 'package:peachgs_flutter/model/multi_vehicle_manage.dart';
 
 class ToolButtons extends StatefulWidget {
-  const ToolButtons({Key? key}) : super(key: key);
+  const ToolButtons({
+    Key? key
+  }) : super(key: key);
 
   @override
   State<ToolButtons> createState() => _ToolButtonsState();
 }
 
 class _ToolButtonsState extends State<ToolButtons> {
+  // TODO : 정확한 반응형 UI
+  double getPosition(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+
+    if(Platform.isAndroid || Platform.isIOS) {
+      if(screenSize.height * 0.15 > 150) {
+        return screenSize.height * 0.15;
+      } else {
+        return 150;
+      }
+    } else {
+      return screenSize.height * 0.15;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 120,
-      height: 400,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-      ),
+    return SizedBox(
+      height: getPosition(context),
       child: Consumer<MultiVehicle>(
         builder: (_, multiManager, __) {
-          bool isArmed = (multiManager.activeVehicle() != null && multiManager.activeVehicle()!.armed) ? true : false; 
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.start,
+        bool armed = (multiManager.activeVehicle() != null && multiManager.activeVehicle()!.armed) ? true : false;
+          bool isFlying = (multiManager.activeVehicle() != null && multiManager.activeVehicle()!.isFlying) ? true : false;
+
+          return Row(
             children: [
-              CircleButton(
-                icon: isArmed ? Icons.highlight_off : Icons.check_circle,
-                text: isArmed ? "끄기" : "시동",
+              CustomButton(
+                icon: armed ? Icons.highlight_off : Icons.power_settings_new,
                 submit: () {
                   Vehicle? vehicle = multiManager.activeVehicle();
                   if(vehicle == null) return;
 
-                  if(isArmed) {
+                  if(armed) {
                     vehicle.vehicleArm(false);
                   } else {
                     vehicle.vehicleArm(true);
                   }
                 },
               ),
-              const SizedBox(height: 20),
-              CircleButton(
-                icon: Icons.flight_takeoff,
-                text: "이륙",
-                submit: () {
+              const SizedBox(width: 10),
+              CustomButton(
+                icon: Icons.file_upload,
+                submit: (!isFlying && armed) ? () {
                   Vehicle? vehicle = multiManager.activeVehicle();
                   if(vehicle == null) return;
 
                   vehicle.vehicleTakeOff(10.0);
-                },
+                } : null
               ),
-              const SizedBox(height: 20),
-              CircleButton(
-                icon: Icons.flight_land,
-                text: "착륙",
-                submit: () {
+              const SizedBox(width: 10),
+              CustomButton(
+                icon: Icons.download,
+                submit: (isFlying && armed) ? () {
                   Vehicle? vehicle = multiManager.activeVehicle();
                   if(vehicle == null) return;
 
                   vehicle.vehicleLand();
+                } : null
+              ),
+              const SizedBox(width: 10),
+              CustomButton(
+                icon: Icons.play_arrow,
+                submit: () {
+
+                },
+              ),
+              const SizedBox(width: 10),
+              CustomButton(
+                icon: Icons.home,
+                submit: () {
+                  
                 },
               ),
             ],
@@ -69,51 +95,50 @@ class _ToolButtonsState extends State<ToolButtons> {
   }
 }
 
-class CircleButton extends StatelessWidget {
+class CustomButton extends StatelessWidget {
   final IconData icon;
-  final String text;
-  final Function()? submit; 
+  final Function()? submit;
 
-  const CircleButton({
+  const CustomButton({
     required this.icon,
-    required this.text,
-    this.submit,
+    required this.submit,
     Key? key
   }) : super(key: key);
 
+  // TODO : 정확한 반응형 UI
+  Size getSize(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+    
+    double width = (screenSize.width * 0.08) > 74.7 ? 74.7 : screenSize.width * 0.08;
+    double height = (screenSize.height * 0.08) > 56.9 ? 56.9 : screenSize.height * 0.08;
+
+    if(Platform.isAndroid || Platform.isIOS) {
+      if(width > 64 && height > 64) {
+        return Size(width, height);
+      } else {
+        return const Size(64, 64);
+      }
+    } else {
+      return Size(width, height);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 120, // 버튼의 너비
-      margin: const EdgeInsets.all(15),
-      child: TextButton(
+    Size buttonSize = getSize(context);
+
+    return SizedBox(
+      width: buttonSize.width,
+      height: buttonSize.height,
+      child: ElevatedButton(
         onPressed: submit,
-        style: ButtonStyle(
-          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-            RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(50), // 원형 버튼을 만들기 위한 원의 반지름
-            ),
-          ),
-          backgroundColor: MaterialStateProperty.all(
-            Colors.grey
-          )
+        style: ElevatedButton.styleFrom(
+          shape: const CircleBorder(),
+          padding: const EdgeInsets.all(20),
+          backgroundColor: Colors.blue, // <-- Button color
+          foregroundColor: Colors.red,  // <-- Splash color
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              color: Colors.white,
-            ),
-            const SizedBox(height: 8), // 아이콘과 텍스트 간의 간격
-            Text(
-              text,
-              style: const TextStyle(
-                color: Colors.white
-              ),
-            ),
-          ],
-        ),
+        child: Icon(icon, color: Colors.white),
       ),
     );
   }

@@ -1,8 +1,9 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:peachgs_flutter/screens/map_page.dart';
+import 'package:peachgs_flutter/screens/video_page.dart';
 import 'package:peachgs_flutter/widget/floating_buttons.dart';
 import 'package:peachgs_flutter/widget/toolbar.dart';
-import 'package:peachgs_flutter/screens/video_page.dart';
 import 'package:peachgs_flutter/widget/vehicle_info.dart';
 import 'package:peachgs_flutter/widget/tool_buttons.dart';
 
@@ -11,28 +12,33 @@ class MainRootWindow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return  const Scaffold(
-      floatingActionButton: FloatingButtons(),
+    final screenSize = MediaQuery.of(context).size;
+
+    return Scaffold(
+      appBar: const ToolBar(),
+      floatingActionButton: const FloatingButtons(),
       body: SafeArea(
         child: Stack(
           children: [
-            MapWindow(),
+            const MapWindow(),
+            if(Platform.isAndroid)
             Positioned(
-              top: 0,
-              child: ToolBar()
+              bottom: screenSize.height * 0.15,
+              right: 0,
+              child: const VideoPage()
             ),
-            Positioned(
+            const Positioned(
               bottom: 0,
-              child: VideoPage()
+              left: 0,
+              right: 0,
+              child: VehicleInfo()
             ),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: ToolButtons()
-            ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: VehicleInfo(),
-            ),
+            Positioned(
+              bottom: screenSize.height * 0.075,
+              left: screenSize.width * 0.01,
+              right: 0,
+              child: const ToolButtons()
+            )
           ],
         )
       ),

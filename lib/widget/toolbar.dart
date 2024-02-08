@@ -1,29 +1,42 @@
 import 'package:flutter/material.dart';
-import 'package:peachgs_flutter/model/multi_vehicle_manage.dart';
-import 'package:peachgs_flutter/utils/utils.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
-class ToolBar extends StatefulWidget {
+class ToolBar extends StatelessWidget implements PreferredSizeWidget {
   const ToolBar({Key? key}) : super(key: key);
 
   @override
-  State<ToolBar> createState() => _ToolBarStete();
-}
-
-class _ToolBarStete extends State<ToolBar> {
-  MultiVehicle manager = MultiVehicle();
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 80 * scaleSmallDevice(context),
-      width: MediaQuery.of(context).size.width,
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.black45, Colors.black26],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight
-        ),
+    return AppBar(
+      backgroundColor: Colors.grey,
+      title: Row(
+        children: [
+          // 로고 이미지
+          SvgPicture.asset(
+            'assets/svg/PeachLogo.svg',
+            width: 40,
+            height: 40,
+          ),
+        ],
       ),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.settings),
+          color: Colors.black,
+          onPressed: () {
+            // 버튼 1의 기능 설정
+          },
+        ),
+        IconButton(
+          icon: const Icon(Icons.more_vert),
+          color: Colors.black,
+          onPressed: () {
+            // 버튼 2의 기능 설정
+          },
+        ),
+      ],
     );
   }
 }

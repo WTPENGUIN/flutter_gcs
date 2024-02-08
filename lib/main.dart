@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:peachgs_flutter/router.dart';
 import 'package:peachgs_flutter/model/multi_vehicle_manage.dart';
 import 'package:peachgs_flutter/utils/connection_manager.dart';
-import 'package:peachgs_flutter/router.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  if(Platform.isAndroid) {
+  if(Platform.isAndroid || Platform.isIOS) {
     SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeRight, DeviceOrientation.landscapeLeft]);
   }
 
