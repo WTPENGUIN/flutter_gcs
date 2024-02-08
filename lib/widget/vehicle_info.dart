@@ -17,7 +17,7 @@ class _VehicleInfoStete extends State<VehicleInfo> {
   MultiVehicle manager = MultiVehicle();
 
   String _formatLocation(double lat, double lon) {
-    return '${lat.toStringAsFixed(4)},${lon.toStringAsFixed(4)}';
+    return '${lat.toStringAsFixed(4)}°, ${lon.toStringAsFixed(4)}°';
   }
 
   // TODO : 정확한 반응형 UI
