@@ -16,9 +16,9 @@ class _VideoPageStete extends State<VideoPage> {
 
   @override
   void initState() {
-    if(Platform.isAndroid) {
+    if(Platform.isAndroid || Platform.isIOS) {
       _webViewController = WebViewController()
-      ..loadRequest(Uri.parse('https://www.youtube.com/')) // TODO : Goto WebRTC Viewer Page
+      ..loadRequest(Uri.parse('http://192.168.0.245:8889/cam')) // TODO : Goto WebRTC Viewer Page
       ..setJavaScriptMode(JavaScriptMode.unrestricted);
     }
     super.initState();
@@ -41,8 +41,10 @@ class _VideoPageStete extends State<VideoPage> {
   @override
   Widget build(BuildContext context) {
     return ResizebleContainerWidget(
-      size: const Size(400,200),
-      child: (Platform.isAndroid ? WebViewWidget(controller: _webViewController!) : informationWindows())
+      size: const Size(300,200),
+      child: AbsorbPointer(
+        child: (Platform.isAndroid ? WebViewWidget(controller: _webViewController!) : informationWindows()),
+      )
     );
   }
 }
