@@ -58,17 +58,59 @@ class _VehicleInfoStete extends State<VehicleInfo> {
           return Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              StatusWidget(title: "위치", text: (activeVehicle != null ? _formatLocation(activeVehicle.vehicleLat, activeVehicle.vehicleLon) : '-'), suffix: ''),
+              Expanded(
+                flex: 1,
+                child: StatusWidget(
+                  title: "위치",
+                  text: (activeVehicle != null ? _formatLocation(activeVehicle.vehicleLat, activeVehicle.vehicleLon) : '-'),
+                  suffix: ''
+                ),
+              ),
               const VerticalDivider(thickness: 2, width: 30),
-              StatusWidget(title: "고도", text: (activeVehicle != null ? activeVehicle.vehicleRelativeAltitude.toStringAsFixed(1) : '0.0'), suffix: 'm'),
+              Expanded(
+                flex: 1,
+                child: StatusWidget(
+                  title: "고도",
+                  text: (activeVehicle != null ? activeVehicle.vehicleRelativeAltitude.toStringAsFixed(1) : '0.0'),
+                  suffix: 'm'
+                ),
+              ),
               const VerticalDivider(thickness: 2, width: 30),
-              StatusWidget(title: "방향", text: (activeVehicle != null ? activeVehicle.vehicleHeading.toStringAsFixed(1) : '0'), suffix: '°'),
+              Expanded(
+                flex: 1,
+                child: StatusWidget(
+                  title: "방향",
+                  text: (activeVehicle != null ? activeVehicle.vehicleHeading.toStringAsFixed(1) : '0'),
+                  suffix: '°'
+                )
+              ),
               const VerticalDivider(thickness: 2, width: 30),
-              StatusWidget(title: "수평속도", text: (activeVehicle != null ? activeVehicle.groundSpeed.toStringAsFixed(1) : '0.0'), suffix: 'm/s'),
+              Expanded(
+                flex: 1,
+                child: StatusWidget(
+                  title: "수평속도",
+                  text: (activeVehicle != null ? activeVehicle.groundSpeed.toStringAsFixed(1) : '0.0'),
+                  suffix: 'm/s'
+                )
+              ),
               const VerticalDivider(thickness: 2, width: 30),
-              StatusWidget(title: "수평속도", text: (activeVehicle != null ? activeVehicle.climbRate.toStringAsFixed(1) : '0.0'), suffix: 'm/s'),
+              Expanded(
+                flex: 1,
+                child: StatusWidget(
+                  title: "수평속도",
+                  text: (activeVehicle != null ? activeVehicle.climbRate.toStringAsFixed(1) : '0.0'),
+                  suffix: 'm/s'
+                )
+              ),
               const VerticalDivider(thickness: 2, width: 30),
-              StatusWidget(title: "비행모드", text: (activeVehicle != null ? activeVehicle.flightMode : '-'), suffix: ''),
+              Expanded(
+                flex: 1,
+                child: StatusWidget(
+                  title: "비행모드",
+                  text: (activeVehicle != null ? activeVehicle.flightMode : '-'),
+                  suffix: ''
+                )
+              )
             ],
           );
         },
