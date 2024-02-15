@@ -7,14 +7,14 @@ import 'package:peachgs_flutter/model/multi_vehicle_manage.dart';
 import 'package:peachgs_flutter/widget/vehicle_marker.dart';
 import 'package:peachgs_flutter/utils/utils.dart';
 
-class MapWindow extends StatefulWidget {
-  const MapWindow({Key? key}) : super(key: key);
+class MapWindowDesktop extends StatefulWidget {
+  const MapWindowDesktop({Key? key}) : super(key: key);
 
   @override
-  State<MapWindow> createState() => _MapWindowState();
+  State<MapWindowDesktop> createState() => _MapWindowDesktopState();
 }
 
-class _MapWindowState extends State<MapWindow> {
+class _MapWindowDesktopState extends State<MapWindowDesktop> {
   List<Marker> vehiclesPosition(MultiVehicle multiVehicleManager) {
     List<Marker> markers = [];
     for(var vehicle in MultiVehicle().allVehicles()) {

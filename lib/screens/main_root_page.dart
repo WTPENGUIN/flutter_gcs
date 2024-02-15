@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:peachgs_flutter/screens/map_page.dart';
+import 'package:peachgs_flutter/screens/map_page_desktop.dart';
+import 'package:peachgs_flutter/screens/map_page_mobile.dart';
 import 'package:peachgs_flutter/screens/video_page.dart';
 import 'package:peachgs_flutter/widget/top_bar.dart';
 import 'package:peachgs_flutter/widget/vehicle_info.dart';
@@ -17,7 +18,7 @@ class MainRootWindow extends StatelessWidget {
       body: SafeArea(
         child: Stack(
           children: [
-            const MapWindow(),
+            Platform.isAndroid ? const MapWindowMobile() : const MapWindowDesktop(),
             const Positioned(
               top: 0,
               left: 0,
