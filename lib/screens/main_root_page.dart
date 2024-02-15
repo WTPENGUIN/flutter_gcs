@@ -10,6 +10,14 @@ import 'package:peachgs_flutter/widget/tool_buttons.dart';
 class MainRootWindow extends StatelessWidget {
   const MainRootWindow({Key? key}) : super(key: key);
 
+  bool _isMobile() {
+    if(Platform.isAndroid || Platform.isIOS) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
@@ -18,7 +26,7 @@ class MainRootWindow extends StatelessWidget {
       body: SafeArea(
         child: Stack(
           children: [
-            Platform.isAndroid ? const MapWindowMobile() : const MapWindowDesktop(),
+            _isMobile() ? const MapWindowMobile() : const MapWindowDesktop(),
             const Positioned(
               top: 0,
               left: 0,

@@ -24,7 +24,7 @@ if (flutterVersionName == null) {
 
 android {
     namespace "kr.thepeach.gcs.peachgs_flutter"
-    compileSdkVersion flutter.compileSdkVersion
+    compileSdkVersion localProperties.getProperty('flutter.compileSdkVersion').toInteger()
     ndkVersion flutter.ndkVersion
 
     compileOptions {
@@ -42,7 +42,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId "kr.thepeach.gcs.peachgs_flutter"
+        applicationId "kr.thepeach.peachgs"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
         minSdkVersion localProperties.getProperty('flutter.minSdkVersion').toInteger()
