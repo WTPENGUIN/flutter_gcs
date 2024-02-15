@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:async';
 import 'dart:isolate';
 import 'package:flutter/material.dart';
@@ -33,6 +34,9 @@ class ConnectionManager extends ChangeNotifier {
   Future<void> startUDPClientTask(String host, int port) async {
     UdpClientTask task = UdpClientTask(ReceivePort());
 
+    // 유효한 주소인지 검사
+    if(!_isVaildHost(host)) return;
+
     _taskList.add(task);
     task.startTask(host, port);
   }  
@@ -40,6 +44,9 @@ class ConnectionManager extends ChangeNotifier {
   // TCP 태스크 시작
   Future<void> startTCPTask(String host, int port) async {
     TcpTask task = TcpTask(ReceivePort());
+
+    // 유효한 주소인지 검사
+    if(!_isVaildHost(host)) return;
 
     _taskList.add(task);
     task.startTask(host, port);
@@ -160,6 +167,17 @@ class ConnectionManager extends ChangeNotifier {
 
     for(ReceivePort sendPort in _getAllTaskPort()) {
       sendPort.sendPort.send(message);
+    }
+  }
+
+  // 입력된 IP 주소 유효성 검사
+  bool _isVaildHost(String host) {
+    InternetAddress? parsedAddress = InternetAddress.tryParse(host);
+
+    if(parsedAddress != null) {
+      return true;
+    } else {
+      return false;
     }
   }
 
