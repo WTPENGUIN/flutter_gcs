@@ -8,7 +8,13 @@ import 'package:peachgs_flutter/utils/connection_task.dart';
 const String udpServerProtocol = 'udpserver';
 const String disconnectUDPServerMessage = 'UDPSERVERDIS';
 
-// TODO : 메세지 보낼 때, Datagram에서 주소 추출하기
+class UdpClient {
+  InternetAddress address;
+  int port;
+
+  UdpClient(this.address, this.port);
+}
+
 class UdpServerTask extends LinkTask {
   RawDatagramSocket? udpSocket;
   final MavlinkProtocol mavlink = MavlinkProtocol();
@@ -19,7 +25,7 @@ class UdpServerTask extends LinkTask {
 
   UdpServerTask(ReceivePort receivePort) : super(receivePort);
 
-  final List<InternetAddress> clientAddress = [];
+  final List<UdpClient> clients = [];
 
   @override
   void startTask(String host, int port) async {
@@ -35,8 +41,11 @@ class UdpServerTask extends LinkTask {
         return;
       } else {
         mavlink.parser.parse(frame.data);
-        if(!clientAddress.contains(frame.address)) {
-          clientAddress.add(frame.address);
+
+        // UDP 패킷에 새로운 주소와 포트번호가 있으면 리스트에 추가
+        if(!_isContainList(frame.address, frame.port)) {
+          UdpClient client = UdpClient(frame.address, frame.port);
+          clients.add(client);
         }
       }
     });
@@ -74,11 +83,22 @@ class UdpServerTask extends LinkTask {
       stopTask();
     } else if(message.runtimeType == MavlinkFrame) {
       MavlinkFrame frame = message as MavlinkFrame;
-      for(InternetAddress address in clientAddress) {
-        udpSocket!.send(frame.serialize(), address, portNum);
+      for(UdpClient client in clients) {
+        udpSocket!.send(frame.serialize(), client.address, client.port);
       }
     } else {
       logger.i(message);
     }
+  }
+
+  // 해당 주소와 포트가 리스트에 있는지 검사
+  bool _isContainList(InternetAddress address, int port) {
+    for(UdpClient client in clients) {
+      if(client.address == address && client.port == port) {
+        return true;
+      }
+    }
+
+    return false;
   }
 }
