@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:logger/logger.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
 import 'package:latlong2/latlong.dart';
@@ -15,6 +16,8 @@ class MapWindowDesktop extends StatefulWidget {
 }
 
 class _MapWindowDesktopState extends State<MapWindowDesktop> {
+  Logger logger = Logger();
+
   List<Marker> vehiclesPosition(MultiVehicle multiVehicleManager) {
     List<Marker> markers = [];
     for(var vehicle in MultiVehicle().allVehicles()) {
@@ -53,17 +56,15 @@ class _MapWindowDesktopState extends State<MapWindowDesktop> {
       options: MapOptions(
         initialCenter: const LatLng(34.610040, 127.20674),
         initialZoom: 15,
-        onTap: (TapPosition tapPosition, LatLng coord) {
+        onMapEvent: (MapEvent event) {
           
         },
       ),
       children: [
         TileLayer(
           wmsOptions: WMSTileLayerOptions(
-            baseUrl: 'https://{s}.s2maps-tiles.eu/wms/?',
-            layers: const ['s2cloudless-2021_3857'],
+            baseUrl: 'https://mt0.google.com/vt/lyrs=y@221097413&x={x}&y={y}&z={z}',
           ),
-          subdomains: const ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'],
           tileProvider: CancellableNetworkTileProvider(),
         ),
         Consumer<MultiVehicle>(
