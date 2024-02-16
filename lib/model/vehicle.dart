@@ -9,6 +9,8 @@ import 'package:peachgs_flutter/model/ardupilot.dart';
 import 'package:peachgs_flutter/utils/connection_manager.dart';
 import 'package:peachgs_flutter/utils/mavlink_protocol.dart';
 
+const double mathEpsilon = 4.94065645841247E-324;
+const double mathPI      = 3.1415926535897932;
 const uint16_t uint16max = 65535;
 
 class Vehicle {
@@ -30,7 +32,7 @@ class Vehicle {
   double vehicleLat = 0.0;
   double vehicleLon = 0.0;
   double vehicleRelativeAltitude = 0.0;
-  double vehicleHeading = 0.0;
+  int    vehicleHeading = 0;
 
   // Home Position
   double homeLat = 0.0;
@@ -41,15 +43,16 @@ class Vehicle {
   double distanceToHome = 0.0;
   
   // Attitude
-  float roll = 0.0;
-  float pitch = 0.0;
-  float yaw = 0.0;
+  double roll = 0.0;
+  double pitch = 0.0;
+  double yaw = 0.0;
 
   // GPS_Raw_Int(HDOP, VDOP)
   double altitudeMSL = double.nan;
   double eph = 0; // HDOP
   double epv = 0; // VDOP
   GpsFixType gpsfixType = gpsFixTypeNoGps;
+  String gpsfixTypeString = '';
 
   // VRF_HUD
   float climbRate = 0.0;
@@ -170,6 +173,20 @@ class Vehicle {
       default:
         // TODO : 미지원 펌웨어 이륙 명령어 예외 처리
     } 
+  }
+
+  // RTL 명령어
+  void vehicleRTL() {
+    switch (autopilotType) {
+      case mavAutopilotArdupilotmega:
+        _ardupilotSetFlightMode("RTL");
+        break;
+      case mavAutopilotPx4:
+        _px4SetFlightMode("Return");
+        break;
+      default:
+        // TODO : 미지원 펌웨어 이륙 명령어 예외 처리
+    }     
   }
 
   // PX4 펌웨어 비행모드 전환 명령어
@@ -305,7 +322,6 @@ class Vehicle {
     vehicleLat = (positionInt.lat == 0) ? 0.0 : (positionInt.lat / 1e7);
     vehicleLon = (positionInt.lon == 0) ? 0.0 : (positionInt.lon / 1e7);
     vehicleRelativeAltitude = (positionInt.relativeAlt / 1000.0);
-    vehicleHeading = (positionInt.hdg / 100.0);
 
     // 홈과 현재 사이 거리 구하기
     if((vehicleLat != 0 && vehicleLon != 0) && (homeLat != 0 && homeLon != 0)) {
@@ -319,12 +335,48 @@ class Vehicle {
     }
   }
 
+  float _limitAngleToPMPIf(double angle) {
+    if(angle > (-20 * mathPI) && angle < (20 * mathPI)) {
+      while(angle > (mathPI + mathEpsilon)) {
+        angle -= 2.0 * mathPI;
+      }
+
+      while(angle <= -(mathPI + mathEpsilon)) {
+        angle += 2.0 + mathPI;
+      }
+    } else {
+      // Approximate
+      angle = angle % mathPI;
+    }
+
+    return angle;
+  }
+
+  double _radianToDegrees(double radians) {
+    return radians * (180.0 / mathPI);
+  }
+
   void _handleAttitude(MavlinkFrame frame) {
     var attitude = frame.message as Attitude;
 
-    roll = attitude.roll;
-    pitch = attitude.pitch;
-    yaw = attitude.yaw;
+    double rollCal, pitchCal, yawCal;
+
+    rollCal  = _limitAngleToPMPIf(attitude.roll);
+    pitchCal = _limitAngleToPMPIf(attitude.pitch);
+    yawCal   = _limitAngleToPMPIf(attitude.yaw);
+
+    rollCal  = _radianToDegrees(rollCal);
+    pitchCal = _radianToDegrees(pitchCal);
+    yawCal   = _radianToDegrees(yawCal);
+
+    if(yawCal < 0.0) {
+      yawCal += 360.0;
+    }
+
+    roll  = rollCal;
+    pitch = pitchCal;
+    yaw   = yawCal;
+    vehicleHeading = yawCal.truncate(); // truncate to integer so widget never displays 360
   }
 
   void _handleGpsRawInt(MavlinkFrame frame) {
@@ -333,6 +385,35 @@ class Vehicle {
     eph = (gpsrawint.eph == uint16max ? double.nan : (gpsrawint.eph / 100.0));
     epv = (gpsrawint.epv == uint16max ? double.nan : (gpsrawint.epv / 100.0));
     gpsfixType = gpsrawint.fixType;
+
+    switch (gpsfixType) {
+      case gpsFixTypeNoFix:
+        gpsfixTypeString = "Not Fixed";
+        break;
+      case gpsFixType2dFix:
+        gpsfixTypeString = "2D Fix";
+        break;
+      case gpsFixType3dFix:
+        gpsfixTypeString = "3D Fix";
+        break;
+      case gpsFixTypeDgps:
+        gpsfixTypeString = "DGPS";
+        break;
+      case gpsFixTypeRtkFloat:
+        gpsfixTypeString = "RTK Float";
+        break;
+      case gpsFixTypeRtkFixed:
+        gpsfixTypeString = "RTK Fix";
+        break;
+      case gpsFixTypeStatic:
+        gpsfixTypeString = "Static";
+        break;
+      case gpsFixTypePpp:
+        gpsfixTypeString = "PPP";
+        break;    
+      default:
+        gpsfixTypeString = "Unknown type";
+    }
 
     if(gpsfixType >= gpsFixType3dFix) {
       altitudeMSL = gpsrawint.alt / 1000.0;

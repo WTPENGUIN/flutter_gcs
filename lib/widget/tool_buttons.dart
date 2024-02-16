@@ -85,7 +85,7 @@ class _ToolButtonsState extends State<ToolButtons> {
                   Vehicle? vehicle = multiManager.activeVehicle();
                   if(vehicle == null) return;
 
-                  //vehicle.vehicleLand();
+                  vehicle.vehicleRTL();
                 } : null,
               ),
             ],

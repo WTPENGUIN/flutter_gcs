@@ -28,7 +28,7 @@ class VehicleMarker extends StatelessWidget {
         children: [
           Center(
             child: Transform.rotate(
-              angle: radians,
+              angle: radians.roundToDouble(),
               child: SvgPicture.asset(
                 route,
                 width: 40 * scaleSmallDevice(context),
@@ -43,7 +43,8 @@ class VehicleMarker extends StatelessWidget {
                 '기체 $vehicleId(${armed ? '시동' : '꺼짐'})',
                 style: TextStyle(
                   fontWeight: FontWeight.w300,
-                  fontSize: 10 * scaleSmallDevice(context)
+                  fontSize: 10 * scaleSmallDevice(context),
+                  color: Colors.white
                 ),
               ),
               strokeWidth: 1,
@@ -58,7 +59,8 @@ class VehicleMarker extends StatelessWidget {
                 flightMode,
                 style: TextStyle(
                   fontWeight: FontWeight.w300,
-                  fontSize: 12 * scaleSmallDevice(context)
+                  fontSize: 12 * scaleSmallDevice(context),
+                  color: Colors.white
                 ),
               ),
               strokeWidth: 1,
