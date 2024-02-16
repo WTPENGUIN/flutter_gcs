@@ -48,7 +48,7 @@ class _GpsWidgetState extends State<GpsWidget> {
                   'Not Connected',
                   style: TextStyle(
                     fontFamily: 'Orbitron',
-                    fontWeight: FontWeight.w300,
+                    fontWeight: FontWeight.bold,
                     fontSize: 12
                   ),
                 ),
@@ -63,7 +63,7 @@ class _GpsWidgetState extends State<GpsWidget> {
                       activeVehicle.gpsfixTypeString,
                       style: const TextStyle(
                         fontFamily: 'Orbitron',
-                        fontWeight: FontWeight.w300,
+                        fontWeight: FontWeight.bold,
                         fontSize: 10
                       ),
                     ),
@@ -71,7 +71,7 @@ class _GpsWidgetState extends State<GpsWidget> {
                       '${activeVehicle.satVisible}',
                       style: const TextStyle(
                         fontFamily: 'Orbitron',
-                        fontWeight: FontWeight.w300,
+                        fontWeight: FontWeight.bold,
                         fontSize: 10
                       )
                     )
@@ -88,7 +88,7 @@ class _GpsWidgetState extends State<GpsWidget> {
                       '${activeVehicle.eph}',
                       style: const TextStyle(
                         fontFamily: 'Orbitron',
-                        fontWeight: FontWeight.w300,
+                        fontWeight: FontWeight.bold,
                         fontSize: 10
                       ),
                     ),
@@ -96,7 +96,7 @@ class _GpsWidgetState extends State<GpsWidget> {
                       '${activeVehicle.epv}',
                       style: const TextStyle(
                         fontFamily: 'Orbitron',
-                        fontWeight: FontWeight.w300,
+                        fontWeight: FontWeight.bold,
                         fontSize: 10
                       ),
                     )

@@ -57,24 +57,6 @@ class _VehicleInfoStete extends State<VehicleInfo> {
               Expanded(
                 flex: 1,
                 child: StatusWidget(
-                  title: "GPS",
-                  text: (activeVehicle != null ? activeVehicle.gpsfixTypeString : '-'),
-                  suffix: ''
-                ),
-              ),
-              const VerticalDivider(thickness: 2, width: 30),
-              Expanded(
-                flex: 2,
-                child: StatusWidget(
-                  title: "GPS 오차",
-                  text: (activeVehicle != null ? 'H : ${activeVehicle.eph}, V : ${activeVehicle.epv}' : '-'),
-                  suffix: ''
-                ),
-              ),
-              const VerticalDivider(thickness: 2, width: 30),
-              Expanded(
-                flex: 1,
-                child: StatusWidget(
                   title: "고도",
                   text: (activeVehicle != null ? activeVehicle.vehicleRelativeAltitude.toStringAsFixed(1) : '0.0'),
                   suffix: 'm'
