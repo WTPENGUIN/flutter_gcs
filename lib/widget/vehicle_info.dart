@@ -16,11 +16,7 @@ class VehicleInfo extends StatefulWidget {
 class _VehicleInfoStete extends State<VehicleInfo> {
   MultiVehicle manager = MultiVehicle();
 
-  String _formatLocation(double lat, double lon) {
-    return '${lat.toStringAsFixed(4)}°, ${lon.toStringAsFixed(4)}°';
-  }
-
-  // TODO : 정확한 반응형 UI
+  // TODO : 화면 크기에 따른 글자 크기 조정
   double getPosition(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
 
@@ -61,8 +57,17 @@ class _VehicleInfoStete extends State<VehicleInfo> {
               Expanded(
                 flex: 1,
                 child: StatusWidget(
-                  title: "위치",
-                  text: (activeVehicle != null ? _formatLocation(activeVehicle.vehicleLat, activeVehicle.vehicleLon) : '-'),
+                  title: "GPS",
+                  text: (activeVehicle != null ? activeVehicle.gpsfixTypeString : '-'),
+                  suffix: ''
+                ),
+              ),
+              const VerticalDivider(thickness: 2, width: 30),
+              Expanded(
+                flex: 2,
+                child: StatusWidget(
+                  title: "GPS 오차",
+                  text: (activeVehicle != null ? 'H : ${activeVehicle.eph}, V : ${activeVehicle.epv}' : '-'),
                   suffix: ''
                 ),
               ),
@@ -80,7 +85,7 @@ class _VehicleInfoStete extends State<VehicleInfo> {
                 flex: 1,
                 child: StatusWidget(
                   title: "방향",
-                  text: (activeVehicle != null ? activeVehicle.vehicleHeading.toStringAsFixed(1) : '0'),
+                  text: (activeVehicle != null ? activeVehicle.vehicleHeading.toString() : '0'),
                   suffix: '°'
                 )
               ),
@@ -88,7 +93,7 @@ class _VehicleInfoStete extends State<VehicleInfo> {
               Expanded(
                 flex: 1,
                 child: StatusWidget(
-                  title: "수평속도",
+                  title: "수평 속도",
                   text: (activeVehicle != null ? activeVehicle.groundSpeed.toStringAsFixed(1) : '0.0'),
                   suffix: 'm/s'
                 )
@@ -97,7 +102,7 @@ class _VehicleInfoStete extends State<VehicleInfo> {
               Expanded(
                 flex: 1,
                 child: StatusWidget(
-                  title: "수평속도",
+                  title: "수직 속도",
                   text: (activeVehicle != null ? activeVehicle.climbRate.toStringAsFixed(1) : '0.0'),
                   suffix: 'm/s'
                 )
@@ -125,16 +130,18 @@ class StatusWidget extends StatelessWidget {
     required this.title,
     required this.text,
     required this.suffix,
+    this.subtext,
   }) : super(key: key);
 
   final String title;
   final String text;
   final String suffix;
+  final String? subtext;
 
-  // TODO : 정확한 반응형 UI
+  // TODO : 화면 크기에 따른 글자 크기 조정
   double getFontSize(BuildContext context) {
     if(Platform.isAndroid || Platform.isIOS) {
-      return 14;
+      return 13;
     } else {
       final screenSize = MediaQuery.of(context).size;
       return (screenSize.height * 0.02 > 15) ? 15 : screenSize.height * 0.02;
