@@ -17,8 +17,8 @@ class Vehicle {
   Logger logger = Logger();
 
   // Vehicle basic information
-  int          vehicleId = 0;
-  MavType      vehicleType = mavTypeGeneric;
+  int          vehicleId     = 0;
+  MavType      vehicleType   = mavTypeGeneric;
   MavAutopilot autopilotType = mavAutopilotGeneric;
 
   // HeartBeat
@@ -33,6 +33,9 @@ class Vehicle {
   double vehicleLon = 0.0;
   double vehicleRelativeAltitude = 0.0;
   int    vehicleHeading = 0;
+
+  // Trajectory Point in vehicle
+  List<LatLng> trajectoryList = [];
 
   // Home Position
   double homeLat = 0.0;
@@ -286,17 +289,29 @@ class Vehicle {
     }
   }
 
+  void _updateArmed(bool newArmed) {
+    if(armed != newArmed) {
+      armed = newArmed;
+
+      // 시동 꺼짐 -> 시동 상태로 변경 되면 새로운 이동 경로를 그리기 위해 리스트 초기화
+      if(armed) {
+        trajectoryList.clear();
+      }
+    }
+  }
+
   void _handleHeartBeat(MavlinkFrame frame) {
     var heartbeat = frame.message as Heartbeat;
 
     baseMode = heartbeat.baseMode;
     customMode = heartbeat.customMode;
+
+    // 하트비트에서 시동 여부 추출
+    bool newArmed = (heartbeat.baseMode & mavModeFlagDecodePositionSafety) == 0 ? false : true;
+    _updateArmed(newArmed);
     
     // 하트비트에서 비행 모드 추출
     flightMode = getFlightModes(baseMode, customMode);
-    
-    // 하트비트에서 시동 여부 추출
-    armed = (heartbeat.baseMode & mavModeFlagDecodePositionSafety) == 0 ? false : true;
 
     // 기체가 비행 중인지 추출(Ardupilot만 해당)
     if(autopilotType == mavAutopilotArdupilotmega) {
@@ -323,6 +338,28 @@ class Vehicle {
     vehicleLon = (positionInt.lon == 0) ? 0.0 : (positionInt.lon / 1e7);
     vehicleRelativeAltitude = (positionInt.relativeAlt / 1000.0);
 
+    // 시동 상태일 때, 이동 경로 포인트에 추가
+    if(armed) {
+      LatLng curPoint = LatLng(vehicleLat, vehicleLon);
+
+      // 처음 시동이 걸린 상태면, 리스트에 추가
+      if(trajectoryList.isEmpty) {
+        trajectoryList.add(curPoint);
+        trajectoryList.add(curPoint); // 네이버 맵에서 경로를 초기화해주기 위한 트릭
+      } else {
+        var distancePrevious = const Distance().as(
+          LengthUnit.Meter,
+          curPoint,
+          trajectoryList.last
+        );
+
+        // 성능을 위해, 1m 이상으로 움직였을 때 포인트에 추가
+        if(distancePrevious > 1.0) {
+          trajectoryList.add(curPoint);
+        }
+      }
+    }
+
     // 홈과 현재 사이 거리 구하기
     if((vehicleLat != 0 && vehicleLon != 0) && (homeLat != 0 && homeLon != 0)) {
       const Distance distance = Distance();
@@ -345,7 +382,7 @@ class Vehicle {
         angle += 2.0 + mathPI;
       }
     } else {
-      // Approximate
+      // 근사치 계산
       angle = angle % mathPI;
     }
 
@@ -376,7 +413,7 @@ class Vehicle {
     roll  = rollCal;
     pitch = pitchCal;
     yaw   = yawCal;
-    vehicleHeading = yawCal.truncate(); // truncate to integer so widget never displays 360
+    vehicleHeading = yawCal.truncate(); // 정수로 자르기(360도를 0도로 표시하기 위해)
   }
 
   void _handleGpsRawInt(MavlinkFrame frame) {
@@ -404,15 +441,9 @@ class Vehicle {
         break;
       case gpsFixTypeRtkFixed:
         gpsfixTypeString = "RTK Fix";
-        break;
-      case gpsFixTypeStatic:
-        gpsfixTypeString = "Static";
-        break;
-      case gpsFixTypePpp:
-        gpsfixTypeString = "PPP";
-        break;    
+        break;   
       default:
-        gpsfixTypeString = "Unknown type";
+        gpsfixTypeString = "-";
     }
 
     if(gpsfixType >= gpsFixType3dFix) {

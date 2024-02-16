@@ -33,7 +33,7 @@ class _MapWindowDesktopState extends State<MapWindowDesktop> {
           child: GestureDetector(
             child: VehicleMarker(
               route: 'assets/image/VehicleIcon.svg',
-              radians: vehicle.yaw,
+              degree: vehicle.yaw,
               vehicleId: vehicle.vehicleId,
               flightMode: vehicle.flightMode,
               armed: vehicle.armed,
@@ -48,6 +48,21 @@ class _MapWindowDesktopState extends State<MapWindowDesktop> {
       );
     }
     return markers;
+  }
+
+  List<Polyline> vehiclesTrajectoryList(MultiVehicle multiVehicleManager) {
+    List<Polyline> lines = [];
+    for(var vehicle in MultiVehicle().allVehicles()) {
+      if(vehicle.trajectoryList.isEmpty) continue;
+
+      lines.add(Polyline(
+        points: vehicle.trajectoryList,
+        color: Colors.red,
+        strokeWidth: 3.0
+      ));
+    }
+
+    return lines;
   }
 
   @override
@@ -68,11 +83,18 @@ class _MapWindowDesktopState extends State<MapWindowDesktop> {
           tileProvider: CancellableNetworkTileProvider(),
         ),
         Consumer<MultiVehicle>(
-          builder:(_, multiManager, __) {
+          builder: (_, multiManager, __) {
             return MarkerLayer(
               markers: vehiclesPosition(multiManager)
             );
           },
+        ),
+        Consumer<MultiVehicle>(
+          builder: (_, multiManager, __) {
+            return PolylineLayer(
+              polylines: vehiclesTrajectoryList(multiManager),
+            );
+          }
         )
       ]
     );

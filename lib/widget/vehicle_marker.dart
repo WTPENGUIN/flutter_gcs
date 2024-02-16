@@ -5,7 +5,7 @@ import 'package:peachgs_flutter/utils/utils.dart';
 // flutter_svg 패키지를 이용해 svg 이미지를 가져온다.
 class VehicleMarker extends StatelessWidget {
   final String route;
-  final double radians;
+  final double degree;
   final int    vehicleId;
   final Color  outlineColor;
   final String flightMode;
@@ -13,13 +13,19 @@ class VehicleMarker extends StatelessWidget {
 
   const VehicleMarker({
     required this.route,
-    required this.radians,
+    required this.degree,
     required this.vehicleId,
     required this.outlineColor,
     required this.flightMode,
     required this.armed,
     Key? key
   }) : super(key: key);
+
+  double _degreesToRadians(double degrees) {
+    const double pi = 3.1415926535897932;
+
+    return degrees * (pi / 180);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +34,7 @@ class VehicleMarker extends StatelessWidget {
         children: [
           Center(
             child: Transform.rotate(
-              angle: radians.roundToDouble(),
+              angle: _degreesToRadians(degree),
               child: SvgPicture.asset(
                 route,
                 width: 40 * scaleSmallDevice(context),
