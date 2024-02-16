@@ -4,14 +4,14 @@ import 'package:dart_mavlink/mavlink.dart';
 import 'package:dart_mavlink/dialects/ardupilotmega.dart';
 import 'package:peachgs_flutter/model/vehicle.dart';
 
-const int heartbeatMaxElpasedMSecs = 3500;
+const int heartbeatMaxElpasedMSecs = 3000;
 
 class MultiVehicle extends ChangeNotifier {
   // 싱글톤 패턴
   static MultiVehicle? _instance;
   MultiVehicle._privateConstructor() {
     // 연결 끊어짐 타이머 초기화
-    _disconnectTimer = Timer.periodic(const Duration(seconds: 4), (_) {
+    _disconnectTimer = Timer.periodic(const Duration(seconds: 1), (_) {
       checkDisconnectedVehicle();
     });
   }
@@ -80,10 +80,7 @@ class MultiVehicle extends ChangeNotifier {
     }
   }
 
-  void processHeartBeat(int id, Heartbeat msg) {
-    // 이미 연결 된 system id는 무시, 동시 연결 기체 10대 제한
-    if(idSelectVehicle(id) != null || _vehicles.length >= 10) return;
-    
+  void addVehicle(int id, Heartbeat msg) {
     MavType type = msg.type;
     MavAutopilot autopilot = msg.autopilot;
 
@@ -99,19 +96,34 @@ class MultiVehicle extends ChangeNotifier {
     }
   }
 
-  // 수신된 Mavlink 메세지 처리
+  // 수신한 Mavlink 패킷 처리
   void mavlinkProcessing(MavlinkFrame frame) {
     if(frame.message.runtimeType == Heartbeat) {
       var heartbeat = frame.message as Heartbeat;
-      processHeartBeat(frame.systemId, heartbeat);
+      
+      // 이미 연결 된 system id는 무시, 동시 연결 기체 10대 제한
+      if(idSelectVehicle(frame.systemId) == null && _vehicles.length <= 10) {
+        addVehicle(frame.systemId, heartbeat);
+      }
     }
 
-    // Mavlink 메세지 전송
-    Vehicle? vehicle = idSelectVehicle(frame.systemId);
-    if(vehicle == null) return;
-    vehicle.mavlinkMessageReceived(frame);
-
-    notifyListeners();
+    switch (frame.message.runtimeType) {
+      case Heartbeat:
+      case GlobalPositionInt:
+      case Attitude:
+      case GpsRawInt:
+      case VfrHud:
+      case HomePosition:
+      case CommandAck:
+      case ExtendedSysState:
+        Vehicle? vehicle = idSelectVehicle(frame.systemId);
+        if(vehicle != null) {
+          vehicle.mavlinkMessageReceived(frame);
+          notifyListeners();
+        }
+        break;
+      default:
+    }
   }
 
   @override
