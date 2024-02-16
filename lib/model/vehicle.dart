@@ -54,6 +54,7 @@ class Vehicle {
   double altitudeMSL = double.nan;
   double eph = 0; // HDOP
   double epv = 0; // VDOP
+  int satVisible = 0;
   GpsFixType gpsfixType = gpsFixTypeNoGps;
   String gpsfixTypeString = '';
 
@@ -421,8 +422,9 @@ class Vehicle {
 
     eph = (gpsrawint.eph == uint16max ? double.nan : (gpsrawint.eph / 100.0));
     epv = (gpsrawint.epv == uint16max ? double.nan : (gpsrawint.epv / 100.0));
-    gpsfixType = gpsrawint.fixType;
+    satVisible = gpsrawint.satellitesVisible;
 
+    gpsfixType = gpsrawint.fixType;
     switch (gpsfixType) {
       case gpsFixTypeNoFix:
         gpsfixTypeString = "Not Fixed";
