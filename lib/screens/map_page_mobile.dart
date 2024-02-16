@@ -46,6 +46,8 @@ class _MapWindowMobileState extends State<MapWindowMobile> {
             // 기체 마커
             var marker = NMarker(
               id: vehicle.vehicleId.toString(),
+              icon: const NOverlayImage.fromAssetImage('assets/image/VehicleIcon.png'),
+              size: const Size(70, 70),
               position: NLatLng(vehicle.vehicleLat, vehicle.vehicleLon),
               caption: NOverlayCaption(
                 text: '기체 ${vehicle.vehicleId} (${(vehicle.armed) ? '시동' : '꺼짐'})',
