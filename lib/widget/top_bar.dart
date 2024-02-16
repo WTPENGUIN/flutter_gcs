@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:peachgs_flutter/model/multi_vehicle_manage.dart';
 import 'package:peachgs_flutter/widget/floating_buttons.dart';
+import 'package:peachgs_flutter/widget/gps_info_widget.dart';
 
 Color pBlue  = const Color(0xFF41B6E6);
 Color pPeach = const Color(0xffFA828F);
@@ -16,7 +17,7 @@ class ToolBar extends StatelessWidget {
         bool isArming = (multiManager.activeVehicle() != null && multiManager.activeVehicle()!.armed) ? true : false;
 
         return Container(
-          height: 56,
+          height: 56, // 안드로이드 기본 상단바의 높이
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.centerLeft,
@@ -30,7 +31,12 @@ class ToolBar extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Image.asset('assets/image/MainLogo.png', width: 120, height: 40),
+              Image.asset(
+                'assets/image/MainLogo.png',
+                fit: BoxFit.fill,
+              ),
+              const SizedBox(width: 20),
+              const GpsWidget(),
               const Spacer(),
               const FloatingButtons(),
               const SizedBox(width: 20)
