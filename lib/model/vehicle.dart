@@ -193,6 +193,20 @@ class Vehicle {
     }     
   }
 
+  // 비행모드 전환 명령 내리기
+  void setFlightMode(String flightMode) {
+    switch (autopilotType) {
+      case mavAutopilotArdupilotmega:
+        _ardupilotSetFlightMode(flightMode);
+        break;
+      case mavAutopilotPx4:
+        _px4SetFlightMode(flightMode);
+        break;
+      default:
+        // TODO : 미지원 펌웨어 비행모드 전환 명령어 예외 처리
+    } 
+  }
+
   // PX4 펌웨어 비행모드 전환 명령어
   void _px4SetFlightMode(String flightMode) {
     PX4FlightMode? mode = findPX4FlightMode(flightMode);

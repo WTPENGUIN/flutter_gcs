@@ -4,6 +4,7 @@ import 'package:peachgs_flutter/model/multi_vehicle_manage.dart';
 import 'package:peachgs_flutter/widget/floating_buttons.dart';
 import 'package:peachgs_flutter/widget/gps_info_widget.dart';
 import 'package:peachgs_flutter/widget/remote_id_info.dart';
+import 'package:peachgs_flutter/widget/flight_mode_menu.dart';
 
 Color pBlue  = const Color(0xFF41B6E6);
 Color pPeach = const Color(0xffFA828F);
@@ -39,8 +40,10 @@ class ToolBar extends StatelessWidget {
               const SizedBox(width: 20),
               const GpsWidget(),
               const SizedBox(width: 20),
-              const RemoteIdInfo(),
+              const FlightModeMenu(),
               const Spacer(),
+              const RemoteIdInfo(),
+              const SizedBox(width: 20),
               const FloatingButtons(),
               const SizedBox(width: 20)
             ],

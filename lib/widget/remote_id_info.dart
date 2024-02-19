@@ -77,7 +77,7 @@ class RemoteIdInfo extends StatelessWidget {
           color: Colors.white,
         ),
         label: const Text(
-          "조종자 정보",
+          "정보",
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
