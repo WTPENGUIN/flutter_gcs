@@ -14,18 +14,17 @@ class ToolBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<MultiVehicle>(
-      builder: (_, multiManager, __) {
-        bool isArming = (multiManager.activeVehicle() != null && multiManager.activeVehicle()!.armed) ? true : false;
-
+    return Selector<MultiVehicle, bool?>(
+      selector: (context, multiVehicle) => multiVehicle.activeVehicle()?.armed,
+      builder: (context, isArming, _) {
         return Container(
-          height: 56, // 안드로이드 기본 상단바의 높이
+          height: 56, // 안드로이드 기본 상단바의 높이,
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.centerLeft,
               end: Alignment.center,
               colors: [
-                isArming ? pBlue : pPeach,
+                (isArming != null && isArming) ? pBlue : pPeach,
                 const Color(0xB3FFFFFF)
               ]
             )
@@ -33,23 +32,20 @@ class ToolBar extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Image.asset(
-                'assets/image/MainLogo.png',
-                fit: BoxFit.fill,
-              ),
+              Image.asset('assets/image/MainLogo.png', fit: BoxFit.fill),
               const SizedBox(width: 20),
-              const GpsWidget(),
+              const GPSWidget(),
               const SizedBox(width: 20),
               const FlightModeMenu(),
               const Spacer(),
               const RemoteIdInfo(),
               const SizedBox(width: 20),
               const FloatingButtons(),
-              const SizedBox(width: 20)
+              const SizedBox(width: 20),
             ],
           ),
         );
-      }
+      },
     );
   }
 }

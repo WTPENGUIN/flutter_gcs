@@ -1,22 +1,12 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:peachgs_flutter/model/vehicle.dart';
 import 'package:peachgs_flutter/model/multi_vehicle_manage.dart';
 
-class VehicleInfo extends StatefulWidget {
-  const VehicleInfo({
-    Key? key
-  }) : super(key: key);
+class VehicleInfo extends StatelessWidget {
+  const VehicleInfo({Key? key}) : super(key: key);
 
-  @override
-  State<VehicleInfo> createState() => _VehicleInfoStete();
-}
-
-class _VehicleInfoStete extends State<VehicleInfo> {
-  MultiVehicle manager = MultiVehicle();
-
-  // TODO : 화면 크기에 따른 글자 크기 조정
+  // TODO : 화면 크기에 따른 위치 조정
   double getPosition(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
 
@@ -47,61 +37,79 @@ class _VehicleInfoStete extends State<VehicleInfo> {
       padding: getPadding(context),
       height: getPosition(context),
       color: Colors.white,
-      child: Consumer<MultiVehicle>(
-        builder: (_, multiManager, __) {
-          Vehicle? activeVehicle = multiManager.activeVehicle();
-
-          return Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Expanded(
-                flex: 1,
-                child: StatusWidget(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Expanded(
+            flex: 1,
+            child: Selector<MultiVehicle, double?>(
+              selector: (context, multiVehicle) => multiVehicle.activeVehicle()?.vehicleRelativeAltitude,
+              builder: (context, altitude, _) {
+                return StatusWidget(
                   title: "고도",
-                  text: (activeVehicle != null ? activeVehicle.vehicleRelativeAltitude.toStringAsFixed(1) : '0.0'),
+                  text: (altitude != null) ? altitude.toStringAsFixed(1) : '0.0',
                   suffix: 'm'
-                ),
-              ),
-              const VerticalDivider(thickness: 2, width: 30),
-              Expanded(
-                flex: 1,
-                child: StatusWidget(
-                  title: "방향",
-                  text: (activeVehicle != null ? activeVehicle.vehicleHeading.toString() : '0'),
+                );
+              },
+            )
+          ),
+          const VerticalDivider(thickness: 2, width: 30),
+          Expanded(
+            flex: 1,
+            child: Selector<MultiVehicle, int?>(
+              selector: (context, multiVehicle) => multiVehicle.activeVehicle()?.vehicleHeading,
+              builder: (context, heading, _) {
+                return StatusWidget(
+                  title: '방향',
+                  text: (heading != null) ? heading.toString() : '0',
                   suffix: '°'
-                )
-              ),
-              const VerticalDivider(thickness: 2, width: 30),
-              Expanded(
-                flex: 1,
-                child: StatusWidget(
-                  title: "수평 속도",
-                  text: (activeVehicle != null ? activeVehicle.groundSpeed.toStringAsFixed(1) : '0.0'),
+                );
+              },
+            )
+          ),
+          const VerticalDivider(thickness: 2, width: 30),
+          Expanded(
+            flex: 1,
+            child: Selector<MultiVehicle, double?>(
+              selector: (context, multiVehicle) => multiVehicle.activeVehicle()?.groundSpeed,
+              builder: (context, verticalSpeed, _) {
+                return StatusWidget(
+                  title: '수평 속도',
+                  text: (verticalSpeed != null) ? verticalSpeed.toStringAsFixed(1) : '0.0',
                   suffix: 'm/s'
-                )
-              ),
-              const VerticalDivider(thickness: 2, width: 30),
-              Expanded(
-                flex: 1,
-                child: StatusWidget(
-                  title: "수직 속도",
-                  text: (activeVehicle != null ? activeVehicle.climbRate.toStringAsFixed(1) : '0.0'),
+                );
+              },
+            )
+          ),
+          const VerticalDivider(thickness: 2, width: 30),
+          Expanded(
+            flex: 1,
+            child: Selector<MultiVehicle, double?>(
+              selector: (context, multiVehicle) => multiVehicle.activeVehicle()?.climbRate,
+              builder: (context, horizentalSpeed, _) {
+                return StatusWidget(
+                  title: '수직 속도',
+                  text: (horizentalSpeed != null) ? horizentalSpeed.toStringAsFixed(1) : '0.0',
                   suffix: 'm/s'
-                )
-              ),
-              const VerticalDivider(thickness: 2, width: 30),
-              Expanded(
-                flex: 1,
-                child: StatusWidget(
-                  title: "비행모드",
-                  text: (activeVehicle != null ? activeVehicle.flightMode : '-'),
-                  suffix: ''
-                )
-              )
-            ],
-          );
-        },
-      )
+                );
+              },
+            )
+          ),
+          const VerticalDivider(thickness: 2, width: 30),
+          Expanded(
+            flex: 1,
+            child: Selector<MultiVehicle, String?>(
+              selector: (context, multiVehicle) => multiVehicle.activeVehicle()?.flightMode,
+              builder: (context, mode, _) {
+                return StatusWidget(
+                  title: '수직 속도',
+                  text: (mode != null) ? mode : '-',
+                );
+              },
+            )
+          ),
+        ],
+      ),
     );
   }
 }
@@ -111,13 +119,13 @@ class StatusWidget extends StatelessWidget {
     Key? key,
     required this.title,
     required this.text,
-    required this.suffix,
+    this.suffix = '',
     this.subtext,
   }) : super(key: key);
 
   final String title;
   final String text;
-  final String suffix;
+  final String? suffix;
   final String? subtext;
 
   // TODO : 화면 크기에 따른 글자 크기 조정

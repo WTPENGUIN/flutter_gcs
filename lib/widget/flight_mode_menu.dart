@@ -26,7 +26,7 @@ class _FlightModeMenuState extends State<FlightModeMenu> {
           builder: (context, flightMode, _) {
             // 현재 선택된 기체의 비행 모드를 가져와서 위젯을 빌드
             return FlightButtonWidget(
-              width: 120,
+              width: 130,
               onTap: onTap,
               modeName: (flightMode != null) ? flightMode : "Not Connected"
             );

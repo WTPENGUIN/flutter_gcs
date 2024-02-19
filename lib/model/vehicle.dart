@@ -59,8 +59,8 @@ class Vehicle {
   String gpsfixTypeString = '';
 
   // VRF_HUD
-  float climbRate = 0.0;
-  float groundSpeed = 0.0;
+  double climbRate = 0.0;
+  double groundSpeed = 0.0;
 
   // Heartbeat 타이머
   final heartbeatElapsedTimer = Stopwatch();
