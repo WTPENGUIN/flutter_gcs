@@ -14,82 +14,136 @@ class GPSWidget extends StatelessWidget {
       child: Selector<MultiVehicle, Vehicle?>(
         selector: (context, multiVehicle) => multiVehicle.activeVehicle(),
         builder: (context, activeVehicle, _) {
-          return Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              const Expanded(
-                flex: 1,
-                child: Icon(
-                  Icons.satellite_alt,
-                  color: Colors.white,
-                )
-              ),
-              if(activeVehicle == null)
-              const Expanded(
-                flex: 2,
-                child: Text(
-                  "Not Connected",
-                  style: TextStyle(
-                    fontFamily: 'Orbitron',
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12
-                  ),
-                ),
-              ),
-              if(activeVehicle != null)
-              Expanded(
-                flex: 2,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      activeVehicle.gpsfixTypeString,
-                      style: const TextStyle(
-                        fontFamily: 'Orbitron',
-                        fontWeight: FontWeight.bold,
-                        fontSize: 10
-                      ),
-                    ),
-                    Text(
-                      '${activeVehicle.satVisible}',
-                      style: const TextStyle(
-                        fontFamily: 'Orbitron',
-                        fontWeight: FontWeight.bold,
-                        fontSize: 10
-                      )
-                    )
-                  ],
-                )
-              ),
-              if(activeVehicle != null)
-              Expanded(
-                flex: 1,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      '${activeVehicle.eph}',
-                      style: const TextStyle(
-                        fontFamily: 'Orbitron',
-                        fontWeight: FontWeight.bold,
-                        fontSize: 10
-                      ),
-                    ),
-                    Text(
-                      '${activeVehicle.epv}',
-                      style: const TextStyle(
-                        fontFamily: 'Orbitron',
-                        fontWeight: FontWeight.bold,
-                        fontSize: 10
-                      ),
-                    )
-                  ],
-                )
-              )
-            ],
-          );
-        },
+          return (activeVehicle != null) ? const VehicleGPSInfo() : const NotVehicleGPS();
+        }
       )
+    );
+  }
+}
+
+class VehicleGPSInfo extends StatelessWidget {
+  const VehicleGPSInfo({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 130,
+      color: Colors.transparent,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          const Expanded(
+            flex: 1,
+            child: Icon(
+              Icons.satellite_alt,
+              color: Colors.white,
+            )
+          ),
+          Expanded(
+            flex: 2,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Selector<MultiVehicle, String?>(
+                  selector: (context, multiVehicle) => multiVehicle.activeVehicle()?.gpsfixTypeString,
+                  builder: (context, gpsString, _) {
+                    return Text(
+                      (gpsString != null) ? gpsString : '',
+                      style: const TextStyle(
+                        fontFamily: 'Orbitron',
+                        fontWeight: FontWeight.bold,
+                        fontSize: 10
+                      ),
+                    );
+                  },
+                ),
+                Selector<MultiVehicle, int?>(
+                  selector: (context, multiVehicle) => multiVehicle.activeVehicle()?.satVisible,
+                  builder: (context, satCount, _) {
+                    return Text(
+                      (satCount != null) ? 'SAT:$satCount' : '',
+                      style: const TextStyle(
+                        fontFamily: 'Orbitron',
+                        fontWeight: FontWeight.bold,
+                        fontSize: 9
+                      ),
+                    );
+                  },
+                )
+              ],
+            )
+          ),
+          Expanded(
+            flex: 1,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Selector<MultiVehicle, double?>(
+                  selector: (context, multiVehicle) => multiVehicle.activeVehicle()?.eph,
+                  builder: (context, hdop, _) {
+                    return Text(
+                      (hdop != null) ? '$hdop' : '',
+                      style: const TextStyle(
+                        fontFamily: 'Orbitron',
+                        fontWeight: FontWeight.bold,
+                        fontSize: 10
+                      ),
+                    );
+                  },
+                ),
+                Selector<MultiVehicle, double?>(
+                  selector: (context, multiVehicle) => multiVehicle.activeVehicle()?.epv,
+                  builder: (context, vdop, _) {
+                    return Text(
+                      (vdop != null) ? '$vdop' : '',
+                      style: const TextStyle(
+                        fontFamily: 'Orbitron',
+                        fontWeight: FontWeight.bold,
+                        fontSize: 10
+                      ),
+                    );
+                  },
+                )
+              ],
+            )
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class NotVehicleGPS extends StatelessWidget {
+  const NotVehicleGPS({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 130,
+      color: Colors.transparent,
+      child: const Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Expanded(
+            flex: 1,
+            child: Icon(
+              Icons.satellite_alt,
+              color: Colors.white,
+            )
+          ),
+          Expanded(
+            flex: 2,
+            child: Text(
+              "Not Connected",
+              style: TextStyle(
+                fontFamily: 'Orbitron',
+                fontWeight: FontWeight.bold,
+                fontSize: 12
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
