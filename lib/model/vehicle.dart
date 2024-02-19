@@ -193,6 +193,55 @@ class Vehicle {
     }     
   }
 
+  // Guided Mode로 원하는 위치 보내기
+  void vehicleGuidedModeGotoLocation(LatLng location) {
+    switch (autopilotType) {
+      case mavAutopilotArdupilotmega:
+        var command = MissionItem(
+          param1: 0,
+          param2: 0,
+          param3: 0,
+          param4: 0,
+          x: location.latitude,
+          y: location.longitude,
+          z: vehicleRelativeAltitude,
+          seq: 0,
+          command: mavCmdNavWaypoint,
+          targetSystem: vehicleId,
+          targetComponent: mavCompIdAll,
+          frame: mavFrameGlobalRelativeAlt,
+          current: 2,
+          autocontinue: 1,
+          missionType: mavMissionTypeMission
+        );
+
+        ConnectionManager link = ConnectionManager();
+        MavlinkFrame mavlinkFrame = MavlinkFrame.v2(0, MavlinkProtocol.getSystemId(), MavlinkProtocol.getComponentId(), command);
+        link.writeMessageLink(mavlinkFrame);
+        break;
+      case mavAutopilotPx4:
+        var command = CommandLong(
+          param1: -1.0,
+          param2: mavDoRepositionFlagsChangeMode.toDouble(),
+          param3: 0.0,
+          param4: double.nan,
+          param5: location.latitude,
+          param6: location.longitude,
+          param7: altitudeMSL.toDouble(),
+          command: mavCmdDoReposition,
+          targetSystem: vehicleId,
+          targetComponent: mavCompIdAll,
+          confirmation: 0
+        );
+        ConnectionManager link = ConnectionManager();
+        MavlinkFrame mavlinkFrame = MavlinkFrame.v2(0, MavlinkProtocol.getSystemId(), MavlinkProtocol.getComponentId(), command);
+        link.writeMessageLink(mavlinkFrame);
+        break;
+      default:
+        // TODO : 미지원 펌웨어 비행모드 전환 명령어 예외 처리
+    } 
+  }
+
   // 비행모드 전환 명령 내리기
   void setFlightMode(String flightMode) {
     switch (autopilotType) {
@@ -297,7 +346,10 @@ class Vehicle {
       _handleCommandAck(frame);
       break;
     case ExtendedSysState:
-    _handleExtendedSysState(frame);
+      _handleExtendedSysState(frame);
+      break;
+    case Statustext:
+      _handleStatusText(frame);
       break;
     default:
       break;
@@ -501,5 +553,9 @@ class Vehicle {
       default:
         break;
     }
+  }
+
+  void _handleStatusText(MavlinkFrame frame) {
+    // var text = frame.message as Statustext;
   }
 }

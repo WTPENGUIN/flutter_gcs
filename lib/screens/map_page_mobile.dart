@@ -20,6 +20,8 @@ class _MapWindowMobileState extends State<MapWindowMobile> {
   late final MultiVehicle multivehicle;
   late Timer _updateLocTimer;
 
+  bool _isGotoButtonPressed = false;
+
   List<NLatLng> convertNaverPoint(List<LatLng> coords) {
     List<NLatLng> list = [];
     for(LatLng coord in coords) {
@@ -31,7 +33,7 @@ class _MapWindowMobileState extends State<MapWindowMobile> {
     return list;
   }
 
-  void drawMarker() {
+  void drawVehicleMarker() {
     if(_mapController != null) {
       var vehicleList = multivehicle.allVehicles();
 
@@ -94,8 +96,8 @@ class _MapWindowMobileState extends State<MapWindowMobile> {
     super.initState();
     multivehicle = context.read<MultiVehicle>();
 
-    _updateLocTimer = Timer.periodic(const Duration(milliseconds: 300), (_) {
-      drawMarker();
+    _updateLocTimer = Timer.periodic(const Duration(milliseconds: 200), (_) {
+      drawVehicleMarker();
     });
   }
 
@@ -107,19 +109,78 @@ class _MapWindowMobileState extends State<MapWindowMobile> {
 
   @override
   Widget build(BuildContext context) {
-    return NaverMap(
-      options: const NaverMapViewOptions(
-        initialCameraPosition: NCameraPosition(
-          target: NLatLng(34.610040, 127.20674),
-          zoom: 15
+    return Stack(
+      children: [
+        NaverMap(
+          options: const NaverMapViewOptions(
+            initialCameraPosition: NCameraPosition(
+              target: NLatLng(34.610040, 127.20674),
+              zoom: 15
+            ),
+            mapType: NMapType.hybrid,
+            logoAlign: NLogoAlign.rightTop,
+            logoMargin: EdgeInsets.only(top: 60),
+          ),
+          onMapReady: (controller) {
+            _mapController = controller;
+          },
+          onMapTapped: (point, latLng) {
+            // 지도가 눌렸을 때 처리
+            if(_isGotoButtonPressed && _mapController != null) {
+              var currentVehicle = MultiVehicle().activeVehicle();
+
+              if(currentVehicle != null) {
+                if(currentVehicle.isFlying) {
+                  // 버튼 비활성화 처리
+                  setState(() {
+                    _isGotoButtonPressed = false;
+                  });
+
+                  // 지도에 있던 기존 마커 제거 후 새로운 마커 추가
+                  _mapController!.deleteOverlay(const NOverlayInfo(type: NOverlayType.marker, id: 'clickedMarker'));
+                  var locationMarker = NMarker(
+                    id: 'clickedMarker',
+                    position: latLng,
+                    size: const Size(50, 60),
+                    caption: const NOverlayCaption(
+                      text: '이동 지점',
+                      color:Colors.black,
+                      haloColor: Colors.white,
+                      textSize: 15
+                    ),
+                  );
+                  _mapController!.addOverlay(locationMarker);
+
+                  // 클릭 포인트로 이동 명령 내리기
+                  currentVehicle.vehicleGuidedModeGotoLocation(LatLng(latLng.latitude, latLng.longitude));
+                }
+              }
+            }
+          },
         ),
-        mapType: NMapType.hybrid,
-        logoAlign: NLogoAlign.rightTop,
-        logoMargin: EdgeInsets.only(top: 60),
-      ),
-      onMapReady: (controller) {
-         _mapController = controller;
-      },
+        Positioned(
+          top: 70,
+          left: 10,
+          child: SizedBox(
+            child: ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  _isGotoButtonPressed = !_isGotoButtonPressed;
+                });
+              },
+              style: ElevatedButton.styleFrom(
+                shape: const CircleBorder(),
+                padding: const EdgeInsets.all(20),
+                backgroundColor: (_isGotoButtonPressed) ? Colors.blue : Colors.grey
+              ),
+              child: const Icon(
+                Icons.flag,
+                color: Colors.white
+              ),
+            ),
+          )
+        )
+      ],
     );
   }
 }

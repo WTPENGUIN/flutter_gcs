@@ -116,6 +116,7 @@ class MultiVehicle extends ChangeNotifier {
       case HomePosition:
       case CommandAck:
       case ExtendedSysState:
+      case Statustext:
         Vehicle? vehicle = idSelectVehicle(frame.systemId);
         if(vehicle != null) {
           vehicle.mavlinkMessageReceived(frame);
