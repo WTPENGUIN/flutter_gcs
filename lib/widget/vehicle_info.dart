@@ -6,28 +6,13 @@ import 'package:peachgs_flutter/model/multi_vehicle_manage.dart';
 class VehicleInfo extends StatelessWidget {
   const VehicleInfo({Key? key}) : super(key: key);
 
-  // TODO : 화면 크기에 따른 위치 조정
-  double getPosition(BuildContext context) {
-    final screenSize = MediaQuery.of(context).size;
-
-    if(Platform.isAndroid || Platform.isIOS) {
-      if(screenSize.height * 0.15 > 95) {
-        return screenSize.height * 0.15;
-      } else {
-        return 95;
-      }
-    } else {
-      return screenSize.height * 0.15;
-    }
-  }
-
+  // 화면 크기에 따른 패딩 크기
   EdgeInsetsGeometry getPadding(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
     if(Platform.isAndroid || Platform.isIOS) {
-      final screenSize = MediaQuery.of(context).size;
-      return EdgeInsets.only(top: (screenSize.height * 0.05), bottom: (screenSize.height * 0.02), left: (screenSize.height * 0.06));
-    } else {
-      final screenSize = MediaQuery.of(context).size;
       return EdgeInsets.only(top: (screenSize.height * 0.05), bottom: (screenSize.height * 0.02), left: (screenSize.height * 0.04));
+    } else {
+      return EdgeInsets.only(top: (screenSize.height * 0.05), bottom: (screenSize.height * 0.02), left: (screenSize.height * 0.06));
     }
   }
 
@@ -35,7 +20,6 @@ class VehicleInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: getPadding(context),
-      height: getPosition(context),
       color: Colors.white,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -102,7 +86,7 @@ class VehicleInfo extends StatelessWidget {
               selector: (context, multiVehicle) => multiVehicle.activeVehicle()?.flightMode,
               builder: (context, mode, _) {
                 return StatusWidget(
-                  title: '수직 속도',
+                  title: '비행 모드',
                   text: (mode != null) ? mode : '-',
                 );
               },
@@ -130,11 +114,11 @@ class StatusWidget extends StatelessWidget {
 
   // TODO : 화면 크기에 따른 글자 크기 조정
   double getFontSize(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
     if(Platform.isAndroid || Platform.isIOS) {
-      return 13;
-    } else {
-      final screenSize = MediaQuery.of(context).size;
       return (screenSize.height * 0.02 > 15) ? 15 : screenSize.height * 0.02;
+    } else {
+      return 15;
     }
   }
 

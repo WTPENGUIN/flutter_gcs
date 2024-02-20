@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:peachgs_flutter/model/vehicle.dart';
@@ -14,25 +13,11 @@ class ToolButtons extends StatefulWidget {
 }
 
 class _ToolButtonsState extends State<ToolButtons> {
-  // TODO : 정확한 반응형 UI
-  double getPosition(BuildContext context) {
-    final screenSize = MediaQuery.of(context).size;
-
-    if(Platform.isAndroid || Platform.isIOS) {
-      if(screenSize.height * 0.15 > 150) {
-        return screenSize.height * 0.15;
-      } else {
-        return 150;
-      }
-    } else {
-      return screenSize.height * 0.15;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: getPosition(context),
+    return Container(
+      height: 50,
+      color: Colors.transparent,
       child: Consumer<MultiVehicle>(
         builder: (_, multiManager, __) {
           bool armed = (multiManager.activeVehicle() != null && multiManager.activeVehicle()!.armed) ? true : false;
@@ -40,9 +25,10 @@ class _ToolButtonsState extends State<ToolButtons> {
 
           return Row(
             children: [
-              CustomButton(
+              ToolButton(
                 icon: armed ? Icons.highlight_off : Icons.power_settings_new,
-                submit: (multiManager.activeVehicle() != null) ?() {
+                color: (multiManager.activeVehicle() != null) ? Colors.blue : Colors.grey,
+                submit: (multiManager.activeVehicle() != null) ? () {
                   Vehicle? vehicle = multiManager.activeVehicle();
                   if(vehicle == null) return;
 
@@ -54,8 +40,9 @@ class _ToolButtonsState extends State<ToolButtons> {
                 } : null,
               ),
               const SizedBox(width: 10),
-              CustomButton(
+              ToolButton(
                 icon: Icons.file_upload,
+                color: (!isFlying && armed) ? Colors.blue : Colors.grey,
                 submit: (!isFlying && armed) ? () {
                   Vehicle? vehicle = multiManager.activeVehicle();
                   if(vehicle == null) return;
@@ -64,8 +51,9 @@ class _ToolButtonsState extends State<ToolButtons> {
                 } : null
               ),
               const SizedBox(width: 10),
-              CustomButton(
+              ToolButton(
                 icon: Icons.download,
+                color: (isFlying && armed) ? Colors.blue : Colors.grey,
                 submit: (isFlying && armed) ? () {
                   Vehicle? vehicle = multiManager.activeVehicle();
                   if(vehicle == null) return;
@@ -74,13 +62,9 @@ class _ToolButtonsState extends State<ToolButtons> {
                 } : null
               ),
               const SizedBox(width: 10),
-              const CustomButton(
-                icon: Icons.play_arrow,
-                submit: null,
-              ),
-              const SizedBox(width: 10),
-              CustomButton(
+              ToolButton(
                 icon: Icons.keyboard_return,
+                color: (isFlying && armed) ? Colors.blue : Colors.grey,
                 submit: (isFlying && armed) ? () {
                   Vehicle? vehicle = multiManager.activeVehicle();
                   if(vehicle == null) return;
@@ -96,50 +80,28 @@ class _ToolButtonsState extends State<ToolButtons> {
   }
 }
 
-class CustomButton extends StatelessWidget {
+class ToolButton extends StatelessWidget {
   final IconData icon;
   final Function()? submit;
+  final Color color;
 
-  const CustomButton({
+  const ToolButton({
     required this.icon,
     required this.submit,
+    required this.color,
     Key? key
   }) : super(key: key);
 
-  // TODO : 정확한 반응형 UI
-  Size getSize(BuildContext context) {
-    final screenSize = MediaQuery.of(context).size;
-    
-    double width = (screenSize.width * 0.08) > 74.7 ? 74.7 : screenSize.width * 0.08;
-    double height = (screenSize.height * 0.08) > 56.9 ? 56.9 : screenSize.height * 0.08;
-
-    if(Platform.isAndroid || Platform.isIOS) {
-      if(width > 64 && height > 64) {
-        return Size(width, height);
-      } else {
-        return const Size(64, 64);
-      }
-    } else {
-      return Size(width, height);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    Size buttonSize = getSize(context);
-
-    return SizedBox(
-      width: buttonSize.width,
-      height: buttonSize.height,
-      child: ElevatedButton(
+    return Container(
+      decoration: ShapeDecoration(
+        shape: const CircleBorder(),
+        color: color
+      ),
+      child: IconButton(
         onPressed: submit,
-        style: ElevatedButton.styleFrom(
-          shape: const CircleBorder(),
-          padding: const EdgeInsets.all(20),
-          backgroundColor: Colors.blue, // <-- Button color
-          foregroundColor: Colors.red,  // <-- Splash color
-        ),
-        child: Icon(icon, color: Colors.white),
+        icon: Icon(icon, color: Colors.white),
       ),
     );
   }

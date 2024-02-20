@@ -1,9 +1,9 @@
 import 'dart:async';
+import 'package:logger/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:logger/logger.dart';
-import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:peachgs_flutter/model/multi_vehicle_manage.dart';
 
 class MapWindowMobile extends StatefulWidget {
@@ -50,6 +50,7 @@ class _MapWindowMobileState extends State<MapWindowMobile> {
               id: vehicle.vehicleId.toString(),
               icon: const NOverlayImage.fromAssetImage('assets/image/VehicleIcon.png'),
               size: const Size(70, 70),
+              anchor: const NPoint(0.5, 0.5), // 기본 마커는 위로 살짝 올라와 있기 때문에 재조정
               position: NLatLng(vehicle.vehicleLat, vehicle.vehicleLon),
               caption: NOverlayCaption(
                 text: '기체 ${vehicle.vehicleId} (${(vehicle.armed) ? '시동' : '꺼짐'})',
@@ -91,6 +92,39 @@ class _MapWindowMobileState extends State<MapWindowMobile> {
     }
   }
 
+  // 이동 명령어 함수
+  void gotoVehicleGuided(NLatLng coord) {
+    if(_isGotoButtonPressed && _mapController != null) {
+      var currentVehicle = MultiVehicle().activeVehicle();
+      
+      if(currentVehicle != null) {
+        if(currentVehicle.isFlying) {
+          setState(() {
+            _isGotoButtonPressed = false;
+          });
+          
+          // 지도에 있던 기존 마커 제거 후 새로운 마커 추가
+          _mapController!.deleteOverlay(const NOverlayInfo(type: NOverlayType.marker, id: 'clickedMarker'));
+          var locationMarker = NMarker(
+            id: 'clickedMarker',
+            position: coord,
+            size: const Size(50, 60),
+            caption: const NOverlayCaption(
+              text: '이동 지점',
+              color:Colors.black,
+              haloColor: Colors.white,
+              textSize: 15
+            ),
+          );
+          _mapController!.addOverlay(locationMarker);
+          
+          // 클릭 포인트로 이동 명령 내리기
+          currentVehicle.vehicleGuidedModeGotoLocation(LatLng(coord.latitude, coord.longitude));
+        }
+      }
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -118,69 +152,64 @@ class _MapWindowMobileState extends State<MapWindowMobile> {
               zoom: 15
             ),
             mapType: NMapType.hybrid,
+            scaleBarEnable: false,
             logoAlign: NLogoAlign.rightTop,
-            logoMargin: EdgeInsets.only(top: 60),
+            logoMargin: EdgeInsets.only(top: 5, right: 5),
           ),
           onMapReady: (controller) {
             _mapController = controller;
           },
-          onMapTapped: (point, latLng) {
-            // 지도가 눌렸을 때 처리
-            if(_isGotoButtonPressed && _mapController != null) {
-              var currentVehicle = MultiVehicle().activeVehicle();
-
-              if(currentVehicle != null) {
-                if(currentVehicle.isFlying) {
-                  // 버튼 비활성화 처리
-                  setState(() {
-                    _isGotoButtonPressed = false;
-                  });
-
-                  // 지도에 있던 기존 마커 제거 후 새로운 마커 추가
-                  _mapController!.deleteOverlay(const NOverlayInfo(type: NOverlayType.marker, id: 'clickedMarker'));
-                  var locationMarker = NMarker(
-                    id: 'clickedMarker',
-                    position: latLng,
-                    size: const Size(50, 60),
-                    caption: const NOverlayCaption(
-                      text: '이동 지점',
-                      color:Colors.black,
-                      haloColor: Colors.white,
-                      textSize: 15
-                    ),
-                  );
-                  _mapController!.addOverlay(locationMarker);
-
-                  // 클릭 포인트로 이동 명령 내리기
-                  currentVehicle.vehicleGuidedModeGotoLocation(LatLng(latLng.latitude, latLng.longitude));
-                }
-              }
-            }
+          onMapTapped: (_, latLng) {
+            // 지도 클릭 시, 기체 이동 명령 내리기
+            gotoVehicleGuided(latLng);
           },
         ),
         Positioned(
-          top: 70,
+          top: 10,
           left: 10,
-          child: SizedBox(
-            child: ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  _isGotoButtonPressed = !_isGotoButtonPressed;
-                });
-              },
-              style: ElevatedButton.styleFrom(
-                shape: const CircleBorder(),
-                padding: const EdgeInsets.all(20),
-                backgroundColor: (_isGotoButtonPressed) ? Colors.blue : Colors.grey
-              ),
-              child: const Icon(
-                Icons.flag,
-                color: Colors.white
-              ),
-            ),
+          child: Row(
+            children: [
+              // TODO : 기체 연결 여부에 따른 버튼 활성화 조정
+              GotoButton(
+                icon: Icons.flag,
+                color: (_isGotoButtonPressed) ? Colors.blue : Colors.grey,
+                submit: () {
+                  setState(() {
+                    _isGotoButtonPressed = !_isGotoButtonPressed;
+                  });
+                }
+              )
+            ],
           )
-        )
+        ),
       ],
+    );
+  }
+}
+
+class GotoButton extends StatelessWidget {
+  final IconData icon;
+  final Function()? submit;
+  final Color color;
+
+  const GotoButton({
+    required this.icon,
+    required this.submit,
+    required this.color,
+    Key? key
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: ShapeDecoration(
+        shape: const CircleBorder(),
+        color: color
+      ),
+      child: IconButton(
+        onPressed: submit,
+        icon: Icon(icon, color: Colors.white),
+      ),
     );
   }
 }
