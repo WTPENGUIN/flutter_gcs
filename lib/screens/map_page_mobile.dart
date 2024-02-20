@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:peachgs_flutter/model/multi_vehicle_manage.dart';
+import 'package:peachgs_flutter/widget/fly_buttons.dart';
 
 class MapWindowMobile extends StatefulWidget {
   const MapWindowMobile({Key? key}) : super(key: key);
@@ -98,11 +99,7 @@ class _MapWindowMobileState extends State<MapWindowMobile> {
       var currentVehicle = MultiVehicle().activeVehicle();
       
       if(currentVehicle != null) {
-        if(currentVehicle.isFlying) {
-          setState(() {
-            _isGotoButtonPressed = false;
-          });
-          
+        if(currentVehicle.isFlying) {          
           // 지도에 있던 기존 마커 제거 후 새로운 마커 추가
           _mapController!.deleteOverlay(const NOverlayInfo(type: NOverlayType.marker, id: 'clickedMarker'));
           var locationMarker = NMarker(
@@ -120,6 +117,11 @@ class _MapWindowMobileState extends State<MapWindowMobile> {
           
           // 클릭 포인트로 이동 명령 내리기
           currentVehicle.vehicleGuidedModeGotoLocation(LatLng(coord.latitude, coord.longitude));
+
+          // 버튼 눌리지 않은 상태로 설정
+          setState(() {
+            _isGotoButtonPressed = false;
+          });
         }
       }
     }
@@ -164,53 +166,21 @@ class _MapWindowMobileState extends State<MapWindowMobile> {
             gotoVehicleGuided(latLng);
           },
         ),
+
+        // 도구 모음 버튼
         Positioned(
           top: 10,
           left: 10,
-          child: Row(
-            children: [
-              // TODO : 기체 연결 여부에 따른 버튼 활성화 조정
-              GotoButton(
-                icon: Icons.flag,
-                color: (_isGotoButtonPressed) ? Colors.blue : Colors.grey,
-                submit: () {
-                  setState(() {
-                    _isGotoButtonPressed = !_isGotoButtonPressed;
-                  });
-                }
-              )
-            ],
+          child: FlyButtons(
+            buttonState: _isGotoButtonPressed,
+            mapSubmit: () {
+              setState(() {
+                _isGotoButtonPressed = !_isGotoButtonPressed;
+              });
+            },
           )
-        ),
+        )
       ],
     );
   }
 }
-
-class GotoButton extends StatelessWidget {
-  final IconData icon;
-  final Function()? submit;
-  final Color color;
-
-  const GotoButton({
-    required this.icon,
-    required this.submit,
-    required this.color,
-    Key? key
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: ShapeDecoration(
-        shape: const CircleBorder(),
-        color: color
-      ),
-      child: IconButton(
-        onPressed: submit,
-        icon: Icon(icon, color: Colors.white),
-      ),
-    );
-  }
-}
-

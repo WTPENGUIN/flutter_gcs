@@ -7,6 +7,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:peachgs_flutter/utils/utils.dart';
 import 'package:peachgs_flutter/model/multi_vehicle_manage.dart';
 import 'package:peachgs_flutter/widget/vehicle_marker.dart';
+import 'package:peachgs_flutter/widget/fly_buttons.dart';
 
 class MapWindowDesktop extends StatefulWidget {
   const MapWindowDesktop({Key? key}) : super(key: key);
@@ -19,6 +20,7 @@ class _MapWindowDesktopState extends State<MapWindowDesktop> {
   Logger logger = Logger();
 
   final List<Marker> guidedModeMarkers = [];
+  bool _isGotoButtonPressed = false;
 
   List<Marker> vehiclesPosition(MultiVehicle multiVehicleManager) {
     List<Marker> markers = [];
@@ -73,25 +75,33 @@ class _MapWindowDesktopState extends State<MapWindowDesktop> {
       options: MapOptions(
         initialCenter: const LatLng(34.610040, 127.20674),
         initialZoom: 15,
-        onSecondaryTap: (TapPosition position, LatLng point) {
-          var currentVehicle = MultiVehicle().activeVehicle();
+        onTap: (TapPosition position, LatLng point) {
+          // 이동 버튼이 눌렸을 때
+          if(_isGotoButtonPressed) {
+            var currentVehicle = MultiVehicle().activeVehicle();
 
-          if(currentVehicle != null) {
-            if(currentVehicle.isFlying) {
-              // 이동할 곳 마커 찍기
-              setState(() {
-                guidedModeMarkers.clear();
-                guidedModeMarkers.add(
-                  Marker(
-                    point: point,
-                    child: const Icon(Icons.location_pin, color: Colors.red),
-                    alignment: Alignment.center
-                  )
-                );
-              });
+            if(currentVehicle != null) {
+              if(currentVehicle.isFlying) {
+                // 이동할 곳 마커 찍기
+                setState(() {
+                  guidedModeMarkers.clear();
+                  guidedModeMarkers.add(
+                    Marker(
+                      point: point,
+                      child: const Icon(Icons.location_pin, color: Colors.red),
+                      alignment: Alignment.center
+                    )
+                  );
+                });
               
-              // 오른쪽 클릭 포인트로 이동 명령 내리기
-              currentVehicle.vehicleGuidedModeGotoLocation(point);
+                // 클릭한 포인트로 이동 명령 내리기
+                currentVehicle.vehicleGuidedModeGotoLocation(point);
+
+                // 버튼 눌리지 않은 상태로 설정
+                setState(() {
+                  _isGotoButtonPressed = false;
+                });
+              }
             }
           }
         },
@@ -104,6 +114,7 @@ class _MapWindowDesktopState extends State<MapWindowDesktop> {
           ),
           tileProvider: CancellableNetworkTileProvider(),
         ),
+
         // 기체 위치 표시 레이어
         Consumer<MultiVehicle>(
           builder: (_, multiManager, __) {
@@ -112,6 +123,7 @@ class _MapWindowDesktopState extends State<MapWindowDesktop> {
             );
           },
         ),
+
         // 기체 이동 경로 표시 레이어
         Consumer<MultiVehicle>(
           builder: (_, multiManager, __) {
@@ -120,8 +132,25 @@ class _MapWindowDesktopState extends State<MapWindowDesktop> {
             );
           }
         ),
+
         // 이동 명령 마커 레이어
-        MarkerLayer(markers: guidedModeMarkers)
+        MarkerLayer(markers: guidedModeMarkers),
+
+        //도구 모음 버튼
+        Align(
+          alignment: Alignment.topLeft,
+          child: Padding(
+            padding: const EdgeInsets.all(10),
+            child: FlyButtons(
+              buttonState: _isGotoButtonPressed,
+              mapSubmit: () {
+                setState(() {
+                  _isGotoButtonPressed = !_isGotoButtonPressed;
+                });
+              },
+            ),
+          )
+        )
       ]
     );
   }
