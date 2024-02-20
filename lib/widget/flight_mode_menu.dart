@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:peachgs_flutter/model/vehicle.dart';
-import 'package:peachgs_flutter/model/multi_vehicle_manage.dart';
 import 'package:dart_mavlink/dialects/ardupilotmega.dart';
 import 'package:peachgs_flutter/model/ardupilot.dart';
 import 'package:peachgs_flutter/model/px4.dart';
+import 'package:peachgs_flutter/model/vehicle.dart';
+import 'package:peachgs_flutter/model/multi_vehicle_manage.dart';
+import 'package:peachgs_flutter/widget/component_widget/overlayportal_drop_menu.dart';
 
 class FlightModeMenu extends StatefulWidget {
   const FlightModeMenu({Key? key}) : super(key: key);
@@ -18,7 +19,7 @@ class _FlightModeMenuState extends State<FlightModeMenu> {
 
   @override
   Widget build(BuildContext context) {
-    return RawFlexDropDown(
+    return OverlayFlexDropDown(
       controller: _controller,
       buttonBuilder:(BuildContext context, Function() onTap) {
         return Selector<MultiVehicle, String?>(
@@ -37,7 +38,7 @@ class _FlightModeMenuState extends State<FlightModeMenu> {
         return Selector<MultiVehicle, int?>(
           selector: (context, multiVehicle) => multiVehicle.activeVehicle()?.autopilotType,
           builder: (context, currentType, _) {
-            // 현재 선택된 기체의 비행 모드를 가져와서 위젯을 빌드
+            // 현재 선택된 기체의 펌웨어 정보를 가져와서 해당 펌웨어에 맞는 비행 모드 목록 위젯을 빌드
             return SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.only(top: 10),
@@ -242,74 +243,5 @@ class ItemHolder extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-typedef ButtonBuilder = Widget Function(
-  BuildContext context,
-  VoidCallback onTap,
-);
-
-typedef MenuBuilder = Widget Function(
-  BuildContext context,
-  double? width,
-);
-
-enum MenuPosition {
-  top,
-  bottom,
-}
-
-class RawFlexDropDown extends StatefulWidget {
-  const RawFlexDropDown({
-    super.key,
-    required this.controller,
-    required this.buttonBuilder,
-    required this.menuBuilder,
-    this.menuPosition = MenuPosition.bottom,
-  });
-
-  final OverlayPortalController controller;
-
-  final ButtonBuilder buttonBuilder;
-  final MenuBuilder menuBuilder;
-  final MenuPosition menuPosition;
-
-  @override
-  State<RawFlexDropDown> createState() => _RawFlexDropDownState();
-}
-
-class _RawFlexDropDownState extends State<RawFlexDropDown> {
-  final _link = LayerLink();
-
-  /// width of the button after the widget rendered
-  double? _buttonWidth;
-
-  @override
-  Widget build(BuildContext context) {
-    return CompositedTransformTarget(
-      link: _link,
-      child: OverlayPortal(
-        controller: widget.controller,
-        overlayChildBuilder: (BuildContext context) {
-          return CompositedTransformFollower(
-            link: _link,
-            targetAnchor: Alignment.bottomLeft,
-            showWhenUnlinked: false,
-            child: Align(
-              alignment: AlignmentDirectional.topStart,
-              child: widget.menuBuilder(context, _buttonWidth),
-            ),
-          );
-        },
-        child: widget.buttonBuilder(context, onTap),
-      ),
-    );
-  }
-
-  void onTap() {
-    _buttonWidth = context.size?.width;
-
-    widget.controller.toggle();
   }
 }
