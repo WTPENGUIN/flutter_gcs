@@ -56,7 +56,7 @@ class _FloatingButtonsState extends State<FloatingButtons> {
           labelBackgroundColor: pBlue,
           onTap: () async {
             var link = await showLinkCreateModal(context);
-            if(link.isEmpty || !mounted) return;
+            if(link.isEmpty) return;
 
             String protocol = link[0];
             String host = link[1];
@@ -64,13 +64,13 @@ class _FloatingButtonsState extends State<FloatingButtons> {
 
             switch (protocol) {
               case 'TCP':
-                Provider.of<ConnectionManager>(context, listen: false).startTCPTask(host, port);
+                if (context.mounted) Provider.of<ConnectionManager>(context, listen: false).startTCPTask(host, port);
                 break;
               case 'UDP(S)':
-                Provider.of<ConnectionManager>(context, listen: false).startUDPServerTask(port);
+                if (context.mounted) Provider.of<ConnectionManager>(context, listen: false).startUDPServerTask(port);
                 break;
               case 'UDP':
-                Provider.of<ConnectionManager>(context, listen: false).startUDPClientTask(host, port);
+                if (context.mounted) Provider.of<ConnectionManager>(context, listen: false).startUDPClientTask(host, port);
                 break;                
               default:
                 return;
