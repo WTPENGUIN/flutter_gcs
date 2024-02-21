@@ -50,6 +50,8 @@ void main() async {
       child: MaterialApp.router(
         routerConfig: router,
         debugShowCheckedModeBanner: false,
+        theme: ThemeData(fontFamily: 'NanumGothic'),
+        themeMode: ThemeMode.system,
       ),
     )
   );
