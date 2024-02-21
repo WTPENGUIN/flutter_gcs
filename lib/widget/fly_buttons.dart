@@ -30,7 +30,7 @@ class _ToolButtonsState extends State<FlyButtons> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 50,
+      width: 150,
       color: Colors.transparent,
       child: SingleChildScrollView(
         child: Column(
@@ -54,9 +54,10 @@ class _ToolButtonsState extends State<FlyButtons> {
                       if(armAble) {
                         vehicle.vehicleArm(true);
                       } else {
-                      vehicle.vehicleArm(false);
+                        vehicle.vehicleArm(false);
                       }
-                    } : null
+                    } : null,
+                    title: armAble ? '시동' : '꺼짐',
                   );
                 }
               )
@@ -74,12 +75,13 @@ class _ToolButtonsState extends State<FlyButtons> {
                   return ToolButton(
                     icon: Icons.file_upload,
                     color: (!flying) ? Colors.blue : Colors.grey,
-                    submit: !flying ? () {
+                    submit: (!flying) ? () {
                       Vehicle? vehicle = MultiVehicle().activeVehicle();
                       if(vehicle == null) return;
 
                       vehicle.vehicleTakeOff(10.0);
-                    } : null
+                    } : null,
+                    title: '이륙',
                   );
                 }
               )
@@ -101,7 +103,8 @@ class _ToolButtonsState extends State<FlyButtons> {
                       if(vehicle == null) return;
 
                       vehicle.vehicleLand();
-                    } : null
+                    } : null,
+                    title: '착륙',
                   );
                 }
               )
@@ -123,7 +126,8 @@ class _ToolButtonsState extends State<FlyButtons> {
                       if(vehicle == null) return;
 
                       vehicle.vehicleRTL();
-                    } : null
+                    } : null,
+                    title: '귀환',
                   );
                 }
               )
@@ -143,7 +147,8 @@ class _ToolButtonsState extends State<FlyButtons> {
             ToolButton(
               icon: isOpen ? Icons.expand_less : Icons.expand_more,
               submit: _toggleOpen,
-              color: Colors.black38
+              color: Colors.black38,
+              title: isOpen ? '닫기' : '열기',
             )
           ],
         )
