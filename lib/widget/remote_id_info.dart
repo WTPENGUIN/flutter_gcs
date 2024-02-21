@@ -6,12 +6,12 @@ class RemoteIdInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 130,
+      width: 100,
       color: Colors.transparent,
       child: ElevatedButton.icon(
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.transparent,
-          shadowColor: Colors.transparent.withOpacity(0.1),
+          backgroundColor: Colors.black.withOpacity(0.3),
+          shadowColor: Colors.transparent.withOpacity(0.3),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8)
           )
