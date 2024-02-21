@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-import 'package:peachgs_flutter/utils/utils.dart';
+import 'package:peachgs_flutter/widget/component_widget/outline_text.dart';
 import 'package:peachgs_flutter/widget/component_widget/resize_handle_container.dart';
 
 class VideoPage extends StatefulWidget {

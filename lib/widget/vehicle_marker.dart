@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:peachgs_flutter/utils/utils.dart';
+import 'package:peachgs_flutter/widget/component_widget/outline_text.dart';
 
 // flutter_svg 패키지를 이용해 svg 이미지를 가져온다.
 class VehicleMarker extends StatelessWidget {
