@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:logger/logger.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -11,6 +12,30 @@ import 'package:peachgs_flutter/router.dart';
 import 'package:peachgs_flutter/model/multi_vehicle_manage.dart';
 import 'package:peachgs_flutter/utils/connection_manager.dart';
 
+// 권한 요청
+Future<bool> getPermission() async {
+  // 어플리케이션에 위치 권한이 허용 되었는지 확인
+  var requestLocationStatus = await Permission.location.request();
+  var locationStatus        = await Permission.location.status;
+
+  // 허용이 되어 있지 않으면, openAppSettings 함수를 호출하여 권한 획득.
+  if(requestLocationStatus.isPermanentlyDenied || locationStatus.isPermanentlyDenied) {
+    openAppSettings();
+  } else if(locationStatus.isRestricted) {
+    openAppSettings();
+  }
+
+  // 위치 권한이 부여 되었는지 다시 확인
+  var confirmLocationState = await Permission.location.status;
+
+  // 허용이 되어 있지 않으면, 종료
+  if(!confirmLocationState.isGranted) {
+    return false;
+  }
+
+  return true;
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   MediaKit.ensureInitialized();
@@ -18,17 +43,21 @@ void main() async {
   if(Platform.isAndroid || Platform.isIOS) {
     SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeRight, DeviceOrientation.landscapeLeft]);
 
-    // 네이버 맵 초기화
-    if(Platform.isAndroid) {
-      await dotenv.load(fileName: '.env');
-      await NaverMapSdk.instance.initialize(
-        clientId: dotenv.env['NAVER_MAP_CLIENT_ID'],
-        onAuthFailed: (ex) {
-          Logger logger = Logger();
-          logger.e("********* 네이버맵 인증오류 : $ex *********");
-        }
-      );
+    // 권한 요청(권한 거부 당하면 앱 종료)
+    bool isGranted = await getPermission();
+    if(!isGranted) {
+      SystemChannels.platform.invokeMethod('SystemNavigator.pop');
     }
+
+    // 네이버 맵 초기화
+    await dotenv.load(fileName: '.env');
+    await NaverMapSdk.instance.initialize(
+      clientId: dotenv.env['NAVER_MAP_CLIENT_ID'],
+      onAuthFailed: (ex) {
+        Logger logger = Logger();
+        logger.e("********* 네이버맵 인증오류 : $ex *********");
+      }
+    );
   }
 
   if(Platform.isWindows) {
