@@ -2,8 +2,8 @@ import 'dart:core';
 import 'package:logger/logger.dart';
 import 'package:geolocator/geolocator.dart';
 
-// Location 클래스
-class Location {
+// CurrentLocation 클래스
+class CurrentLocation {
   double latitude  = double.nan;
   double longitude = double.nan;
 
@@ -18,18 +18,22 @@ class Location {
   }
 
   // 현재 내 위치 요청
-  void getCurrentLocation() async {
+  Future<bool> getCurrentLocation() async {
     try {
       Position pos = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
 
       latitude = pos.latitude;
       longitude = pos.longitude;
 
-      if(_isValidLocation(latitude, longitude)) {
+      if(!_isValidLocation(latitude, longitude)) {
         throw Exception('Wrong Location');
       }
+      
+      return true;
     } catch(e) {
+      logger.e('$latitude, $longitude');
       logger.e(e.toString());
+      return false;
     }
   }
 }

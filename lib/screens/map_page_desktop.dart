@@ -5,6 +5,7 @@ import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_ti
 import 'package:logger/logger.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:peachgs_flutter/utils/utils.dart';
+import 'package:peachgs_flutter/utils/current_location.dart';
 import 'package:peachgs_flutter/model/multi_vehicle_manage.dart';
 import 'package:peachgs_flutter/widget/vehicle_widget/vehicle_marker.dart';
 import 'package:peachgs_flutter/widget/vehicle_widget/fly_buttons.dart';
@@ -19,8 +20,11 @@ class MapWindowDesktop extends StatefulWidget {
 class _MapWindowDesktopState extends State<MapWindowDesktop> {
   Logger logger = Logger();
 
+  late final MapController _mapController;
   final List<Marker> guidedModeMarkers = [];
   bool _isGotoButtonPressed = false;
+
+  CurrentLocation _loc = CurrentLocation();
 
   List<Marker> vehiclesPosition(MultiVehicle multiVehicleManager) {
     List<Marker> markers = [];
@@ -70,11 +74,29 @@ class _MapWindowDesktopState extends State<MapWindowDesktop> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _mapController = MapController();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return FlutterMap(
+      mapController: _mapController,
       options: MapOptions(
         initialCenter: const LatLng(34.610040, 127.20674),
         initialZoom: 15,
+        onMapReady: () async {
+          bool isGetCoord = await _loc.getCurrentLocation();
+          if(isGetCoord) {
+            _mapController.move(LatLng(_loc.latitude, _loc.longitude), 15);
+          }
+        },
         onTap: (TapPosition position, LatLng point) {
           // 이동 버튼이 눌렸을 때
           if(_isGotoButtonPressed) {
