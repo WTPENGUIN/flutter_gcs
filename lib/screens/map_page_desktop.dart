@@ -24,7 +24,7 @@ class _MapWindowDesktopState extends State<MapWindowDesktop> {
   final List<Marker> guidedModeMarkers = [];
   bool _isGotoButtonPressed = false;
 
-  CurrentLocation _loc = CurrentLocation();
+  final CurrentLocation _loc = CurrentLocation();
 
   List<Marker> vehiclesPosition(MultiVehicle multiVehicleManager) {
     List<Marker> markers = [];
