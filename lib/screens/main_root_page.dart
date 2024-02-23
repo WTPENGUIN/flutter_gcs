@@ -5,7 +5,7 @@ import 'package:peachgs_flutter/screens/map_page_desktop.dart';
 import 'package:peachgs_flutter/screens/map_page_mobile.dart';
 import 'package:peachgs_flutter/widget/component_widget/tool_button.dart';
 import 'package:peachgs_flutter/widget/ui/vehicle_info.dart';
-//import 'package:peachgs_flutter/screens/video_page.dart';
+import 'package:peachgs_flutter/screens/video_page.dart';
 
 class MainRootWindow extends StatefulWidget {
   const MainRootWindow({Key? key}) : super(key: key);
@@ -62,10 +62,10 @@ class _MainRootWindowState extends State<MainRootWindow> {
                   ],
                 ),
                 // 비디오 위젯
-                // Positioned(
-                //   bottom: (isShow) ? ((appScreenSize.height / 11) * 2) : 0,
-                //   child: const VideoPage()
-                // ),
+                Positioned(
+                  bottom: (isShow) ? ((appScreenSize.height / 11) * 2) : 0,
+                  child: const VideoPage()
+                ),
                 // 하단 정보 숨기기 버튼
                 Positioned(
                   bottom: (isShow) ? ((appScreenSize.height / 11) * 2.05) : 10,

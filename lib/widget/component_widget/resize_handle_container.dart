@@ -79,6 +79,9 @@ class _ResizebleContainerWidgetState extends State<ResizebleContainerWidget> {
                   var newHeight = height - mid;
                   var newWidth = width - mid;
 
+                  if(newHeight > MediaQuery.of(context).size.height * 0.75) return;
+                  if(newWidth > MediaQuery.of(context).size.width * 0.75) return;
+
                   setState(() {
                     height = newHeight > widget.size.height ? newHeight : widget.size.height;
                     width  = newWidth  > widget.size.width  ? newWidth  : widget.size.width;
@@ -97,6 +100,9 @@ class _ResizebleContainerWidgetState extends State<ResizebleContainerWidget> {
                 onDrag: (dx, dy) {
                   var newHeight = height - dy;
                   var newWidth = width + dx;
+
+                  if(newHeight > MediaQuery.of(context).size.height * 0.75) return;
+                  if(newWidth > MediaQuery.of(context).size.width * 0.75) return;
 
                   setState(() {
                     height = newHeight > widget.size.height ? newHeight : widget.size.height;
