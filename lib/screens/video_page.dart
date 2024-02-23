@@ -8,6 +8,7 @@ import 'package:peachgs_flutter/widget/modal/video_setting_modal.dart';
 import 'package:peachgs_flutter/widget/component_widget/outline_text.dart';
 import 'package:peachgs_flutter/widget/component_widget/resize_handle_container.dart';
 
+// TODO : 이전에 설정한 URL 불러와서 자동 비디오 스트리밍 실행
 class VideoPage extends StatefulWidget {
   const VideoPage({Key? key}) : super(key: key);
 
@@ -23,24 +24,23 @@ class _VideoPageStete extends State<VideoPage> {
   late final Player _mediaPlayer = Player();
   late final VideoController _mediaController = VideoController(_mediaPlayer);
 
-  bool play = false; // 재생 상태
-  bool isWebView = false;
+  bool play = false;       // 재생 상태 저장
+  bool isWebView = false;  // 웹뷰 판단
 
-  // RTSP 혹은 HTTP 아니면 재생 되지 않게
-  bool isValidMediaURL(String url) {
-    return (url.startsWith('http') || url.startsWith('rtsp'));
-  }
-
-  // 모바일인지 여부 판단
   bool isMobile() {
     return (Platform.isAndroid || Platform.isIOS);
+  }
+
+  // RTSP 혹은 HTTP외에 허용하지 않음
+  bool isValidMediaURL(String url) {
+    return (url.startsWith('http') || url.startsWith('rtsp'));
   }
 
   @override
   void initState() {
     if(isMobile()) {
       _webViewController = WebViewController();
-      _webViewController.setJavaScriptMode(JavaScriptMode.unrestricted);
+      _webViewController.setJavaScriptMode(JavaScriptMode.unrestricted); // 웹뷰 재생을 위해 자바스크립트 허용
     }
     super.initState();
   }
@@ -51,11 +51,12 @@ class _VideoPageStete extends State<VideoPage> {
     super.dispose();
   }
 
+  // 재생 중이 아닐 때 표시할 위젯
   Widget readyWidget() {
     return const Center(
       child: OutlineText(
         Text(
-          '재생 준비 중....',
+          '재생 준비 중...',
           style: TextStyle(color: Colors.white),
         ),
         strokeWidth: 1,
@@ -66,11 +67,11 @@ class _VideoPageStete extends State<VideoPage> {
   }
 
   void switchURL(String url) async {
-    // 데스크톱에서는 웹뷰가 지원되지 않음
+    // 데스크톱 버전은 웹뷰 지원하지 않음
     if(!isMobile() && url.startsWith('http')) {
       MotionToast.info(
         title: const Text('정보'),
-        description: const Text("윈도우에서는 웹뷰 모드가 지원되지 않습니다."),
+        description: const Text("윈도우에서는 웹뷰가 지원되지 않습니다."),
         position: MotionToastPosition.bottom,
         animationType: AnimationType.fromBottom,
       ).show(context);
@@ -86,11 +87,11 @@ class _VideoPageStete extends State<VideoPage> {
 
     // 새로운 url로 전환
     if(url.startsWith('http')) {
-      // HTTP로 시작하니 웹뷰로 동작
+      // HTTP => 웹뷰
       isWebView = true;
       _webViewController.loadRequest(Uri.parse(url));
     } else {
-      // RTSP로 시작하니 RTSP 플레이어로 동작
+      // RTSP => RTSP 플레이어
       isWebView = false;
       _mediaPlayer.open(
         Media(
@@ -99,7 +100,7 @@ class _VideoPageStete extends State<VideoPage> {
       );
     }
 
-    // 재생 중으로 전환
+    // 플레이어 재생 상태로 전환
     setState(() {
       play = true;
     });
@@ -107,8 +108,10 @@ class _VideoPageStete extends State<VideoPage> {
 
   @override
   Widget build(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+
     return ResizebleContainerWidget(
-      size: const Size(300,200),
+      size: Size(screenSize.width * 0.25, screenSize.height * 0.25),
       position: ResizeHandlePosition.positionUpperRight,
       child: Stack(
         children: [
@@ -127,7 +130,7 @@ class _VideoPageStete extends State<VideoPage> {
                   if(address.isEmpty) return;
                   MotionToast.error(
                     title: const Text('오류'),
-                    description: const Text("URL이 정확하지 않습니다."),
+                    description: const Text("URL은 http와 rtsp만 지원합니다."),
                     position: MotionToastPosition.bottom,
                     animationType: AnimationType.fromBottom,
                   ).show(context);
