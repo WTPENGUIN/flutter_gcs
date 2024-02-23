@@ -2,10 +2,16 @@ import 'package:flutter/material.dart';
 
 const ballDiameter = 30.0;
 
+enum ResizeHandlePosition {
+  positionUpperLeft,
+  positionUpperRight
+}
+
 class ResizebleContainerWidget extends StatefulWidget {
   const ResizebleContainerWidget({
     required this.size,
     required this.child,
+    required this.position,
     this.boxColor = Colors.black54,
     Key? key
   }) : super(key: key);
@@ -13,6 +19,7 @@ class ResizebleContainerWidget extends StatefulWidget {
   final Widget child;
   final Size   size;
   final Color  boxColor;
+  final ResizeHandlePosition position;
 
   @override
   State<ResizebleContainerWidget> createState() => _ResizebleContainerWidgetState();
@@ -61,22 +68,44 @@ class _ResizebleContainerWidgetState extends State<ResizebleContainerWidget> {
             )
           ),
           // 왼쪽 상단에 위치하는 크기조정 핸들
-          Positioned(
-            top: top,
-            left: left,
-            child: ManipulatePoint(
-              onDrag: (dx, dy) {
-                var mid = (dx + dy) / 2;
-                var newHeight = height - mid;
-                var newWidth = width - mid;
-                
-                setState(() {
-                  height = newHeight > 0 ? newHeight : 0;
-                  width = newWidth > 0 ? newWidth : 0;
-                });
-              },
+          Visibility(
+            visible: (widget.position == ResizeHandlePosition.positionUpperLeft),
+            child: Positioned(
+              top: top,
+              left: left,
+              child: ManipulatePoint(
+                onDrag: (dx, dy) {
+                  var mid = (dx + dy) / 2;
+                  var newHeight = height - mid;
+                  var newWidth = width - mid;
+
+                  setState(() {
+                    height = newHeight > widget.size.height ? newHeight : widget.size.height;
+                    width  = newWidth  > widget.size.width  ? newWidth  : widget.size.width;
+                  });
+                },
+              ),
             ),
           ),
+          // 오른쪽 상단에 위치하는 크기조정 핸들
+          Visibility(
+            visible: (widget.position == ResizeHandlePosition.positionUpperRight),
+            child: Positioned(
+              top: top,
+              left: left + width - ballDiameter,
+              child: ManipulatePoint(
+                onDrag: (dx, dy) {
+                  var newHeight = height - dy;
+                  var newWidth = width + dx;
+
+                  setState(() {
+                    height = newHeight > widget.size.height ? newHeight : widget.size.height;
+                    width  = newWidth  > widget.size.width  ? newWidth  : widget.size.width;
+                  });
+                },
+              ),
+            ),
+          )
         ],
       ),
     );

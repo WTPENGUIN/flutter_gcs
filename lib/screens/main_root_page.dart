@@ -64,7 +64,6 @@ class _MainRootWindowState extends State<MainRootWindow> {
                 // 비디오 위젯
                 // Positioned(
                 //   bottom: (isShow) ? ((appScreenSize.height / 11) * 2) : 0,
-                //   left: 1,
                 //   child: const VideoPage()
                 // ),
                 // 하단 정보 숨기기 버튼
