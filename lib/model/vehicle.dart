@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 import 'package:logger/logger.dart';
 import 'package:latlong2/latlong.dart';
@@ -562,24 +563,25 @@ class Vehicle {
 
   void _handleStatusText(MavlinkFrame frame) {
     var statusText = frame.message as Statustext;
-
-    // Status 메세지의 ID 파싱
-    // 51번 바이트와 52번 바이트가 청크되지 않은 메시지면 [0, 0]의 형식으로 도착해야 하는데, 이유 불명으로 그렇지 않음
-    // 강제로 51번 바이트와 52번 바이트를 얻어서 검사
-    // 둘 중에 하나라도 0이면 청크 메세지가 아닌 것으로 간주
-    ByteData byte = frame.message.serialize();
-    List<int> hackIdList = byte.buffer.asUint8List(51, 2);
-    bool isChunked = !hackIdList.contains(0);
     
     // 임시 리스트에 복사
     List<int> tempList = [];
     for(int ch in statusText.text) {
-      if(ch == 0) break;
+      if(ch <= 0) break;
       tempList.add(ch);
     }
 
     // status 메세지의 id로 청크화 되었는지 판단(0보다 크면 청크화)
-    if(isChunked) {
+    if(statusText.id != 0) {
+      Timer(const Duration(seconds: 3), () {
+        logger.i('${statusText.severity} : ${String.fromCharCodes(_statusChunkText)}');
+        
+        // 청크 조립이 완료 되었으므로 초기화
+        _statusTextLastId = 0;
+        _statusTextLastChunkSeq = 0;
+        _statusChunkText.clear();
+      });
+
       if(statusText.id != _statusTextLastId) {
         _statusTextLastChunkSeq = 0;
         _statusTextLastId = statusText.id;

@@ -6,8 +6,8 @@ import 'package:logger/logger.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:peachgs_flutter/utils/utils.dart';
 import 'package:peachgs_flutter/model/multi_vehicle_manage.dart';
-import 'package:peachgs_flutter/widget/vehicle_marker.dart';
-import 'package:peachgs_flutter/widget/fly_buttons.dart';
+import 'package:peachgs_flutter/widget/vehicle_widget/vehicle_marker.dart';
+import 'package:peachgs_flutter/widget/vehicle_widget/fly_buttons.dart';
 
 class MapWindowDesktop extends StatefulWidget {
   const MapWindowDesktop({Key? key}) : super(key: key);
