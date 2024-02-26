@@ -36,7 +36,6 @@ class ToolBar extends StatelessWidget {
               Image.asset('assets/image/MainLogo.png', fit: BoxFit.fill),
               const SizedBox(width: 20),
               const GPSWidget(),
-              const SizedBox(width: 20),
               const FlightModeMenu(),
               const Spacer(),
               const RemoteIdInfo(),

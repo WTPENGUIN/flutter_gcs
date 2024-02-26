@@ -22,7 +22,7 @@ class _FlightModeMenuState extends State<FlightModeMenu> {
   Widget build(BuildContext context) {
     return OverlayFlexDropDown(
       controller: _controller,
-      buttonBuilder:(BuildContext context, Function() onTap) {
+      buttonBuilder: (BuildContext context, Function() onTap) {
         return Selector<MultiVehicle, String?>(
           selector: (context, multiVehicle) => multiVehicle.activeVehicle()?.mode,
           builder: (context, flightMode, _) {
@@ -35,7 +35,7 @@ class _FlightModeMenuState extends State<FlightModeMenu> {
           },
         );
       },
-      menuBuilder:(BuildContext context, double? width) {
+      menuBuilder: (BuildContext context, double? width) {
         return Selector<MultiVehicle, int?>(
           selector: (context, multiVehicle) => multiVehicle.activeVehicle()?.firmware,
           builder: (context, firmware, _) {
