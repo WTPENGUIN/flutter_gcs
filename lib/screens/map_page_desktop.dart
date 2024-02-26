@@ -29,8 +29,8 @@ class _MapWindowDesktopState extends State<MapWindowDesktop> {
   List<Marker> vehiclesPosition(MultiVehicle multiVehicleManager) {
     List<Marker> markers = [];
     for(var vehicle in MultiVehicle().allVehicles()) {
-      double markerLat = vehicle.vehicleLat;
-      double markerLon = vehicle.vehicleLon;
+      double markerLat = vehicle.lat;
+      double markerLon = vehicle.lon;
 
       if((markerLat == 0) || (markerLon == 0)) continue;
       markers.add(
@@ -42,14 +42,14 @@ class _MapWindowDesktopState extends State<MapWindowDesktop> {
             child: VehicleMarker(
               route: 'assets/image/VehicleIcon.svg',
               degree: vehicle.yaw,
-              vehicleId: vehicle.vehicleId,
-              flightMode: vehicle.flightMode,
+              vehicleId: vehicle.id,
+              flightMode: vehicle.mode,
               armed: vehicle.armed,
-              outlineColor: (multiVehicleManager.getActiveId == vehicle.vehicleId ? Colors.redAccent : Colors.grey),
+              outlineColor: (multiVehicleManager.getActiveId == vehicle.id ? Colors.redAccent : Colors.grey),
             ),
             onTap: () {
-              if(multiVehicleManager.getActiveId == vehicle.vehicleId) return;
-              multiVehicleManager.setActiceId = vehicle.vehicleId;
+              if(multiVehicleManager.getActiveId == vehicle.id) return;
+              multiVehicleManager.setActiceId = vehicle.id;
             },
           ),
         )
@@ -61,10 +61,10 @@ class _MapWindowDesktopState extends State<MapWindowDesktop> {
   List<Polyline> vehiclesTrajectoryList(MultiVehicle multiVehicleManager) {
     List<Polyline> lines = [];
     for(var vehicle in MultiVehicle().allVehicles()) {
-      if(vehicle.trajectoryList.isEmpty) continue;
+      if(vehicle.route.isEmpty) continue;
 
       lines.add(Polyline(
-        points: vehicle.trajectoryList,
+        points: vehicle.route,
         color: Colors.red,
         strokeWidth: 3.0
       ));
@@ -103,7 +103,7 @@ class _MapWindowDesktopState extends State<MapWindowDesktop> {
             var currentVehicle = MultiVehicle().activeVehicle();
 
             if(currentVehicle != null) {
-              if(currentVehicle.isFlying) {
+              if(currentVehicle.isFly) {
                 // 이동할 곳 마커 찍기
                 setState(() {
                   guidedModeMarkers.clear();
@@ -117,7 +117,7 @@ class _MapWindowDesktopState extends State<MapWindowDesktop> {
                 });
               
                 // 클릭한 포인트로 이동 명령 내리기
-                currentVehicle.vehicleGuidedModeGotoLocation(point);
+                currentVehicle.goto(point);
 
                 // 버튼 눌리지 않은 상태로 설정
                 setState(() {

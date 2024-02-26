@@ -45,7 +45,7 @@ class VehicleGPSInfo extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Selector<MultiVehicle, String?>(
-                  selector: (context, multiVehicle) => multiVehicle.activeVehicle()?.gpsfixTypeString,
+                  selector: (context, multiVehicle) => multiVehicle.activeVehicle()?.fixType,
                   builder: (context, gpsString, _) {
                     return Text(
                       (gpsString != null) ? gpsString : '',
@@ -58,7 +58,7 @@ class VehicleGPSInfo extends StatelessWidget {
                   },
                 ),
                 Selector<MultiVehicle, int?>(
-                  selector: (context, multiVehicle) => multiVehicle.activeVehicle()?.satVisible,
+                  selector: (context, multiVehicle) => multiVehicle.activeVehicle()?.gpsSat,
                   builder: (context, satCount, _) {
                     return Text(
                       (satCount != null) ? 'SAT:$satCount' : '',
@@ -79,7 +79,7 @@ class VehicleGPSInfo extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Selector<MultiVehicle, double?>(
-                  selector: (context, multiVehicle) => multiVehicle.activeVehicle()?.eph,
+                  selector: (context, multiVehicle) => multiVehicle.activeVehicle()?.hdop,
                   builder: (context, hdop, _) {
                     return Text(
                       (hdop != null) ? '$hdop' : '',
@@ -92,7 +92,7 @@ class VehicleGPSInfo extends StatelessWidget {
                   },
                 ),
                 Selector<MultiVehicle, double?>(
-                  selector: (context, multiVehicle) => multiVehicle.activeVehicle()?.epv,
+                  selector: (context, multiVehicle) => multiVehicle.activeVehicle()?.vdop,
                   builder: (context, vdop, _) {
                     return Text(
                       (vdop != null) ? '$vdop' : '',

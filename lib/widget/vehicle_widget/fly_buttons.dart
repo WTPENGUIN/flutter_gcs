@@ -52,9 +52,9 @@ class _ToolButtonsState extends State<FlyButtons> {
                       if(vehicle == null) return;
 
                       if(armAble) {
-                        vehicle.vehicleArm(true);
+                        vehicle.arm(true);
                       } else {
-                        vehicle.vehicleArm(false);
+                        vehicle.arm(false);
                       }
                     } : null,
                     title: armAble ? '시동' : '꺼짐',
@@ -68,7 +68,7 @@ class _ToolButtonsState extends State<FlyButtons> {
             Visibility(
               visible: isOpen,
               child: Selector<MultiVehicle, bool?>(
-                selector: (context, multiVehicle) => multiVehicle.activeVehicle()?.isFlying,
+                selector: (context, multiVehicle) => multiVehicle.activeVehicle()?.isFly,
                 builder: (context, isFlying, _) {
                   bool flying = (isFlying != null) && isFlying;
 
@@ -79,7 +79,7 @@ class _ToolButtonsState extends State<FlyButtons> {
                       Vehicle? vehicle = MultiVehicle().activeVehicle();
                       if(vehicle == null) return;
 
-                      vehicle.vehicleTakeOff(10.0);
+                      vehicle.takeOff(10.0);
                     } : null,
                     title: '이륙',
                   );
@@ -91,7 +91,7 @@ class _ToolButtonsState extends State<FlyButtons> {
             Visibility(
               visible: isOpen,
               child: Selector<MultiVehicle, bool?>(
-                selector: (context, multiVehicle) => multiVehicle.activeVehicle()?.isFlying,
+                selector: (context, multiVehicle) => multiVehicle.activeVehicle()?.isFly,
                 builder: (context, isFlying, _) {
                   bool flying = (isFlying != null) && isFlying;
 
@@ -102,7 +102,7 @@ class _ToolButtonsState extends State<FlyButtons> {
                       Vehicle? vehicle = MultiVehicle().activeVehicle();
                       if(vehicle == null) return;
 
-                      vehicle.vehicleLand();
+                      vehicle.land();
                     } : null,
                     title: '착륙',
                   );
@@ -114,7 +114,7 @@ class _ToolButtonsState extends State<FlyButtons> {
             Visibility(
               visible: isOpen,
               child: Selector<MultiVehicle, bool?>(
-                selector: (context, multiVehicle) => multiVehicle.activeVehicle()?.isFlying,
+                selector: (context, multiVehicle) => multiVehicle.activeVehicle()?.isFly,
                 builder: (context, isFlying, _) {
                   bool flying = (isFlying != null) && isFlying;
 
@@ -125,7 +125,7 @@ class _ToolButtonsState extends State<FlyButtons> {
                       Vehicle? vehicle = MultiVehicle().activeVehicle();
                       if(vehicle == null) return;
 
-                      vehicle.vehicleRTL();
+                      vehicle.rtl();
                     } : null,
                     title: '귀환',
                   );

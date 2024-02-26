@@ -43,7 +43,7 @@ class MultiVehicle extends ChangeNotifier {
     if(_vehicles.isEmpty) return null;
 
     for(Vehicle tempVehicle in _vehicles) {
-      if(tempVehicle.vehicleId == id) {
+      if(tempVehicle.id == id) {
         return tempVehicle;
       }
     }
@@ -70,13 +70,13 @@ class MultiVehicle extends ChangeNotifier {
   void checkDisconnectedVehicle() {
     List<Vehicle> removeVehicles = [];
     for(Vehicle vehicle in _vehicles) {
-      if(vehicle.heartbeatElapsedTimer.elapsedMilliseconds > heartbeatMaxElpasedMSecs) {
+      if(vehicle.heartbeatTimer.elapsedMilliseconds > heartbeatMaxElpasedMSecs) {
         removeVehicles.add(vehicle);
       }
     }
 
     for(Vehicle vehicle in removeVehicles) {
-      disconnectVehicle(vehicle.vehicleId);
+      disconnectVehicle(vehicle.id);
     }
   }
 

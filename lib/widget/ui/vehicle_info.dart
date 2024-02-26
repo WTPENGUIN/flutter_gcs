@@ -27,7 +27,7 @@ class VehicleInfo extends StatelessWidget {
           Expanded(
             flex: 1,
             child: Selector<MultiVehicle, double?>(
-              selector: (context, multiVehicle) => multiVehicle.activeVehicle()?.vehicleRelativeAltitude,
+              selector: (context, multiVehicle) => multiVehicle.activeVehicle()?.alt,
               builder: (context, altitude, _) {
                 return StatusWidget(
                   title: "고도",
@@ -41,7 +41,7 @@ class VehicleInfo extends StatelessWidget {
           Expanded(
             flex: 1,
             child: Selector<MultiVehicle, int?>(
-              selector: (context, multiVehicle) => multiVehicle.activeVehicle()?.vehicleHeading,
+              selector: (context, multiVehicle) => multiVehicle.activeVehicle()?.heading,
               builder: (context, heading, _) {
                 return StatusWidget(
                   title: '방향',
@@ -55,7 +55,7 @@ class VehicleInfo extends StatelessWidget {
           Expanded(
             flex: 1,
             child: Selector<MultiVehicle, double?>(
-              selector: (context, multiVehicle) => multiVehicle.activeVehicle()?.groundSpeed,
+              selector: (context, multiVehicle) => multiVehicle.activeVehicle()?.hSpeed,
               builder: (context, verticalSpeed, _) {
                 return StatusWidget(
                   title: '수평 속도',
@@ -69,7 +69,7 @@ class VehicleInfo extends StatelessWidget {
           Expanded(
             flex: 1,
             child: Selector<MultiVehicle, double?>(
-              selector: (context, multiVehicle) => multiVehicle.activeVehicle()?.climbRate,
+              selector: (context, multiVehicle) => multiVehicle.activeVehicle()?.vSpeed,
               builder: (context, horizentalSpeed, _) {
                 return StatusWidget(
                   title: '수직 속도',
@@ -83,7 +83,7 @@ class VehicleInfo extends StatelessWidget {
           Expanded(
             flex: 1,
             child: Selector<MultiVehicle, String?>(
-              selector: (context, multiVehicle) => multiVehicle.activeVehicle()?.flightMode,
+              selector: (context, multiVehicle) => multiVehicle.activeVehicle()?.mode,
               builder: (context, mode, _) {
                 return StatusWidget(
                   title: '비행 모드',

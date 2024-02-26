@@ -42,43 +42,43 @@ class _MapWindowMobileState extends State<MapWindowMobile> {
         _mapController!.clearOverlays();
       } else {
         for(var vehicle in multivehicle.allVehicles()) {
-          double markerLat = vehicle.vehicleLat;
-          double markerLon = vehicle.vehicleLon;
+          double markerLat = vehicle.lat;
+          double markerLon = vehicle.lon;
 
           if((markerLat != 0) && (markerLon != 0)) {
             // 기체 마커
             var marker = NMarker(
-              id: vehicle.vehicleId.toString(),
+              id: vehicle.id.toString(),
               icon: const NOverlayImage.fromAssetImage('assets/image/VehicleIcon.png'),
               size: const Size(70, 70),
               anchor: const NPoint(0.5, 0.5), // 기본 마커는 위로 살짝 올라와 있기 때문에 재조정
-              position: NLatLng(vehicle.vehicleLat, vehicle.vehicleLon),
+              position: NLatLng(vehicle.lat, vehicle.lon),
               caption: NOverlayCaption(
-                text: '기체 ${vehicle.vehicleId} (${(vehicle.armed) ? '시동' : '꺼짐'})',
-                color: (multivehicle.getActiveId == vehicle.vehicleId) ? Colors.white : Colors.black,
-                haloColor: (multivehicle.getActiveId == vehicle.vehicleId) ? Colors.red : Colors.white,
+                text: '기체 ${vehicle.id} (${(vehicle.armed) ? '시동' : '꺼짐'})',
+                color: (multivehicle.getActiveId == vehicle.id) ? Colors.white : Colors.black,
+                haloColor: (multivehicle.getActiveId == vehicle.id) ? Colors.red : Colors.white,
                 textSize: 15
               ),
               subCaption: NOverlayCaption(
-                text: '모드 ${vehicle.flightMode}',
-                color: (multivehicle.getActiveId == vehicle.vehicleId) ? Colors.white : Colors.black,
-                haloColor: (multivehicle.getActiveId == vehicle.vehicleId) ? Colors.red : Colors.white,
+                text: '모드 ${vehicle.mode}',
+                color: (multivehicle.getActiveId == vehicle.id) ? Colors.white : Colors.black,
+                haloColor: (multivehicle.getActiveId == vehicle.id) ? Colors.red : Colors.white,
                 textSize: 13
               )
             );
             marker.setOnTapListener((_) {
-              multivehicle.setActiceId = vehicle.vehicleId;
+              multivehicle.setActiceId = vehicle.id;
             });
 
             // 마커 오버레이에 추가
             _mapController!.addOverlay(marker);
           }
 
-          if(vehicle.trajectoryList.isNotEmpty && (vehicle.trajectoryList.length >= 2)) {
+          if(vehicle.route.isNotEmpty && (vehicle.route.length >= 2)) {
             // 기체 이동 경로
             var path = NPolylineOverlay(
-              id: vehicle.vehicleId.toString(),
-              coords: convertNaverPoint(vehicle.trajectoryList),
+              id: vehicle.id.toString(),
+              coords: convertNaverPoint(vehicle.route),
               color: Colors.red,
               width: 2,
               lineJoin: NLineJoin.round,
@@ -99,7 +99,7 @@ class _MapWindowMobileState extends State<MapWindowMobile> {
       var currentVehicle = MultiVehicle().activeVehicle();
       
       if(currentVehicle != null) {
-        if(currentVehicle.isFlying) {          
+        if(currentVehicle.isFly) {          
           // 지도에 있던 기존 마커 제거 후 새로운 마커 추가
           _mapController!.deleteOverlay(const NOverlayInfo(type: NOverlayType.marker, id: 'clickedMarker'));
           var locationMarker = NMarker(
@@ -116,7 +116,7 @@ class _MapWindowMobileState extends State<MapWindowMobile> {
           _mapController!.addOverlay(locationMarker);
           
           // 클릭 포인트로 이동 명령 내리기
-          currentVehicle.vehicleGuidedModeGotoLocation(LatLng(coord.latitude, coord.longitude));
+          currentVehicle.goto(LatLng(coord.latitude, coord.longitude));
 
           // 버튼 눌리지 않은 상태로 설정
           setState(() {

@@ -23,7 +23,7 @@ class _FlightModeMenuState extends State<FlightModeMenu> {
       controller: _controller,
       buttonBuilder:(BuildContext context, Function() onTap) {
         return Selector<MultiVehicle, String?>(
-          selector: (context, multiVehicle) => multiVehicle.activeVehicle()?.flightMode,
+          selector: (context, multiVehicle) => multiVehicle.activeVehicle()?.mode,
           builder: (context, flightMode, _) {
             // 현재 선택된 기체의 비행 모드를 가져와서 위젯을 빌드
             return FlightButtonWidget(
@@ -36,7 +36,7 @@ class _FlightModeMenuState extends State<FlightModeMenu> {
       },
       menuBuilder:(BuildContext context, double? width) {
         return Selector<MultiVehicle, int?>(
-          selector: (context, multiVehicle) => multiVehicle.activeVehicle()?.autopilotType,
+          selector: (context, multiVehicle) => multiVehicle.activeVehicle()?.firmware,
           builder: (context, currentType, _) {
             // 현재 선택된 기체의 펌웨어 정보를 가져와서 해당 펌웨어에 맞는 비행 모드 목록 위젯을 빌드
             return SingleChildScrollView(
@@ -141,7 +141,7 @@ class FlightModeButton extends StatelessWidget {
               onTap: () {
                 Vehicle? activeArduVehicle = MultiVehicle().activeVehicle();
                 if(activeArduVehicle != null) {
-                  activeArduVehicle.setFlightMode(flightmode.modeName);
+                  activeArduVehicle.setMode(flightmode.modeName);
                 }
 
                 // 메뉴 닫기
@@ -161,7 +161,7 @@ class FlightModeButton extends StatelessWidget {
               onTap: () {
                 Vehicle? activePX4Vehicle = MultiVehicle().activeVehicle();
                 if(activePX4Vehicle != null) {
-                  activePX4Vehicle.setFlightMode(flightmode.modeName);
+                  activePX4Vehicle.setMode(flightmode.modeName);
                 }
 
                 // 메뉴 닫기

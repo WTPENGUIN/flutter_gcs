@@ -17,77 +17,110 @@ const uint16_t uint16max = 65535;
 class Vehicle {
   Logger logger = Logger();
 
-  // Vehicle basic information
-  int          vehicleId     = 0;
-  MavType      vehicleType   = mavTypeGeneric;
-  MavAutopilot autopilotType = mavAutopilotGeneric;
+  // 기체의 기본 정보
+  int          _vehicleId     = 0;
+  MavType      _vehicleType   = mavTypeGeneric;
+  MavAutopilot _autopilotType = mavAutopilotGeneric;
 
-  // HeartBeat
-  uint8_t  baseMode   = 0;
-  uint32_t customMode = 0;
-  String   flightMode = '';
-  bool     armed      = false;
-  bool     isFlying   = false;
+  int          get id       => _vehicleId;
+  MavType      get type     => _vehicleType;
+  MavAutopilot get firmware => _autopilotType;
 
-  // Global Position Int
-  double vehicleLat = 0.0;
-  double vehicleLon = 0.0;
-  double vehicleRelativeAltitude = 0.0;
-  int    vehicleHeading = 0;
+  // HeartBeat 메세지 정보
+  uint8_t  _baseMode   = 0;
+  uint32_t _customMode = 0;
+  String   _flightMode = '';
+  bool     _armed      = false;
+  bool     _isFlying   = false;
 
-  // Trajectory Point in vehicle
-  List<LatLng> trajectoryList = [];
+  String get mode  => _flightMode;
+  bool   get armed => _armed;
+  bool   get isFly => _isFlying;
 
-  // Home Position
-  double homeLat = 0.0;
-  double homeLon = 0.0;
-  double homeAlt = 0.0;
+  // Global_Position_Int 메세지 정보
+  double _vehicleLat = 0.0;
+  double _vehicleLon = 0.0;
+  double _vehicleRelativeAltitude = 0.0;
+  int    _vehicleHeading = 0;
 
-  // distance to home
-  double distanceToHome = 0.0;
+  double get lat     => _vehicleLat;
+  double get lon     => _vehicleLon;
+  double get alt     => _vehicleRelativeAltitude;
+  int    get heading => _vehicleHeading;
+
+  // 기체의 이동 경로 리스트
+  final List<LatLng> _trajectoryList = [];
+  List<LatLng> get route => _trajectoryList;
+
+  // Home_Position 메세지 정보
+  double _homeLat = 0.0;
+  double _homeLon = 0.0;
+  double _homeAlt = 0.0;
+
+  double get hLat => _homeLat;
+  double get hLon => _homeLon;
+  double get hAlt => _homeAlt;
+
+  // 이륙 위치에서 현재 기체 위치까지의 거리
+  double _distanceToHome = 0.0;
+  double get distanceHome => _distanceToHome;
   
-  // Attitude
-  double roll = 0.0;
-  double pitch = 0.0;
-  double yaw = 0.0;
+  // Attitude 메세지 정보
+  double _roll = 0.0;
+  double _pitch = 0.0;
+  double _yaw = 0.0;
 
-  // GPS_Raw_Int(HDOP, VDOP)
-  double altitudeMSL = double.nan;
-  double eph = 0; // HDOP
-  double epv = 0; // VDOP
-  int satVisible = 0;
-  GpsFixType gpsfixType = gpsFixTypeNoGps;
-  String gpsfixTypeString = '';
+  double get roll  => _roll;
+  double get pitch => _pitch;
+  double get yaw   => _yaw;
 
-  // VRF_HUD
-  double climbRate = 0.0;
-  double groundSpeed = 0.0;
+  // GPS_Raw_Int 메세지 정보
+  double _eph = 0; // HDOP
+  double _epv = 0; // VDOP
+  double altitudeMSL = double.nan; // 해발고도
+  int   _sattleVisible = 0;
+  GpsFixType _gpsfixType = gpsFixTypeNoGps;
+  String _gpsfixTypeString = '';
 
-  // StatusText
+  double get hdop    => _eph;
+  double get vdop    => _epv;
+  int    get gpsSat  => _sattleVisible;
+  String get fixType => _gpsfixTypeString;
+
+  // Vrf_Hud 메세지 정보
+  double _climbRate = 0.0;
+  double _groundSpeed = 0.0;
+
+  double get vSpeed => _climbRate;
+  double get hSpeed => _groundSpeed;
+
+  // StatusText 메세지 정보
   int _statusTextLastId = 0;
   int _statusTextLastChunkSeq = 0;
   final List<int> _statusChunkText = [];
 
-  // Heartbeat 타이머
-  final heartbeatElapsedTimer = Stopwatch();
+  // 연결 끊어짐 감지 타이머
+  // Heartbeat 메세지 수신 시, 타이머 시간 초기화
+  final Stopwatch _heartbeatElapsedTimer = Stopwatch();
+  Stopwatch get heartbeatTimer => _heartbeatElapsedTimer;
 
-  // Vehicle 생성자
+  // Vehicle 인스턴스 생성자
   Vehicle(int id, MavType type, MavAutopilot autoType) {
-    vehicleId = id;
-    vehicleType = type;
-    autopilotType = autoType;
-    heartbeatElapsedTimer.start(); // 하트비트 타이머 시작
+    _vehicleId = id;
+    _vehicleType = type;
+    _autopilotType = autoType;
+    _heartbeatElapsedTimer.start(); // 연결 끊어짐 감지 타이머 시작ㄴ
   }
 
-  // 현재 비행모드 파싱
+  // 현재 기체의 비행모드를 가져오는 함수
   String getFlightModes(uint8_t baseMode, uint32_t customMode) {
     String flightMode = 'Unknown';
 
     bool flag = (baseMode & mavModeFlagCustomModeEnabled) == 0 ? false : true;
     if(flag) {
-      if(autopilotType == mavAutopilotArdupilotmega) {
+      if(_autopilotType == mavAutopilotArdupilotmega) {
         flightMode = apmGetFlightModeName(customMode);
-      } else { // PX4
+      } else {
         flightMode = px4GetFlightModeName(customMode);
       }
     }
@@ -95,8 +128,8 @@ class Vehicle {
     return flightMode;
   }
 
-  // 시동 명령어 전송
-  void vehicleArm(bool armed) {
+  // 기체에 시동 명령어 전송
+  void arm(bool armed) {
     ConnectionManager link = ConnectionManager();
 
     var command = CommandLong(
@@ -108,7 +141,7 @@ class Vehicle {
       param6: 0,
       param7: 0,
       command: mavCmdComponentArmDisarm,
-      targetSystem: vehicleId,
+      targetSystem: _vehicleId,
       targetComponent: mavCompIdAll,
       confirmation: 0
     );
@@ -117,20 +150,20 @@ class Vehicle {
     link.writeMessageLink(mavlinkFrame);
   }
 
-  // 이륙 명령어
-  void vehicleTakeOff(double alt) {
+  // 기체에 이륙 명령어 전송
+  void takeOff(double alt) {
     // AMSL 고도가 잡히지 않으면(GPS 미수신) 이륙 거부
     if(altitudeMSL.isNaN) {
-      // TODO : 이륙 거부 메세지
+      // TODO : 이륙 거부 메세지를 출력
       return;
     }
     
     // 펌웨어에 따라 이륙 명령어 작성
     ConnectionManager link = ConnectionManager();
-    switch (autopilotType) {
+    switch (_autopilotType) {
       case mavAutopilotArdupilotmega:
         _ardupilotSetFlightMode("GUIDED"); // 모드 변경
-        vehicleArm(true);                  // 시동 걸기
+        arm(true);                  // 시동 걸기
         var command = CommandLong(
           param1: 0.0,
           param2: 0.0,
@@ -140,7 +173,7 @@ class Vehicle {
           param6: 0.0,
           param7: (alt > 10) ? alt : 10,
           command: mavCmdNavTakeoff,
-          targetSystem: vehicleId,
+          targetSystem: _vehicleId,
           targetComponent: mavCompIdAll,
           confirmation: 0
         );
@@ -158,7 +191,7 @@ class Vehicle {
           param6: double.nan,
           param7: alt + altitudeMSL,
           command: mavCmdNavTakeoff,
-          targetSystem: vehicleId,
+          targetSystem: _vehicleId,
           targetComponent: mavCompIdAll,
           confirmation: 0
         );
@@ -171,9 +204,9 @@ class Vehicle {
     }    
   }
 
-  // 착륙 명령어
-  void vehicleLand() {
-    switch (autopilotType) {
+  // 기체에 착륙 명령어 전송
+  void land() {
+    switch (_autopilotType) {
       case mavAutopilotArdupilotmega:
         _ardupilotSetFlightMode("LAND");
         break;
@@ -185,9 +218,9 @@ class Vehicle {
     } 
   }
 
-  // RTL 명령어
-  void vehicleRTL() {
-    switch (autopilotType) {
+  // 기체에 귀환 명령어 전송
+  void rtl() {
+    switch (_autopilotType) {
       case mavAutopilotArdupilotmega:
         _ardupilotSetFlightMode("RTL");
         break;
@@ -199,9 +232,9 @@ class Vehicle {
     }     
   }
 
-  // Guided Mode로 원하는 위치 보내기
-  void vehicleGuidedModeGotoLocation(LatLng location) {
-    switch (autopilotType) {
+  // 기체에 이동 명령어 전송
+  void goto(LatLng location) {
+    switch (_autopilotType) {
       case mavAutopilotArdupilotmega:
         var command = MissionItem(
           param1: 0,
@@ -210,10 +243,10 @@ class Vehicle {
           param4: 0,
           x: location.latitude,
           y: location.longitude,
-          z: vehicleRelativeAltitude,
+          z: _vehicleRelativeAltitude,
           seq: 0,
           command: mavCmdNavWaypoint,
-          targetSystem: vehicleId,
+          targetSystem: _vehicleId,
           targetComponent: mavCompIdAll,
           frame: mavFrameGlobalRelativeAlt,
           current: 2,
@@ -235,7 +268,7 @@ class Vehicle {
           param6: location.longitude,
           param7: altitudeMSL.toDouble(),
           command: mavCmdDoReposition,
-          targetSystem: vehicleId,
+          targetSystem: _vehicleId,
           targetComponent: mavCompIdAll,
           confirmation: 0
         );
@@ -245,12 +278,12 @@ class Vehicle {
         break;
       default:
         // TODO : 미지원 펌웨어 비행모드 전환 명령어 예외 처리
-    } 
+    }
   }
 
-  // 비행모드 전환 명령 내리기
-  void setFlightMode(String flightMode) {
-    switch (autopilotType) {
+  // 기체의 비행모드 전환
+  void setMode(String flightMode) {
+    switch (_autopilotType) {
       case mavAutopilotArdupilotmega:
         _ardupilotSetFlightMode(flightMode);
         break;
@@ -272,7 +305,7 @@ class Vehicle {
     }
 
     uint8_t setBaseMode = mavModeFlagCustomModeEnabled;
-    uint8_t newBaseMode = baseMode & ~mavModeFlagDecodePositionCustomMode;
+    uint8_t newBaseMode = _baseMode & ~mavModeFlagDecodePositionCustomMode;
     newBaseMode |= setBaseMode;
     
     // PX4 메인모드, 서브모드를 비트연산으로 커스텀 모드에 정보 담기
@@ -283,10 +316,11 @@ class Vehicle {
       ..[0] = 0;
     uint32_t newCustomMode = list.buffer.asByteData().getUint32(0, Endian.little);
 
-    // PX4 not support MAV_CMD_DO_SET_MODE command
+    // PX4에서는 MAV_CMD_DO_SET_MODE 명령어를 지원하지 않음
+    // SET_MODE 명령어 대신 사용
     var command = SetMode(
       customMode: newCustomMode,
-      targetSystem: vehicleId,
+      targetSystem: _vehicleId,
       baseMode: newBaseMode
     );
 
@@ -307,7 +341,7 @@ class Vehicle {
     uint8_t baseMode = mavModeFlagCustomModeEnabled;
     uint8_t customMode = mode.customMode;
 
-    // Ardupilot support MAV_CMD_DO_SET_MODE command
+    // Ardupilot에서는 MAV_CMD_DO_SET_MODE 명령어를 지원
     var command = CommandLong(
       param1: baseMode.toDouble(),
       param2: customMode.toDouble(),
@@ -317,7 +351,7 @@ class Vehicle {
       param6: 0.0,
       param7: 0.0,
       command: mavCmdDoSetMode,
-      targetSystem: vehicleId,
+      targetSystem: _vehicleId,
       targetComponent: mavCompIdAll,
       confirmation: 0
     );
@@ -363,12 +397,12 @@ class Vehicle {
   }
 
   void _updateArmed(bool newArmed) {
-    if(armed != newArmed) {
-      armed = newArmed;
+    if(_armed != newArmed) {
+      _armed = newArmed;
 
       // 시동 꺼짐 -> 시동 상태로 변경 되면 새로운 이동 경로를 그리기 위해 리스트 초기화
-      if(armed) {
-        trajectoryList.clear();
+      if(_armed) {
+        _trajectoryList.clear();
       }
     }
   }
@@ -376,75 +410,76 @@ class Vehicle {
   void _handleHeartBeat(MavlinkFrame frame) {
     var heartbeat = frame.message as Heartbeat;
 
-    baseMode = heartbeat.baseMode;
-    customMode = heartbeat.customMode;
+    _baseMode = heartbeat.baseMode;
+    _customMode = heartbeat.customMode;
 
-    // 하트비트에서 시동 여부 추출
+    // HeartBeat 메세지에서 시동 여부 얻기
     bool newArmed = (heartbeat.baseMode & mavModeFlagDecodePositionSafety) == 0 ? false : true;
     _updateArmed(newArmed);
     
-    // 하트비트에서 비행 모드 추출
-    flightMode = getFlightModes(baseMode, customMode);
+    // HeartBeat 메세지에서 비행 모드 얻기
+    _flightMode = getFlightModes(_baseMode, _customMode);
 
-    // 기체가 비행 중인지 추출(Ardupilot만 해당)
-    if(autopilotType == mavAutopilotArdupilotmega) {
+    // 기체가 비행 중인지 감지(Ardupilot만 해당)
+    if(_autopilotType == mavAutopilotArdupilotmega) {
       bool flying = false;
 
-      if(armed) {
+      if(_armed) {
         flying = heartbeat.systemStatus == mavStateActive;
 
-        if(!flying && isFlying) {
+        if(!flying && _isFlying) {
           flying = ((heartbeat.systemStatus == mavStateCritical) && (heartbeat.systemStatus == mavStateEmergency));
         } 
       }
-      isFlying = flying;
+      _isFlying = flying;
     }
     
-    // 하트비트 도착할 때마다 하트비트 타이머 리셋
-    heartbeatElapsedTimer.reset(); 
+    // Heartbeat 메세지 도착할 때마다 연결 끊어짐 감지 타이머 시간 초기화
+    _heartbeatElapsedTimer.reset();
   }
 
   void _handleGlobalPositionInt(MavlinkFrame frame) {
     var positionInt = frame.message as GlobalPositionInt;
 
-    vehicleLat = (positionInt.lat == 0) ? 0.0 : (positionInt.lat / 1e7);
-    vehicleLon = (positionInt.lon == 0) ? 0.0 : (positionInt.lon / 1e7);
-    vehicleRelativeAltitude = (positionInt.relativeAlt / 1000.0);
+    _vehicleLat = (positionInt.lat == 0) ? 0.0 : (positionInt.lat / 1e7);
+    _vehicleLon = (positionInt.lon == 0) ? 0.0 : (positionInt.lon / 1e7);
+    _vehicleRelativeAltitude = (positionInt.relativeAlt / 1000.0);
 
     // 시동 상태일 때, 이동 경로 포인트에 추가
-    if(armed) {
-      LatLng curPoint = LatLng(vehicleLat, vehicleLon);
+    if(_armed) {
+      LatLng curPoint = LatLng(_vehicleLat, _vehicleLon);
 
-      // 처음 시동이 걸린 상태면, 리스트에 추가
-      if(trajectoryList.isEmpty) {
-        trajectoryList.add(curPoint);
-        trajectoryList.add(curPoint); // 네이버 맵에서 경로를 초기화해주기 위한 트릭
+      // 처음 시동이 걸린 상태면, 현재 위치를 리스트에 추가
+      if(_trajectoryList.isEmpty) {
+        _trajectoryList.add(curPoint);
+        _trajectoryList.add(curPoint); // 네이버 맵에서 경로를 초기화해주기 위한 트릭
       } else {
         var distancePrevious = const Distance().as(
           LengthUnit.Meter,
           curPoint,
-          trajectoryList.last
+          _trajectoryList.last
         );
 
         // 성능을 위해, 1m 이상으로 움직였을 때 포인트에 추가
         if(distancePrevious > 1.0) {
-          trajectoryList.add(curPoint);
+          _trajectoryList.add(curPoint);
         }
       }
     }
 
-    // 홈과 현재 사이 거리 구하기
-    if((vehicleLat != 0 && vehicleLon != 0) && (homeLat != 0 && homeLon != 0)) {
+    // 이륙 위치와 현재 기체 사이의 거리 구하기
+    if((_vehicleLat != 0 && _vehicleLon != 0) && (_homeLat != 0 && _homeLon != 0)) {
       const Distance distance = Distance();
 
-      distanceToHome = distance.as(
+      _distanceToHome = distance.as(
         LengthUnit.Meter,
-        LatLng(vehicleLat, vehicleLon),
-        LatLng(homeLat, homeLon)
+        LatLng(_vehicleLat, _vehicleLon),
+        LatLng(_homeLat, _homeLon)
       );
     }
   }
 
+  // 각도 범위 유지
   float _limitAngleToPMPIf(double angle) {
     if(angle > (-20 * mathPI) && angle < (20 * mathPI)) {
       while(angle > (mathPI + mathEpsilon)) {
@@ -455,15 +490,10 @@ class Vehicle {
         angle += 2.0 + mathPI;
       }
     } else {
-      // 근사치 계산
       angle = angle % mathPI;
     }
 
     return angle;
-  }
-
-  double _radianToDegrees(double radians) {
-    return radians * (180.0 / mathPI);
   }
 
   void _handleAttitude(MavlinkFrame frame) {
@@ -471,56 +501,59 @@ class Vehicle {
 
     double rollCal, pitchCal, yawCal;
 
+    // 각도 범위를 한정
     rollCal  = _limitAngleToPMPIf(attitude.roll);
     pitchCal = _limitAngleToPMPIf(attitude.pitch);
     yawCal   = _limitAngleToPMPIf(attitude.yaw);
 
-    rollCal  = _radianToDegrees(rollCal);
-    pitchCal = _radianToDegrees(pitchCal);
-    yawCal   = _radianToDegrees(yawCal);
+    // 라디안을 각도로 변환
+    rollCal  = rollCal  * (180.0 / mathPI);
+    pitchCal = pitchCal * (180.0 / mathPI);
+    yawCal   = yawCal   * (180.0 / mathPI);
 
+    // yaw가 나타내는 범위 한정(0 ~ 360)
     if(yawCal < 0.0) {
       yawCal += 360.0;
     }
 
-    roll  = rollCal;
-    pitch = pitchCal;
-    yaw   = yawCal;
-    vehicleHeading = yawCal.truncate(); // 정수로 자르기(360도를 0도로 표시하기 위해)
+    _roll  = rollCal;
+    _pitch = pitchCal;
+    _yaw   = yawCal;
+    _vehicleHeading = yawCal.truncate(); // 정수로 자르기(360도를 0도로 표시하기 위해)
   }
 
   void _handleGpsRawInt(MavlinkFrame frame) {
     var gpsrawint = frame.message as GpsRawInt;
 
-    eph = (gpsrawint.eph == uint16max ? double.nan : (gpsrawint.eph / 100.0));
-    epv = (gpsrawint.epv == uint16max ? double.nan : (gpsrawint.epv / 100.0));
-    satVisible = gpsrawint.satellitesVisible;
+    _eph = (gpsrawint.eph == uint16max ? double.nan : (gpsrawint.eph / 100.0));
+    _epv = (gpsrawint.epv == uint16max ? double.nan : (gpsrawint.epv / 100.0));
+    _sattleVisible = gpsrawint.satellitesVisible;
 
-    gpsfixType = gpsrawint.fixType;
-    switch (gpsfixType) {
+    _gpsfixType = gpsrawint.fixType;
+    switch (_gpsfixType) {
       case gpsFixTypeNoFix:
-        gpsfixTypeString = "Not Fixed";
+        _gpsfixTypeString = "Not Fixed";
         break;
       case gpsFixType2dFix:
-        gpsfixTypeString = "2D Fix";
+        _gpsfixTypeString = "2D Fix";
         break;
       case gpsFixType3dFix:
-        gpsfixTypeString = "3D Fix";
+        _gpsfixTypeString = "3D Fix";
         break;
       case gpsFixTypeDgps:
-        gpsfixTypeString = "DGPS";
+        _gpsfixTypeString = "DGPS";
         break;
       case gpsFixTypeRtkFloat:
-        gpsfixTypeString = "RTK Float";
+        _gpsfixTypeString = "RTK Float";
         break;
       case gpsFixTypeRtkFixed:
-        gpsfixTypeString = "RTK Fix";
+        _gpsfixTypeString = "RTK Fix";
         break;   
       default:
-        gpsfixTypeString = "-";
+        _gpsfixTypeString = "-";
     }
 
-    if(gpsfixType >= gpsFixType3dFix) {
+    if(_gpsfixType >= gpsFixType3dFix) {
       altitudeMSL = gpsrawint.alt / 1000.0;
     }
   }
@@ -528,20 +561,16 @@ class Vehicle {
   void _handleVfrHud(MavlinkFrame frame) {
     var vfrhud = frame.message as VfrHud;
     
-    climbRate = vfrhud.climb;
-    groundSpeed = vfrhud.groundspeed;
+    _climbRate = vfrhud.climb;
+    _groundSpeed = vfrhud.groundspeed;
   }
 
   void _handleHomePosition(MavlinkFrame frame) {
     var homeposition = frame.message as HomePosition;
 
-    homeLat = (homeposition.latitude  / 1e7);
-    homeLon = (homeposition.longitude / 1e7);
-    homeAlt = (homeposition.altitude  / 1000.0);
-  }
-
-  void _handleCommandAck(MavlinkFrame frame) {
-    //var commandack = frame.message as CommandAck;
+    _homeLat = (homeposition.latitude  / 1e7);
+    _homeLon = (homeposition.longitude / 1e7);
+    _homeAlt = (homeposition.altitude  / 1000.0);
   }
 
   void _handleExtendedSysState(MavlinkFrame frame) {
@@ -549,18 +578,23 @@ class Vehicle {
 
     switch (extendedSysState.landedState) {
       case mavLandedStateOnGround:
-        isFlying = false;
+        _isFlying = false;
         break;
       case mavLandedStateTakeoff:
       case mavLandedStateInAir:
-        isFlying = true;
+        _isFlying = true;
       case mavLandedStateLanding:
-        isFlying = false;
+        _isFlying = false;
       default:
         break;
     }
   }
 
+  void _handleCommandAck(MavlinkFrame frame) {
+    //var commandack = frame.message as CommandAck;
+  }
+
+  // TODO : 청크화 메세지 조립
   void _handleStatusText(MavlinkFrame frame) {
     var statusText = frame.message as Statustext;
     
