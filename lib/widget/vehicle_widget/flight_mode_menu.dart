@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:dart_mavlink/dialects/ardupilotmega.dart';
-import 'package:peachgs_flutter/model/ardupilot.dart';
-import 'package:peachgs_flutter/model/px4.dart';
+
+import 'package:peachgs_flutter/model/firmware/ardupilot.dart';
+import 'package:peachgs_flutter/model/firmware/px4.dart';
 import 'package:peachgs_flutter/model/vehicle.dart';
 import 'package:peachgs_flutter/model/multi_vehicle_manage.dart';
 import 'package:peachgs_flutter/widget/component_widget/overlayportal_drop_menu.dart';

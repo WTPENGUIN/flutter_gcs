@@ -1,10 +1,11 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+
 import 'package:peachgs_flutter/widget/ui/top_bar.dart';
-import 'package:peachgs_flutter/screens/map_page_desktop.dart';
-import 'package:peachgs_flutter/screens/map_page_mobile.dart';
 import 'package:peachgs_flutter/widget/component_widget/tool_button.dart';
 import 'package:peachgs_flutter/widget/ui/vehicle_info.dart';
+import 'package:peachgs_flutter/screens/map_page_desktop.dart';
+import 'package:peachgs_flutter/screens/map_page_mobile.dart';
 import 'package:peachgs_flutter/screens/video_page.dart';
 
 class MainRootWindow extends StatefulWidget {
@@ -23,7 +24,7 @@ class _MainRootWindowState extends State<MainRootWindow> {
     });
   }
 
-  // 모바일 여부 확인
+  // 실행 환경이 모바일인지 반환
   bool _isMobile() {
     if(Platform.isAndroid || Platform.isIOS) {
       return true;

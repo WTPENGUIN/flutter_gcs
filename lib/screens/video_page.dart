@@ -1,9 +1,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:webview_flutter/webview_flutter.dart';
+import 'package:motion_toast/motion_toast.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
-import 'package:motion_toast/motion_toast.dart';
+import 'package:webview_flutter/webview_flutter.dart';
+
 import 'package:peachgs_flutter/widget/modal/video_setting_modal.dart';
 import 'package:peachgs_flutter/widget/component_widget/outline_text.dart';
 import 'package:peachgs_flutter/widget/component_widget/resize_handle_container.dart';
@@ -24,8 +25,8 @@ class _VideoPageStete extends State<VideoPage> {
   late final Player _mediaPlayer = Player();
   late final VideoController _mediaController = VideoController(_mediaPlayer);
 
-  bool play = false;       // 재생 상태 저장
-  bool isWebView = false;  // 웹뷰 판단
+  bool play = false;      // 재생 상태 저장
+  bool isWebView = false; // 웹뷰 여부
 
   bool isMobile() {
     return (Platform.isAndroid || Platform.isIOS);
@@ -91,7 +92,7 @@ class _VideoPageStete extends State<VideoPage> {
       isWebView = true;
       _webViewController.loadRequest(Uri.parse(url));
     } else {
-      // RTSP => RTSP 플레이어
+      // RTSP => 미디어 플레이어
       isWebView = false;
       _mediaPlayer.open(
         Media(

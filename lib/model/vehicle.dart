@@ -5,8 +5,9 @@ import 'package:latlong2/latlong.dart';
 import 'package:dart_mavlink/types.dart';
 import 'package:dart_mavlink/mavlink.dart';
 import 'package:dart_mavlink/dialects/ardupilotmega.dart';
-import 'package:peachgs_flutter/model/px4.dart';
-import 'package:peachgs_flutter/model/ardupilot.dart';
+
+import 'package:peachgs_flutter/model/firmware/px4.dart';
+import 'package:peachgs_flutter/model/firmware/ardupilot.dart';
 import 'package:peachgs_flutter/utils/connection_manager.dart';
 import 'package:peachgs_flutter/utils/mavlink_protocol.dart';
 

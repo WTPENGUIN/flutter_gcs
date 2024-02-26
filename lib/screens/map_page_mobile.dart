@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
+
 import 'package:peachgs_flutter/model/multi_vehicle_manage.dart';
 import 'package:peachgs_flutter/widget/vehicle_widget/fly_buttons.dart';
 
@@ -21,9 +22,9 @@ class _MapWindowMobileState extends State<MapWindowMobile> {
   late final MultiVehicle multivehicle;
   late Timer _updateLocTimer;
 
-  bool _isGotoButtonPressed = false;
+  bool _buttonPressed = false;
 
-  List<NLatLng> convertNaverPoint(List<LatLng> coords) {
+  List<NLatLng> _convert(List<LatLng> coords) {
     List<NLatLng> list = [];
     for(LatLng coord in coords) {
       list.add(
@@ -34,7 +35,7 @@ class _MapWindowMobileState extends State<MapWindowMobile> {
     return list;
   }
 
-  void drawVehicleMarker() {
+  void _drawVehicle() {
     if(_mapController != null) {
       var vehicleList = multivehicle.allVehicles();
 
@@ -78,7 +79,7 @@ class _MapWindowMobileState extends State<MapWindowMobile> {
             // 기체 이동 경로
             var path = NPolylineOverlay(
               id: vehicle.id.toString(),
-              coords: convertNaverPoint(vehicle.route),
+              coords: _convert(vehicle.route),
               color: Colors.red,
               width: 2,
               lineJoin: NLineJoin.round,
@@ -94,8 +95,8 @@ class _MapWindowMobileState extends State<MapWindowMobile> {
   }
 
   // 이동 명령어 함수
-  void gotoVehicleGuided(NLatLng coord) {
-    if(_isGotoButtonPressed && _mapController != null) {
+  void _goto(NLatLng coord) {
+    if(_buttonPressed && _mapController != null) {
       var currentVehicle = MultiVehicle().activeVehicle();
       
       if(currentVehicle != null) {
@@ -120,7 +121,7 @@ class _MapWindowMobileState extends State<MapWindowMobile> {
 
           // 버튼 눌리지 않은 상태로 설정
           setState(() {
-            _isGotoButtonPressed = false;
+            _buttonPressed = false;
           });
         }
       }
@@ -133,7 +134,7 @@ class _MapWindowMobileState extends State<MapWindowMobile> {
     multivehicle = context.read<MultiVehicle>();
 
     _updateLocTimer = Timer.periodic(const Duration(milliseconds: 200), (_) {
-      drawVehicleMarker();
+      _drawVehicle();
     });
   }
 
@@ -163,7 +164,7 @@ class _MapWindowMobileState extends State<MapWindowMobile> {
           },
           onMapTapped: (_, latLng) {
             // 지도 클릭 시, 기체 이동 명령 내리기
-            gotoVehicleGuided(latLng);
+            _goto(latLng);
           },
         ),
 
@@ -172,10 +173,10 @@ class _MapWindowMobileState extends State<MapWindowMobile> {
           top: 10,
           left: 10,
           child: FlyButtons(
-            buttonState: _isGotoButtonPressed,
+            buttonState: _buttonPressed,
             mapSubmit: () {
               setState(() {
-                _isGotoButtonPressed = !_isGotoButtonPressed;
+                _buttonPressed = !_buttonPressed;
               });
             },
           )

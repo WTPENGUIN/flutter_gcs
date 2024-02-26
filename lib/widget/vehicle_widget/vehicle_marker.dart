@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:peachgs_flutter/utils/utils.dart';
+
 import 'package:peachgs_flutter/widget/component_widget/outline_text.dart';
 
-// flutter_svg 패키지를 이용해 svg 이미지를 가져온다.
 class VehicleMarker extends StatelessWidget {
   final String route;
   final double degree;
@@ -38,8 +37,8 @@ class VehicleMarker extends StatelessWidget {
               angle: _degreesToRadians(degree),
               child: SvgPicture.asset(
                 route,
-                width: 40 * scaleSmallDevice(context),
-                height: 40 * scaleSmallDevice(context),
+                width: 40,
+                height: 40,
               ),
             ),
           ),
@@ -48,9 +47,9 @@ class VehicleMarker extends StatelessWidget {
             child: OutlineText(
               Text(
                 '기체 $vehicleId(${armed ? '시동' : '꺼짐'})',
-                style: TextStyle(
+                style: const TextStyle(
                   fontWeight: FontWeight.w300,
-                  fontSize: 10 * scaleSmallDevice(context),
+                  fontSize: 10,
                   color: Colors.white
                 ),
               ),
@@ -64,9 +63,9 @@ class VehicleMarker extends StatelessWidget {
             child: OutlineText(
               Text(
                 flightMode,
-                style: TextStyle(
+                style: const TextStyle(
                   fontWeight: FontWeight.w300,
-                  fontSize: 12 * scaleSmallDevice(context),
+                  fontSize: 12,
                   color: Colors.white
                 ),
               ),

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
 import 'package:logger/logger.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:peachgs_flutter/utils/utils.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
+
 import 'package:peachgs_flutter/utils/current_location.dart';
 import 'package:peachgs_flutter/model/multi_vehicle_manage.dart';
 import 'package:peachgs_flutter/widget/vehicle_widget/vehicle_marker.dart';
@@ -21,12 +21,12 @@ class _MapWindowDesktopState extends State<MapWindowDesktop> {
   Logger logger = Logger();
 
   late final MapController _mapController;
-  final List<Marker> guidedModeMarkers = [];
-  bool _isGotoButtonPressed = false;
+  final List<Marker> gotoMarker = [];
+  bool _buttonPressed = false;
 
-  CurrentLocation _loc = CurrentLocation();
+  final CurrentLocation _loc = CurrentLocation();
 
-  List<Marker> vehiclesPosition(MultiVehicle multiVehicleManager) {
+  List<Marker> _markers(MultiVehicle manager) {
     List<Marker> markers = [];
     for(var vehicle in MultiVehicle().allVehicles()) {
       double markerLat = vehicle.lat;
@@ -36,8 +36,8 @@ class _MapWindowDesktopState extends State<MapWindowDesktop> {
       markers.add(
         Marker(
           point: LatLng(markerLat, markerLon),
-          width: 70 * scaleSmallDevice(context),
-          height: 70 * scaleSmallDevice(context),
+          width: 70,
+          height: 70,
           child: GestureDetector(
             child: VehicleMarker(
               route: 'assets/image/VehicleIcon.svg',
@@ -45,11 +45,11 @@ class _MapWindowDesktopState extends State<MapWindowDesktop> {
               vehicleId: vehicle.id,
               flightMode: vehicle.mode,
               armed: vehicle.armed,
-              outlineColor: (multiVehicleManager.getActiveId == vehicle.id ? Colors.redAccent : Colors.grey),
+              outlineColor: (manager.getActiveId == vehicle.id ? Colors.redAccent : Colors.grey),
             ),
             onTap: () {
-              if(multiVehicleManager.getActiveId == vehicle.id) return;
-              multiVehicleManager.setActiceId = vehicle.id;
+              if(manager.getActiveId == vehicle.id) return;
+              manager.setActiceId = vehicle.id;
             },
           ),
         )
@@ -58,9 +58,9 @@ class _MapWindowDesktopState extends State<MapWindowDesktop> {
     return markers;
   }
 
-  List<Polyline> vehiclesTrajectoryList(MultiVehicle multiVehicleManager) {
+  List<Polyline> _route(MultiVehicle manager) {
     List<Polyline> lines = [];
-    for(var vehicle in MultiVehicle().allVehicles()) {
+    for(var vehicle in manager.allVehicles()) {
       if(vehicle.route.isEmpty) continue;
 
       lines.add(Polyline(
@@ -99,15 +99,15 @@ class _MapWindowDesktopState extends State<MapWindowDesktop> {
         },
         onTap: (TapPosition position, LatLng point) {
           // 이동 버튼이 눌렸을 때
-          if(_isGotoButtonPressed) {
+          if(_buttonPressed) {
             var currentVehicle = MultiVehicle().activeVehicle();
 
             if(currentVehicle != null) {
               if(currentVehicle.isFly) {
                 // 이동할 곳 마커 찍기
                 setState(() {
-                  guidedModeMarkers.clear();
-                  guidedModeMarkers.add(
+                  gotoMarker.clear();
+                  gotoMarker.add(
                     Marker(
                       point: point,
                       child: const Icon(Icons.location_pin, color: Colors.red),
@@ -121,7 +121,7 @@ class _MapWindowDesktopState extends State<MapWindowDesktop> {
 
                 // 버튼 눌리지 않은 상태로 설정
                 setState(() {
-                  _isGotoButtonPressed = false;
+                  _buttonPressed = false;
                 });
               }
             }
@@ -141,7 +141,7 @@ class _MapWindowDesktopState extends State<MapWindowDesktop> {
         Consumer<MultiVehicle>(
           builder: (_, multiManager, __) {
             return MarkerLayer(
-              markers: vehiclesPosition(multiManager)
+              markers: _markers(multiManager)
             );
           },
         ),
@@ -150,13 +150,13 @@ class _MapWindowDesktopState extends State<MapWindowDesktop> {
         Consumer<MultiVehicle>(
           builder: (_, multiManager, __) {
             return PolylineLayer(
-              polylines: vehiclesTrajectoryList(multiManager),
+              polylines: _route(multiManager),
             );
           }
         ),
 
         // 이동 명령 마커 레이어
-        MarkerLayer(markers: guidedModeMarkers),
+        MarkerLayer(markers: gotoMarker),
 
         //도구 모음 버튼
         Align(
@@ -164,10 +164,10 @@ class _MapWindowDesktopState extends State<MapWindowDesktop> {
           child: Padding(
             padding: const EdgeInsets.all(10),
             child: FlyButtons(
-              buttonState: _isGotoButtonPressed,
+              buttonState: _buttonPressed,
               mapSubmit: () {
                 setState(() {
-                  _isGotoButtonPressed = !_isGotoButtonPressed;
+                  _buttonPressed = !_buttonPressed;
                 });
               },
             ),

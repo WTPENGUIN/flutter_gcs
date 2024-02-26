@@ -2,17 +2,17 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:dart_mavlink/mavlink.dart';
 import 'package:dart_mavlink/dialects/ardupilotmega.dart';
+
 import 'package:peachgs_flutter/model/vehicle.dart';
 
-const int heartbeatMaxElpasedMSecs = 3000;
+const int disconnectTime = 3000;
 
 class MultiVehicle extends ChangeNotifier {
-  // 싱글톤 패턴
+  // MultiVehicle 클래스는 싱글톤 클래스로 관리
   static MultiVehicle? _instance;
   MultiVehicle._privateConstructor() {
-    // 연결 끊어짐 타이머 초기화
     _disconnectTimer = Timer.periodic(const Duration(seconds: 1), (_) {
-      checkDisconnectedVehicle();
+      checkDisconnectedVehicle(); // 1초마다 연결 끊어짐 감지 함수 호출
     });
   }
   factory MultiVehicle() => _instance ??= MultiVehicle._privateConstructor();
@@ -24,7 +24,7 @@ class MultiVehicle extends ChangeNotifier {
   // 기체 목록 리스트
   final List<Vehicle> _vehicles = [];
 
-  // 연결 끊어짐 감지 코드 실행 타이머
+  // 연결 끊어짐 감지 타이머
   Timer? _disconnectTimer;
 
   int countVehicle() {
@@ -70,7 +70,7 @@ class MultiVehicle extends ChangeNotifier {
   void checkDisconnectedVehicle() {
     List<Vehicle> removeVehicles = [];
     for(Vehicle vehicle in _vehicles) {
-      if(vehicle.heartbeatTimer.elapsedMilliseconds > heartbeatMaxElpasedMSecs) {
+      if(vehicle.heartbeatTimer.elapsedMilliseconds > disconnectTime) {
         removeVehicles.add(vehicle);
       }
     }
@@ -80,6 +80,7 @@ class MultiVehicle extends ChangeNotifier {
     }
   }
 
+  // 기체 추가
   void addVehicle(int id, Heartbeat msg) {
     MavType type = msg.type;
     MavAutopilot autopilot = msg.autopilot;

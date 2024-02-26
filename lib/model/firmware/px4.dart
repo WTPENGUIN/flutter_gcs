@@ -50,7 +50,7 @@ List<PX4FlightMode> px4FlightModes = [
   PX4FlightMode("Acro",           PX4CustomMainMode.px4CustomMainModeAcro.index,       0,                                                           true,     true,  true),
   PX4FlightMode("Rattitude",      PX4CustomMainMode.px4CustomMainModeRattitude.index,  0,                                                           true,     true,  true),
   PX4FlightMode("Altitude",       PX4CustomMainMode.px4CustomMainModeAltctl.index,     0,                                                           true,     true,  true),
-  PX4FlightMode("Position",       PX4CustomMainMode.px4CustomMainModePosctl.index,     PX4CustomSubModePosctl.px4CutomSubModePosctlPosctl.index,    true,     true, true),
+  PX4FlightMode("Position",       PX4CustomMainMode.px4CustomMainModePosctl.index,     PX4CustomSubModePosctl.px4CutomSubModePosctlPosctl.index,    true,     true,  true),
   PX4FlightMode("Offboard",       PX4CustomMainMode.px4CustomMainModeOffBoard.index,   0,                                                           true,     false, true),
   PX4FlightMode("Ready",          PX4CustomMainMode.px4CustomMainModeAuto.index,       PX4CustomSubModeAuto.px4CustomSubModeAutoReady.index,        false,    true,  true),
   PX4FlightMode("Takeoff",        PX4CustomMainMode.px4CustomMainModeAuto.index,       PX4CustomSubModeAuto.px4CustomSubModeAutoTakeoff.index,      false,    true,  true),
