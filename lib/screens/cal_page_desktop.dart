@@ -24,12 +24,20 @@ class _MyHomePageState extends State<VehicleCalDesktop> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: canvasColor,
-        title: const Text("기체 설정"),
+        title: const Text(
+          "기체 설정",
+          style: TextStyle(
+            color: Colors.white
+          ),
+        ),
         leading: IconButton(
           onPressed: () {
             context.pop();
           },
-          icon: const Icon(Icons.arrow_back_ios),
+          icon: const Icon(
+            Icons.arrow_back_ios,
+            color: Colors.white,
+          ),
         ),
       ),
       body: SafeArea(

@@ -45,7 +45,6 @@ class _FloatingButtonsState extends State<FloatingButtons> {
           labelBackgroundColor: pBlue,
           onTap: () {
             context.push('/cal');
-            //context.goNamed('calibration');
           }
         ),
         SpeedDialChild(
@@ -106,7 +105,7 @@ class _FloatingButtonsState extends State<FloatingButtons> {
           backgroundColor: pBlue,
           labelBackgroundColor: pBlue,
           onTap: () {
-            // Do something....
+            context.push('/setting');
           }
         ),
       ],
