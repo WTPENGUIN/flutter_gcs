@@ -38,18 +38,18 @@ class _FlightModeMenuState extends State<FlightModeMenu> {
       menuBuilder:(BuildContext context, double? width) {
         return Selector<MultiVehicle, int?>(
           selector: (context, multiVehicle) => multiVehicle.activeVehicle()?.firmware,
-          builder: (context, currentType, _) {
+          builder: (context, firmware, _) {
             // 현재 선택된 기체의 펌웨어 정보를 가져와서 해당 펌웨어에 맞는 비행 모드 목록 위젯을 빌드
             return SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.only(top: 10),
-                child: FlightModeButton(
-                  autopilotType: (currentType != null) ? currentType : -1, // TODO : 기체가 연결되어 있지 않으면 반응 없도록
+                child: (firmware != null)? FlightModeButton(
+                  autopilotType: firmware,
                   width: width,
                   onItemTap: () {
                     _controller.hide();
                   },
-                ),
+                ) : null,
               ),
             );
           },
@@ -172,7 +172,6 @@ class FlightModeButton extends StatelessWidget {
           );
         }
         break;
-      // TODO : 지원하지 않는 펌웨어 및 연결되어 있지 않을 때 처리
       default:
     }
     return list;
