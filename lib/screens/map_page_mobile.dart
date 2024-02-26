@@ -131,8 +131,8 @@ class _MapWindowMobileState extends State<MapWindowMobile> {
   @override
   void initState() {
     super.initState();
-    multivehicle = context.read<MultiVehicle>();
 
+    multivehicle = context.read<MultiVehicle>();
     _updateLocTimer = Timer.periodic(const Duration(milliseconds: 200), (_) {
       _drawVehicle();
     });

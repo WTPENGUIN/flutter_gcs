@@ -44,10 +44,10 @@ class _ResizebleContainerWidgetState extends State<ResizebleContainerWidget> {
 
   @override
   void initState() {
-    super.initState();
-    
     height = widget.size.height;
     width = widget.size.width;
+
+    super.initState();
   }
   
   @override

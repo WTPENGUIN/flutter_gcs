@@ -76,6 +76,7 @@ class _MapWindowDesktopState extends State<MapWindowDesktop> {
   @override
   void initState() {
     super.initState();
+    
     _mapController = MapController();
   }
 

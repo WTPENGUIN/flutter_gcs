@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import 'package:peachgs_flutter/utils/connection_manager.dart';
@@ -15,6 +16,7 @@ class FloatingButtons extends StatefulWidget {
   State<FloatingButtons> createState() => _FloatingButtonsState();
 }
 
+// TODO : 화면 크기에 따른 하위 버튼 크기 조절
 class _FloatingButtonsState extends State<FloatingButtons> {
   @override
   Widget build(BuildContext context) {
@@ -32,17 +34,18 @@ class _FloatingButtonsState extends State<FloatingButtons> {
       spacing: 10,
       children: [
         SpeedDialChild(
-          child: const Icon(Icons.work_history, color: Colors.white),
-          label: "임무 모드",
+          child: const Icon(Icons.tune, color: Colors.white),
+          label: "기체 설정",
           labelStyle: const TextStyle(
             fontWeight: FontWeight.w500,
             color: Colors.white,
-            fontSize: 13.0
+            fontSize: 12.0
           ),
           backgroundColor: pBlue,
           labelBackgroundColor: pBlue,
           onTap: () {
-            // Do something....
+            context.push('/cal');
+            //context.goNamed('calibration');
           }
         ),
         SpeedDialChild(
@@ -51,7 +54,7 @@ class _FloatingButtonsState extends State<FloatingButtons> {
           labelStyle: const TextStyle(
             fontWeight: FontWeight.w500,
             color: Colors.white,
-            fontSize: 13.0
+            fontSize: 12.0
           ),
           backgroundColor: pBlue,
           labelBackgroundColor: pBlue,
@@ -84,7 +87,7 @@ class _FloatingButtonsState extends State<FloatingButtons> {
           labelStyle: const TextStyle(
             fontWeight: FontWeight.w500,
             color: Colors.white,
-            fontSize: 13.0
+            fontSize: 12.0
           ),
           backgroundColor: pBlue,
           labelBackgroundColor: pBlue,
@@ -94,11 +97,11 @@ class _FloatingButtonsState extends State<FloatingButtons> {
         ),
         SpeedDialChild(
           child: const Icon(Icons.settings, color: Colors.white),
-          label: "설정",
+          label: "App 설정",
           labelStyle: const TextStyle(
             fontWeight: FontWeight.w500,
             color: Colors.white,
-            fontSize: 13.0
+            fontSize: 12.0
           ),
           backgroundColor: pBlue,
           labelBackgroundColor: pBlue,

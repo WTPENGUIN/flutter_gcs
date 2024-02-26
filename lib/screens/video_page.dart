@@ -38,12 +38,13 @@ class _VideoPageStete extends State<VideoPage> {
   }
 
   @override
-  void initState() {
+  void initState() {    
+    super.initState();
+
     if(isMobile()) {
       _webViewController = WebViewController();
       _webViewController.setJavaScriptMode(JavaScriptMode.unrestricted); // 웹뷰 재생을 위해 자바스크립트 허용
     }
-    super.initState();
   }
 
   @override
