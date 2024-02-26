@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 
+import 'package:peachgs_flutter/utils/current_location.dart';
 import 'package:peachgs_flutter/model/multi_vehicle_manage.dart';
 import 'package:peachgs_flutter/widget/vehicle_widget/fly_buttons.dart';
 
@@ -23,6 +24,8 @@ class _MapWindowMobileState extends State<MapWindowMobile> {
   late Timer _updateLocTimer;
 
   bool _buttonPressed = false;
+
+  final CurrentLocation _loc = CurrentLocation();
 
   List<NLatLng> _convert(List<LatLng> coords) {
     List<NLatLng> list = [];
@@ -159,8 +162,16 @@ class _MapWindowMobileState extends State<MapWindowMobile> {
             logoAlign: NLogoAlign.rightTop,
             logoMargin: EdgeInsets.only(top: 5, right: 5),
           ),
-          onMapReady: (controller) {
+          onMapReady: (controller) async {
             _mapController = controller;
+            
+            bool isGetCoord = await _loc.getCurrentLocation();
+            if(isGetCoord) {
+              var cameraUpdate = NCameraUpdate.withParams(
+                target: NLatLng(_loc.latitude, _loc.longitude)
+              );
+              _mapController!.updateCamera(cameraUpdate);
+            }
           },
           onMapTapped: (_, latLng) {
             // 지도 클릭 시, 기체 이동 명령 내리기
