@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_settings_ui/flutter_settings_ui.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
-import 'package:peachgs_flutter/utils/mavlink_protocol.dart';
+import 'package:peachgs_flutter/model/app_setting.dart';
 
 class AppSettingPage extends StatefulWidget {
   const AppSettingPage({
@@ -17,14 +20,36 @@ class _AppSettingPageState extends State<AppSettingPage> {
   final TextEditingController _mavlinkId = TextEditingController();
   final TextEditingController _rtspUrl = TextEditingController();
 
+  void showErrorMessage(String message) {
+    showTopSnackBar(
+      Overlay.of(context),
+      CustomSnackBar.error(
+        message: message,
+      ),
+      snackBarPosition: SnackBarPosition.top
+    );
+  }
+
+  void showSuccessMessage(String message) {
+    showTopSnackBar(
+      Overlay.of(context),
+      CustomSnackBar.success(
+        message: message,
+      ),
+      snackBarPosition: SnackBarPosition.top
+    );
+  }
+
   @override
   void initState() {
     super.initState();
-    _mavlinkId.text = MavlinkProtocol.getSystemId().toString();
   }
 
   @override
   Widget build(BuildContext context) {
+    _mavlinkId.text = context.read<AppConfig>().id.toString();
+    _rtspUrl.text = context.read<AppConfig>().url;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('어플리케이션 설정'),
@@ -36,6 +61,8 @@ class _AppSettingPageState extends State<AppSettingPage> {
         ),
       ),
       body: SettingsList(
+        platform: DevicePlatform.iOS,
+        applicationType: ApplicationType.both,
         sections: [
           SettingsSection(
             title: const Text(
@@ -45,12 +72,12 @@ class _AppSettingPageState extends State<AppSettingPage> {
                 fontSize: 20
               ),
             ),
-            tiles: <SettingsTile>[
+            tiles: [
               SettingsTile(
                 leading: const Icon(Icons.settings_input_antenna),
                 title: Row(
                   children: [
-                    const Text('Mavlink ID'),
+                    const Text('Mavlink System ID'),
                     const Spacer(),
                     SizedBox(
                       width: 50,
@@ -73,19 +100,36 @@ class _AppSettingPageState extends State<AppSettingPage> {
                         keyboardType: TextInputType.number,
                         maxLength: 3,
                         onSubmitted: (value) {
-                          // Do something...
+                          int? val = int.tryParse(value);
+                          if(val == null) {
+                            showErrorMessage('올바른 숫자를 입력해 주세요.');
+                            return;
+                          } else {
+                            if(val <= 0 || val > 255 ) {
+                              showErrorMessage('Mavlink ID 범위를 확인해 주세요.');
+                              return;
+                            }
+                            AppConfig().updateMavId(val);
+                            showSuccessMessage('설정이 완료 되었습니다.');
+                          }
                         },
                       ),
                     )
                   ],
                 ),
-                description: const Text('GCS의 Mavlink ID를 설정합니다.(숫자 3자리)'),
+                description: const Text('지상 제어 어플리케이션의 Mavlink System ID를 지정합니다(1~255).'),
               ),
             ],
           ),
           // TODO : 비디오 스트리밍 URL 설정
           SettingsSection(
-            title: const Text('Video'),
+            title: const Text(
+              'Video',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 20
+              ),
+            ),
             tiles: <SettingsTile>[
               SettingsTile(
                 leading: const Icon(Icons.movie),
@@ -94,7 +138,7 @@ class _AppSettingPageState extends State<AppSettingPage> {
                     const Text('URL'),
                     const Spacer(),
                     SizedBox(
-                      width: 400,
+                      width: MediaQuery.of(context).size.width * 0.3,
                       child: TextField(
                         controller: _rtspUrl,
                         decoration: const InputDecoration(
@@ -111,7 +155,7 @@ class _AppSettingPageState extends State<AppSettingPage> {
                         cursorColor: Colors.black54,
                         cursorHeight: 20,
                         textAlign: TextAlign.right,
-                        maxLength: 30,
+                        maxLines: 1,
                         onSubmitted: (value) {
                           // Do something...
                         },
@@ -119,12 +163,12 @@ class _AppSettingPageState extends State<AppSettingPage> {
                     )
                   ],
                 ),
-                description: const Text('Video Streaming 주소를 설정합니다.(rtsp 혹은 http 주소만 허용됩니다.)'),
+                description: const Text('Video Streaming 주소를 설정합니다(rtsp 혹은 http 주소만 허용됩니다).'),
               ),
             ],
           ),
         ],
-      ),
+      )
     );
   }
 }

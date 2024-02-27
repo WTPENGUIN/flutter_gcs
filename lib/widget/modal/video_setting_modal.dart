@@ -1,11 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-// 링크 생성 모달
+import 'package:peachgs_flutter/model/app_setting.dart';
+
+// 비디오 URL 설정 모달
 Future<String> showVideoModal(BuildContext context) async {
-  final formKey = GlobalKey<FormState>();
+  final formKey    = GlobalKey<FormState>();
+  final controller = TextEditingController();
 
-  String url = '';
-  
+  String url = context.read<AppConfig>().url;
+  controller.text = url;
+
+  // 모달 크기 설정
+  double modalHeight = (MediaQuery.of(context).size.height * 0.15 < 151) ? 152 : MediaQuery.of(context).size.height * 0.15;
+  double modalWidth  = (MediaQuery.of(context).size.width  * 0.25 < 480) ? 480 : MediaQuery.of(context).size.width  * 0.25;
+
   return showDialog(
     context: context,
     builder: (context) {
@@ -21,8 +30,8 @@ Future<String> showVideoModal(BuildContext context) async {
           style: TextStyle(fontSize: 24.0)
         ),
         content: SizedBox(
-          height: MediaQuery.of(context).size.height * 0.25,
-          width: MediaQuery.of(context).size.width * 0.2,
+          height: modalHeight,
+          width: modalWidth,
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(8.0),
             child: Form(
@@ -35,6 +44,7 @@ Future<String> showVideoModal(BuildContext context) async {
                   Container(
                     padding: const EdgeInsets.all(8.0),
                     child: TextFormField(
+                      controller: controller,
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(),
                         hintText: 'URL을 입력해 주세요',
@@ -81,5 +91,7 @@ Future<String> showVideoModal(BuildContext context) async {
         ),
       );
     }
-  ).then((value) { return url; });
+  ).then((_) {
+    return url;
+  });
 }

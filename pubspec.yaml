@@ -32,23 +32,27 @@ dependencies:
     sdk: flutter
   
   # Application core
-  window_manager: ^0.3.8
-  provider: ^6.1.1
-  go_router: ^13.1.0
-  logger: ^2.0.2+1
-  flutter_svg: ^2.0.9
-  flutter_speed_dial: ^7.0.0
-  flutter_dotenv: ^5.1.0
-  motion_toast: ^2.8.0
-  geolocator: ^11.0.0
-  permission_handler: ^11.3.0
-  sidebarx: ^0.16.3
-  flutter_settings_ui: ^3.0.0
+  window_manager: ^0.3.8      # 데스크톱 환경 실행 시, 창 크기 조절
+  provider: ^6.1.1            # provider
+  go_router: ^13.1.0          # 페이지 이동 router
+  logger: ^2.0.2+1            # debug용 logger
+  flutter_svg: ^2.0.9         # SVG 이미지 파일을 위젯으로 사용할 수 있는 패키지
+  flutter_dotenv: ^5.1.0      # 실행 환경을 외부 파일로 관리
+  geolocator: ^11.0.0         # 현재 사용자의 위치를 가져오는 패키지
+  permission_handler: ^11.3.0 # Android, iOS에서 권한을 가져올 수 있는 패키지
+  path_provider: ^2.1.2       # 어플리케이션 내부 저장소에 접근하기 위한 패키지
 
-  # For RTSP Streaming
-  media_kit: ^1.1.10           # Primary package.
-  media_kit_video: ^1.2.4      # For video rendering.
-  media_kit_libs_video: ^1.0.4 # Native video dependencies.
+  # Application UI
+  sidebarx: ^0.16.3            # 사이드바 패키지
+  flutter_speed_dial: ^7.0.0   # Speed Dial 버튼 패키지
+  top_snackbar_flutter: ^3.1.0 # 스낵바 표시 패키지
+  flutter_settings_ui: ^3.0.0  # 세팅 페이지를 구축할 수 있는 패키지
+
+  # For RTSP Streaming(3개 전부 필요)
+  # 3개의 패키지의 버전을 맞추어서 관리 필요
+  media_kit: ^1.1.10
+  media_kit_video: ^1.2.4
+  media_kit_libs_video: ^1.0.4
 
   # For WebRTC Streming(WebView)
   webview_flutter: ^4.7.0

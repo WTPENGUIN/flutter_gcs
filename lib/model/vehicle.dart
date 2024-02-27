@@ -147,7 +147,7 @@ class Vehicle {
       confirmation: 0
     );
     
-    var mavlinkFrame = MavlinkFrame.v2(0, MavlinkProtocol.getSystemId(), MavlinkProtocol.getComponentId(), command);
+    var mavlinkFrame = MavlinkFrame.v2(0, MavlinkProtocol().getSystemId(), MavlinkProtocol.getComponentId(), command);
     link.writeMessageLink(mavlinkFrame);
   }
 
@@ -179,7 +179,7 @@ class Vehicle {
           confirmation: 0
         );
 
-        MavlinkFrame mavlinkFrame = MavlinkFrame.v2(0, MavlinkProtocol.getSystemId(), MavlinkProtocol.getComponentId(), command);
+        MavlinkFrame mavlinkFrame = MavlinkFrame.v2(0, MavlinkProtocol().getSystemId(), MavlinkProtocol.getComponentId(), command);
         link.writeMessageLink(mavlinkFrame);     
         break;
       case mavAutopilotPx4:
@@ -197,7 +197,7 @@ class Vehicle {
           confirmation: 0
         );
 
-        MavlinkFrame mavlinkFrame = MavlinkFrame.v2(0, MavlinkProtocol.getSystemId(), MavlinkProtocol.getComponentId(), command);
+        MavlinkFrame mavlinkFrame = MavlinkFrame.v2(0, MavlinkProtocol().getSystemId(), MavlinkProtocol.getComponentId(), command);
         link.writeMessageLink(mavlinkFrame);
         break;
       default:
@@ -256,7 +256,7 @@ class Vehicle {
         );
 
         ConnectionManager link = ConnectionManager();
-        MavlinkFrame mavlinkFrame = MavlinkFrame.v2(0, MavlinkProtocol.getSystemId(), MavlinkProtocol.getComponentId(), command);
+        MavlinkFrame mavlinkFrame = MavlinkFrame.v2(0, MavlinkProtocol().getSystemId(), MavlinkProtocol.getComponentId(), command);
         link.writeMessageLink(mavlinkFrame);
         break;
       case mavAutopilotPx4:
@@ -274,7 +274,7 @@ class Vehicle {
           confirmation: 0
         );
         ConnectionManager link = ConnectionManager();
-        MavlinkFrame mavlinkFrame = MavlinkFrame.v2(0, MavlinkProtocol.getSystemId(), MavlinkProtocol.getComponentId(), command);
+        MavlinkFrame mavlinkFrame = MavlinkFrame.v2(0, MavlinkProtocol().getSystemId(), MavlinkProtocol.getComponentId(), command);
         link.writeMessageLink(mavlinkFrame);
         break;
       default:
@@ -326,7 +326,7 @@ class Vehicle {
     );
 
     ConnectionManager link = ConnectionManager();
-    MavlinkFrame mavlinkFrame = MavlinkFrame.v2(0, MavlinkProtocol.getSystemId(), MavlinkProtocol.getComponentId(), command);
+    MavlinkFrame mavlinkFrame = MavlinkFrame.v2(0, MavlinkProtocol().getSystemId(), MavlinkProtocol.getComponentId(), command);
     link.writeMessageLink(mavlinkFrame);
   }
 
@@ -358,7 +358,7 @@ class Vehicle {
     );
 
     ConnectionManager link = ConnectionManager();
-    MavlinkFrame mavlinkFrame = MavlinkFrame.v2(0, MavlinkProtocol.getSystemId(), MavlinkProtocol.getComponentId(), command);
+    MavlinkFrame mavlinkFrame = MavlinkFrame.v2(0, MavlinkProtocol().getSystemId(), MavlinkProtocol.getComponentId(), command);
     link.writeMessageLink(mavlinkFrame);
   }
 

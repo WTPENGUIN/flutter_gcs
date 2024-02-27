@@ -2,13 +2,15 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:logger/logger.dart';
+import 'package:media_kit/media_kit.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
-import 'package:media_kit/media_kit.dart';
+
 import 'package:peachgs_flutter/router.dart';
+import 'package:peachgs_flutter/model/app_setting.dart';
 import 'package:peachgs_flutter/model/multi_vehicle_manage.dart';
 import 'package:peachgs_flutter/utils/connection_manager.dart';
 
@@ -81,6 +83,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   MediaKit.ensureInitialized();
   
+  // 모바일 실행 환경 어플리케이션 초기화
   if(Platform.isAndroid || Platform.isIOS) {
     bool init = await initAppMobile();
     if(!init) {
@@ -91,15 +94,20 @@ void main() async {
     }
   }
 
+  // 데스크톱 실행 환경 어플리케이션 초기화
   if(Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
     await initAppDesktop();
   }
+
+  // 어플리케이션 세팅 초기화
+  await AppConfig().loadAppConfig();
 
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => MultiVehicle()),
-        ChangeNotifierProvider(create: (_) => ConnectionManager())
+        ChangeNotifierProvider(create: (_) => ConnectionManager()),
+        ChangeNotifierProvider(create: (_) => AppConfig())
       ],
       child: MaterialApp.router(
         routerConfig: router,
