@@ -25,9 +25,22 @@ Future<String> showVideoModal(BuildContext context) async {
           ),
         ),
         contentPadding: const EdgeInsets.only(top: 10.0),
-        title: const Text(
-          "비디오 설정",
-          style: TextStyle(fontSize: 24.0)
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            const Text(
+              "비디오 설정",
+              style: TextStyle(fontSize: 24.0)
+            ),
+            const Spacer(),
+            IconButton(
+              style: IconButton.styleFrom(
+                backgroundColor: Colors.black
+              ),
+              onPressed: () { Navigator.of(context).pop(); },
+              icon: const Icon(Icons.close, color: Colors.white)
+            )
+          ],
         ),
         content: SizedBox(
           height: modalHeight,
@@ -51,6 +64,10 @@ Future<String> showVideoModal(BuildContext context) async {
                         labelText: 'URL',
                         counterText: ''
                       ),
+                      // 클릭하였을 때, 모든 텍스트 선택
+                      onTap: () {
+                        controller.selection = TextSelection(baseOffset: 0, extentOffset: controller.value.text.length);
+                      },
                       validator: (String? value) {
                         if(value!.isEmpty) {
                           return 'URL은 비어 있을 수 없습니다';
