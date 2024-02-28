@@ -49,6 +49,15 @@ class _ResizebleContainerWidgetState extends State<ResizebleContainerWidget> {
 
     super.initState();
   }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // 화면이 큰 상태에서 작아질 때, 위젯 크기를 조절
+    if(height > MediaQuery.of(context).size.height * 0.75) { height = MediaQuery.of(context).size.height * 0.75; }
+    if(width  > MediaQuery.of(context).size.width  * 0.75) { width  = MediaQuery.of(context).size.width  * 0.75; }
+  }
   
   @override
   Widget build(BuildContext context) {
