@@ -2,12 +2,16 @@ import 'package:flutter/material.dart';
 
 // 링크 생성 모달
 Future<List<String>> showLinkCreateModal(BuildContext context) async {
-  List<String> linkConfigure = [];
   final formKey = GlobalKey<FormState>();
+  List<String> linkConfigure = [];
 
   String selectedProtocol = 'UDP(S)';
   String hostName = '';
   String portNumber = '';
+
+  // 모달 크기 설정
+  double modalHeight = (MediaQuery.of(context).size.height * 0.4 < 284) ? 285 : MediaQuery.of(context).size.height * 0.4;
+  double modalWidth  = (MediaQuery.of(context).size.width  * 0.3 < 355) ? 356 : MediaQuery.of(context).size.width  * 0.3;
   
   return showDialog(
     context: context,
@@ -19,13 +23,26 @@ Future<List<String>> showLinkCreateModal(BuildContext context) async {
           ),
         ),
         contentPadding: const EdgeInsets.only(top: 10.0),
-        title: const Text(
-          "링크 설정",
-          style: TextStyle(fontSize: 24.0)
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            const Text(
+              "링크 설정",
+              style: TextStyle(fontSize: 24.0)
+            ),
+            const Spacer(),
+            IconButton(
+              style: IconButton.styleFrom(
+                backgroundColor: Colors.black
+              ),
+              onPressed: () { Navigator.of(context).pop(); },
+              icon: const Icon(Icons.close, color: Colors.white)
+            )
+          ],
         ),
         content: SizedBox(
-          height: MediaQuery.of(context).size.height * 0.65,
-          width: MediaQuery.of(context).size.width * 0.3,
+          height: modalHeight,
+          width: modalWidth,
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(8.0),
             child: Form(
@@ -35,10 +52,6 @@ Future<List<String>> showLinkCreateModal(BuildContext context) async {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text("프로토콜"),
-                  ),
                   Container(
                     padding: const EdgeInsets.all(8.0),
                     child: DropdownButtonFormField<String>(
@@ -58,10 +71,6 @@ Future<List<String>> showLinkCreateModal(BuildContext context) async {
                         );
                       }).toList(),
                     ),
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text("주소"),
                   ),
                   Container(
                     padding: const EdgeInsets.all(8.0),
@@ -83,10 +92,6 @@ Future<List<String>> showLinkCreateModal(BuildContext context) async {
                         hostName = value!;
                       },
                     ),
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text("포트 번호"),
                   ),
                   Container(
                     padding: const EdgeInsets.all(8.0),
