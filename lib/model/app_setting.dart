@@ -5,17 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 
 class AppConfig with ChangeNotifier {
-  int    _mavid     = 205;
+  int    _mavid     = 250;
   String _streamUrl = '';
 
-  int get id     => _mavid;
+  int    get id  => _mavid;
   String get url => _streamUrl;
 
   // 파일 이름
   static const String _fileName = 'PeachAppSetting.json';
-
-  // Debug 로거
-  Logger logger = Logger();
 
   // AppConfig 클래스는 싱글톤 클래스로 관리
   static AppConfig? _instance;
@@ -30,21 +27,22 @@ class AppConfig with ChangeNotifier {
     try {
       // 어플리케이션 내부 저장소 경로 가져오기
       Directory internalStorage = await getApplicationDocumentsDirectory();
-      String filePath = '${internalStorage.path}/$_fileName';
+      String    filePath        = '${internalStorage.path}/$_fileName';
 
       File file = File(filePath);
       if(await file.exists()) {
         // 파일이 존재하는 경우 파일 내용 읽기
         String content = await file.readAsString();
+
         Map<String, dynamic> jsonMap = json.decode(content);
-        _mavid = jsonMap['mavid'] ?? 200;
+        _mavid     = jsonMap['mavid']     ?? 200;
         _streamUrl = jsonMap['video_url'] ?? '';
       } else {
         // 파일이 존재하지 않는 경우 기본 설정 저장
         await _saveAppConfig();
       }
     } catch (e) {
-      logger.e('Error while reading app config: $e');
+      Logger().e('Error while reading app config: $e');
     }
   }
 
@@ -53,13 +51,18 @@ class AppConfig with ChangeNotifier {
     try {
       // 어플리케이션 내부 저장소 경로 가져오기
       Directory internalStorage = await getApplicationDocumentsDirectory();
-      String filePath = '${internalStorage.path}/$_fileName';
+      String    filePath        = '${internalStorage.path}/$_fileName';
       
       // 설정을 JSON으로 직렬화하여 파일에 쓰기
       File file = File(filePath);
-      await file.writeAsString(json.encode({'mavid': _mavid, 'video_url': _streamUrl}));
+      await file.writeAsString(
+        json.encode({
+          'mavid'    : _mavid,
+          'video_url': _streamUrl
+        })
+      );
     } catch (e) {
-      logger.e('Error while saving app config: $e');
+      Logger().e('Error while saving app config: $e');
     }
   }
 
