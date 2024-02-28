@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'dart:async';
 import 'dart:isolate';
-import 'package:logger/logger.dart';
 import 'package:flutter/material.dart';
 
 import 'package:peachgs_flutter/utils/connection_task.dart';
@@ -16,9 +15,6 @@ class ConnectionManager extends ChangeNotifier {
   factory ConnectionManager() {
     return _instance;
   }
-  
-  // Logger
-  final Logger logger = Logger();
 
   // Task 리스트
   final List<LinkTask> _taskList = [];

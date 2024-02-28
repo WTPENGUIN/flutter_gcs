@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:logger/logger.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
@@ -18,10 +17,8 @@ class MapWindowDesktop extends StatefulWidget {
 }
 
 class _MapWindowDesktopState extends State<MapWindowDesktop> {
-  Logger logger = Logger();
-
   late final MapController _mapController;
-  final List<Marker> gotoMarker = [];
+  final List<Marker>       _gotoMarker = [];
   bool _buttonPressed = false;
 
   final CurrentLocation _loc = CurrentLocation();
@@ -107,8 +104,8 @@ class _MapWindowDesktopState extends State<MapWindowDesktop> {
               if(currentVehicle.isFly) {
                 // 이동할 곳 마커 찍기
                 setState(() {
-                  gotoMarker.clear();
-                  gotoMarker.add(
+                  _gotoMarker.clear();
+                  _gotoMarker.add(
                     Marker(
                       point: point,
                       child: const Icon(Icons.location_pin, color: Colors.red),
@@ -157,7 +154,7 @@ class _MapWindowDesktopState extends State<MapWindowDesktop> {
         ),
 
         // 이동 명령 마커 레이어
-        MarkerLayer(markers: gotoMarker),
+        MarkerLayer(markers: _gotoMarker),
 
         //도구 모음 버튼
         Align(

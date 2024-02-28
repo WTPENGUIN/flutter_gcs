@@ -7,7 +7,7 @@ import 'package:peachgs_flutter/widget/calibration/cal_mag.dart';
 
 const canvasColor = Color(0xFF41B6E6);
 const itemColor   = Color(0xffFA828F);
-const white = Colors.white;
+const white       = Colors.white;
 
 class VehicleCalMobile extends StatefulWidget {
   const VehicleCalMobile({Key? key}) : super(key: key);
@@ -104,7 +104,7 @@ class _MyHomePageState extends State<VehicleCalMobile> {
             children: [
               Expanded(
                 child: Center(
-                  child: _ScreensExample(controller: _controller),
+                  child: _Screens(controller: _controller),
                 )
               )
             ],
@@ -115,8 +115,8 @@ class _MyHomePageState extends State<VehicleCalMobile> {
   }
 }
 
-class _ScreensExample extends StatelessWidget {
-  const _ScreensExample({
+class _Screens extends StatelessWidget {
+  const _Screens({
     Key? key,
     required this.controller,
   }) : super(key: key);

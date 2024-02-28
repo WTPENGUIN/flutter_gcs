@@ -5,14 +5,12 @@ import 'package:dart_mavlink/dialects/ardupilotmega.dart';
 
 import 'package:peachgs_flutter/model/vehicle.dart';
 
-const int disconnectTime = 3000;
-
 class MultiVehicle extends ChangeNotifier {
   // MultiVehicle 클래스는 싱글톤 클래스로 관리
   static MultiVehicle? _instance;
   MultiVehicle._privateConstructor() {
     _disconnectTimer = Timer.periodic(const Duration(seconds: 1), (_) {
-      checkDisconnectedVehicle(); // 1초마다 연결 끊어짐 감지 함수 호출
+      _checkDisconnectedVehicle(); // 1초마다 연결 끊어짐 감지 함수 호출
     });
   }
   factory MultiVehicle() => _instance ??= MultiVehicle._privateConstructor();
@@ -20,6 +18,9 @@ class MultiVehicle extends ChangeNotifier {
   int _activeVehicle = 1;
   set setActiceId(int number) => _activeVehicle = number;
   int get getActiveId         => _activeVehicle;
+
+  // 3초 동안 하트비트가 없으면 연결이 끊어진 것으로 간주
+  final int _disconnectTime = 3000;
 
   // 기체 목록 리스트
   final List<Vehicle> _vehicles = [];
@@ -58,7 +59,7 @@ class MultiVehicle extends ChangeNotifier {
   }
 
   // 기체 연결 해제
-  void disconnectVehicle(int id) {
+  void _disconnectVehicle(int id) {
     Vehicle? removeVehicle = idSelectVehicle(id);
 
     if(removeVehicle == null) return;
@@ -67,21 +68,21 @@ class MultiVehicle extends ChangeNotifier {
   }
 
   // 연결 끊어진 기체 탐색
-  void checkDisconnectedVehicle() {
+  void _checkDisconnectedVehicle() {
     List<Vehicle> removeVehicles = [];
     for(Vehicle vehicle in _vehicles) {
-      if(vehicle.heartbeatTimer.elapsedMilliseconds > disconnectTime) {
+      if(vehicle.heartbeatTimer.elapsedMilliseconds > _disconnectTime) {
         removeVehicles.add(vehicle);
       }
     }
 
     for(Vehicle vehicle in removeVehicles) {
-      disconnectVehicle(vehicle.id);
+      _disconnectVehicle(vehicle.id);
     }
   }
 
   // 기체 추가
-  void addVehicle(int id, Heartbeat msg) {
+  void _addVehicle(int id, Heartbeat msg) {
     MavType type = msg.type;
     MavAutopilot autopilot = msg.autopilot;
 
@@ -104,7 +105,7 @@ class MultiVehicle extends ChangeNotifier {
       
       // 이미 연결 된 system id는 무시, 동시 연결 기체 10대 제한
       if(idSelectVehicle(frame.systemId) == null && _vehicles.length <= 10) {
-        addVehicle(frame.systemId, heartbeat);
+        _addVehicle(frame.systemId, heartbeat);
       }
     }
 

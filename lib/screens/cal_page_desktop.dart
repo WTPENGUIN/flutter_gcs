@@ -95,7 +95,7 @@ class _MyHomePageState extends State<VehicleCalDesktop> {
             ),
             Expanded(
               child: Center(
-                child: _ScreensExample(controller: _controller),
+                child: _Screens(controller: _controller),
               ),
             ),
           ],
@@ -105,8 +105,8 @@ class _MyHomePageState extends State<VehicleCalDesktop> {
   }
 }
 
-class _ScreensExample extends StatelessWidget {
-  const _ScreensExample({
+class _Screens extends StatelessWidget {
+  const _Screens({
     Key? key,
     required this.controller,
   }) : super(key: key);

@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:logger/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:latlong2/latlong.dart';
@@ -17,15 +16,12 @@ class MapWindowMobile extends StatefulWidget {
 }
 
 class _MapWindowMobileState extends State<MapWindowMobile> {
+  late final MultiVehicle _multivehicle;
+  late final Timer        _updateLocTimer;
+  final CurrentLocation   _loc = CurrentLocation();
+
   NaverMapController? _mapController;
-  Logger logger = Logger();
-
-  late final MultiVehicle multivehicle;
-  late Timer _updateLocTimer;
-
   bool _buttonPressed = false;
-
-  final CurrentLocation _loc = CurrentLocation();
 
   List<NLatLng> _convert(List<LatLng> coords) {
     List<NLatLng> list = [];
@@ -40,12 +36,12 @@ class _MapWindowMobileState extends State<MapWindowMobile> {
 
   void _drawVehicle() {
     if(_mapController != null) {
-      var vehicleList = multivehicle.allVehicles();
+      var vehicleList = _multivehicle.allVehicles();
 
       if(vehicleList.isEmpty) {
         _mapController!.clearOverlays();
       } else {
-        for(var vehicle in multivehicle.allVehicles()) {
+        for(var vehicle in _multivehicle.allVehicles()) {
           double markerLat = vehicle.lat;
           double markerLon = vehicle.lon;
 
@@ -59,19 +55,19 @@ class _MapWindowMobileState extends State<MapWindowMobile> {
               position: NLatLng(vehicle.lat, vehicle.lon),
               caption: NOverlayCaption(
                 text: '기체 ${vehicle.id} (${(vehicle.armed) ? '시동' : '꺼짐'})',
-                color: (multivehicle.getActiveId == vehicle.id) ? Colors.white : Colors.black,
-                haloColor: (multivehicle.getActiveId == vehicle.id) ? Colors.red : Colors.white,
+                color: (_multivehicle.getActiveId == vehicle.id) ? Colors.white : Colors.black,
+                haloColor: (_multivehicle.getActiveId == vehicle.id) ? Colors.red : Colors.white,
                 textSize: 15
               ),
               subCaption: NOverlayCaption(
                 text: '모드 ${vehicle.mode}',
-                color: (multivehicle.getActiveId == vehicle.id) ? Colors.white : Colors.black,
-                haloColor: (multivehicle.getActiveId == vehicle.id) ? Colors.red : Colors.white,
+                color: (_multivehicle.getActiveId == vehicle.id) ? Colors.white : Colors.black,
+                haloColor: (_multivehicle.getActiveId == vehicle.id) ? Colors.red : Colors.white,
                 textSize: 13
               )
             );
             marker.setOnTapListener((_) {
-              multivehicle.setActiceId = vehicle.id;
+              _multivehicle.setActiceId = vehicle.id;
             });
 
             // 마커 오버레이에 추가
@@ -135,7 +131,7 @@ class _MapWindowMobileState extends State<MapWindowMobile> {
   void initState() {
     super.initState();
 
-    multivehicle = context.read<MultiVehicle>();
+    _multivehicle = context.read<MultiVehicle>();
     _updateLocTimer = Timer.periodic(const Duration(milliseconds: 200), (_) {
       _drawVehicle();
     });

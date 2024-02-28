@@ -8,9 +8,7 @@ import 'package:top_snackbar_flutter/top_snack_bar.dart';
 import 'package:peachgs_flutter/model/app_setting.dart';
 
 class AppSettingPage extends StatefulWidget {
-  const AppSettingPage({
-    Key? key,
-  }) : super(key: key);
+  const AppSettingPage({Key? key}) : super(key: key);
 
   @override
   State<AppSettingPage> createState() => _AppSettingPageState();
@@ -20,7 +18,7 @@ class _AppSettingPageState extends State<AppSettingPage> {
   final TextEditingController _mavlinkId = TextEditingController();
   final TextEditingController _rtspUrl = TextEditingController();
 
-  void showErrorMessage(String message) {
+  void _showErrorMessage(String message) {
     showTopSnackBar(
       Overlay.of(context),
       CustomSnackBar.error(
@@ -30,7 +28,7 @@ class _AppSettingPageState extends State<AppSettingPage> {
     );
   }
 
-  void showSuccessMessage(String message) {
+  void _showSuccessMessage(String message) {
     showTopSnackBar(
       Overlay.of(context),
       CustomSnackBar.success(
@@ -102,15 +100,15 @@ class _AppSettingPageState extends State<AppSettingPage> {
                         onSubmitted: (value) {
                           int? val = int.tryParse(value);
                           if(val == null) {
-                            showErrorMessage('올바른 숫자를 입력해 주세요.');
+                            _showErrorMessage('올바른 숫자를 입력해 주세요.');
                             return;
                           } else {
                             if(val <= 0 || val > 255 ) {
-                              showErrorMessage('Mavlink ID 범위를 확인해 주세요.');
+                              _showErrorMessage('Mavlink ID 범위를 확인해 주세요.');
                               return;
                             }
                             AppConfig().updateMavId(val);
-                            showSuccessMessage('설정이 완료 되었습니다.');
+                            _showSuccessMessage('설정이 완료 되었습니다.');
                           }
                         },
                       ),

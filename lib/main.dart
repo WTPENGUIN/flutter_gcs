@@ -15,7 +15,7 @@ import 'package:peachgs_flutter/model/multi_vehicle_manage.dart';
 import 'package:peachgs_flutter/utils/connection_manager.dart';
 
 // 위치 권한 요청
-Future<bool> getPermission() async {
+Future<bool> _getPermission() async {
   // 어플리케이션에 위치 권한이 허용 되었는지 확인
   var requestLocationStatus = await Permission.location.request();
   var locationStatus        = await Permission.location.status;
@@ -39,11 +39,11 @@ Future<bool> getPermission() async {
 }
 
 // 모바일 환경 App 초기화
-Future<bool> initAppMobile() async {
+Future<bool> _initAppMobile() async {
   SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeRight, DeviceOrientation.landscapeLeft]);
   
   // 위치 권한 요청(권한 거부 당하면 앱 종료)
-  bool isGranted = await getPermission();
+  bool isGranted = await _getPermission();
   if(!isGranted) {
     SystemChannels.platform.invokeMethod('SystemNavigator.pop');
   }
@@ -66,7 +66,7 @@ Future<bool> initAppMobile() async {
 }
 
 // 데스크톱 환경 App 초기화
-Future<bool> initAppDesktop() async {
+Future<bool> _initAppDesktop() async {
   await windowManager.ensureInitialized();
   await windowManager.waitUntilReadyToShow();
 
@@ -85,7 +85,7 @@ void main() async {
   
   // 모바일 실행 환경 어플리케이션 초기화
   if(Platform.isAndroid || Platform.isIOS) {
-    bool init = await initAppMobile();
+    bool init = await _initAppMobile();
     if(!init) {
       Logger logger = Logger();
       logger.e("앱 초기화 실패");
@@ -96,7 +96,7 @@ void main() async {
 
   // 데스크톱 실행 환경 어플리케이션 초기화
   if(Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
-    await initAppDesktop();
+    await _initAppDesktop();
   }
 
   // 어플리케이션 세팅 초기화

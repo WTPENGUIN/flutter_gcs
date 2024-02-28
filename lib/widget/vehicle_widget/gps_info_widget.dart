@@ -16,7 +16,7 @@ class GPSWidget extends StatelessWidget {
       child: Selector<MultiVehicle, Vehicle?>(
         selector: (context, multiVehicle) => multiVehicle.activeVehicle(),
         builder: (context, activeVehicle, _) {
-          return (activeVehicle != null) ? const VehicleGPSInfo() : const NotVehicleGPS();
+          return (activeVehicle != null) ? const VehicleGPSInfo() : const _NotVehicleGPS();
         }
       )
     );
@@ -42,7 +42,7 @@ class _VehicleGPSInfoState extends State<VehicleGPSInfo> {
           selector: (context, multiVehicle) => multiVehicle.activeVehicle()?.fixType,
           builder: (context, fixString, _) {
             // 현재 선택된 기체의 GPS 픽스 타입을 가져와서 위젯을 빌드
-            return GpsButtonWidget(
+            return _GpsButtonWidget(
               width: 130,
               onTap: onTap,
               fixString: '$fixString'
@@ -54,7 +54,7 @@ class _VehicleGPSInfoState extends State<VehicleGPSInfo> {
         return Padding(
           padding: const EdgeInsets.only(top: 10),
             // 현재 선택된 기체의 GPS 정보를 가져와서 위젯을 빌드
-            child: GPSModeButton(
+            child: _GPSModeButton(
             width: 130,
             onItemTap: () {
               _controller.hide();
@@ -66,21 +66,21 @@ class _VehicleGPSInfoState extends State<VehicleGPSInfo> {
   }
 }
 
-class GpsButtonWidget extends StatelessWidget {
-  const GpsButtonWidget({
-    super.key,
-    required this.fixString,
+class _GpsButtonWidget extends StatelessWidget {
+  const _GpsButtonWidget({
+    Key? key,
     this.height = 48,
     this.width,
     this.onTap,
     this.child,
-  });
+    required this.fixString,
+  }) : super(key: key);
 
-  final double? height;
-  final double? width;
+  final double?       height;
+  final double?       width;
   final VoidCallback? onTap;
-  final Widget? child;
-  final String fixString;
+  final Widget?       child;
+  final String        fixString;
 
   @override
   Widget build(BuildContext context) {
@@ -123,14 +123,14 @@ class GpsButtonWidget extends StatelessWidget {
   }
 }
 
-class GPSModeButton extends StatelessWidget {
-  const GPSModeButton({
-    super.key,
+class _GPSModeButton extends StatelessWidget {
+  const _GPSModeButton({
+    Key? key,
     this.width,
     required this.onItemTap,
-  });
+  }) : super(key: key);
 
-  final double? width;
+  final double?      width;
   final VoidCallback onItemTap;
 
   @override
@@ -261,8 +261,8 @@ class GPSModeButton extends StatelessWidget {
   }
 }
 
-class NotVehicleGPS extends StatelessWidget {
-  const NotVehicleGPS({Key? key}) : super(key: key);
+class _NotVehicleGPS extends StatelessWidget {
+  const _NotVehicleGPS({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

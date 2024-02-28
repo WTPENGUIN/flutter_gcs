@@ -27,10 +27,12 @@ class _FlightModeMenuState extends State<FlightModeMenu> {
           selector: (context, multiVehicle) => multiVehicle.activeVehicle()?.mode,
           builder: (context, flightMode, _) {
             // 현재 선택된 기체의 비행 모드를 가져와서 위젯을 빌드
-            return FlightButtonWidget(
+            return _FlightButtonWidget(
               width: 130,
+              height: 48,
               onTap: onTap,
-              modeName: (flightMode != null) ? flightMode : "Not Connected"
+              modeName: (flightMode != null) ? flightMode : "Not Connected",
+              child: null,
             );
           },
         );
@@ -43,7 +45,7 @@ class _FlightModeMenuState extends State<FlightModeMenu> {
             return SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.only(top: 10),
-                child: (firmware != null)? FlightModeButton(
+                child: (firmware != null)? _FlightModeButton(
                   autopilotType: firmware,
                   width: width,
                   onItemTap: () {
@@ -59,21 +61,21 @@ class _FlightModeMenuState extends State<FlightModeMenu> {
   }
 }
 
-class FlightButtonWidget extends StatelessWidget {
-  const FlightButtonWidget({
-    super.key,
-    required this.modeName,
+class _FlightButtonWidget extends StatelessWidget {
+  const _FlightButtonWidget({
+    Key? key,
     this.height = 48,
     this.width,
     this.onTap,
     this.child,
-  });
+    required this.modeName,
+  }) : super(key: key);
 
-  final double? height;
-  final double? width;
+  final double?       height;
+  final double?       width;
   final VoidCallback? onTap;
-  final Widget? child;
-  final String modeName;
+  final Widget?       child;
+  final String        modeName;
 
   @override
   Widget build(BuildContext context) {
@@ -116,19 +118,19 @@ class FlightButtonWidget extends StatelessWidget {
   }
 }
 
-class FlightModeButton extends StatelessWidget {
-  const FlightModeButton({
-    super.key,
+class _FlightModeButton extends StatelessWidget {
+  const _FlightModeButton({
+    Key? key,
     this.width,
     required this.onItemTap,
     required this.autopilotType
-  });
+  }) : super(key: key);
 
-  final double? width;
+  final double?      width;
   final VoidCallback onItemTap;
   final MavAutopilot autopilotType;
 
-  List<Widget> createMenu(MavAutopilot pilot) {
+  List<Widget> _createMenu(MavAutopilot pilot) {
     List<Widget> list = [];
 
     switch (pilot) {
@@ -137,7 +139,7 @@ class FlightModeButton extends StatelessWidget {
         for(var flightmode in ardupilotFlightModes) {
           if(!flightmode.settable) continue;
           list.add(
-            ItemHolder(
+            _ItemHolder(
               text: flightmode.modeName,
               onTap: () {
                 Vehicle? activeArduVehicle = MultiVehicle().activeVehicle();
@@ -157,7 +159,7 @@ class FlightModeButton extends StatelessWidget {
         for(var flightmode in px4FlightModes) {
           if(!flightmode.canBeAuto) continue;
           list.add(
-            ItemHolder(
+            _ItemHolder(
               text: flightmode.modeName,
               onTap: () {
                 Vehicle? activePX4Vehicle = MultiVehicle().activeVehicle();
@@ -203,20 +205,20 @@ class FlightModeButton extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: createMenu(autopilotType)
+        children: _createMenu(autopilotType)
       ),
     );
   }
 }
 
-class ItemHolder extends StatelessWidget {
-  const ItemHolder({
+class _ItemHolder extends StatelessWidget {
+  const _ItemHolder({
+    Key? key,
     required this.text,
     required this.onTap,
-    Key? key
   }) : super(key: key);
 
-  final String text;
+  final String       text;
   final VoidCallback onTap;
 
   @override

@@ -11,8 +11,8 @@ import 'package:peachgs_flutter/model/firmware/ardupilot.dart';
 import 'package:peachgs_flutter/utils/connection_manager.dart';
 import 'package:peachgs_flutter/utils/mavlink_protocol.dart';
 
-const double mathEpsilon = 4.94065645841247E-324;
-const double mathPI      = 3.1415926535897932;
+const double   mathEpsilon = 4.94065645841247E-324;
+const double   mathPI      = 3.1415926535897932;
 const uint16_t uint16max = 65535;
 
 class Vehicle {

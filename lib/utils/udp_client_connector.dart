@@ -6,33 +6,32 @@ import 'package:dart_mavlink/mavlink.dart';
 import 'package:peachgs_flutter/utils/mavlink_protocol.dart';
 import 'package:peachgs_flutter/utils/connection_task.dart';
 
-const String udpClientProtocol = 'udpclient';
+const String udpClientProtocol          = 'udpclient';
 const String disconnectUDPClientMessage = 'UDPCLIENTDIS';
 
 class UdpClientTask extends LinkTask {
-  RawDatagramSocket? udpSocket;
-  final MavlinkProtocol mavlink = MavlinkProtocol();
-  final Logger logger = Logger();
-
-  String hostName = '';
-  int    portNum = 0;
-
   UdpClientTask(ReceivePort receivePort) : super(receivePort);
+  
+  RawDatagramSocket?    _udpSocket;
+  final MavlinkProtocol _mavlink = MavlinkProtocol();
+
+  String _hostName = '';
+  int    _portNum = 0;
 
   @override
   void startTask(String host, int port) async {
-    hostName = host;
-    portNum = port;
+    _hostName = host;
+    _portNum = port;
 
-    udpSocket = await RawDatagramSocket.bind(InternetAddress.anyIPv4, port);
-    udpSocket!.listen((RawSocketEvent event) {
+    _udpSocket = await RawDatagramSocket.bind(InternetAddress.anyIPv4, port);
+    _udpSocket!.listen((RawSocketEvent event) {
       if(event != RawSocketEvent.read) return;
 
-      Datagram? frame = udpSocket!.receive();
+      Datagram? frame = _udpSocket!.receive();
       if(frame == null) {
         return;
       } else {
-        mavlink.parser.parse(frame.data);
+        _mavlink.parser.parse(frame.data);
       }
     });
 
@@ -40,26 +39,26 @@ class UdpClientTask extends LinkTask {
       processMessage(message);
     });
 
-    logger.i('start udp task');
+    Logger().i('start udp task');
   }
 
   @override
   String getProtocol() => udpClientProtocol;
 
   @override
-  String getHost() => hostName;
+  String getHost() => _hostName;
 
   @override
-  int getPortNum() => portNum;
+  int getPortNum() => _portNum;
 
   @override
   ReceivePort getMessagePort() => receivePort;
 
   @override
   void stopTask() {
-    if(udpSocket != null) {
-      udpSocket!.close();
-      logger.i('stop udp task');
+    if(_udpSocket != null) {
+      _udpSocket!.close();
+      Logger().i('stop udp task');
     }
   }
 
@@ -69,9 +68,9 @@ class UdpClientTask extends LinkTask {
       stopTask();
     } else if(message.runtimeType == MavlinkFrame) {
       MavlinkFrame frame = message as MavlinkFrame;
-      udpSocket!.send(frame.serialize(), InternetAddress(hostName), portNum);
+      _udpSocket!.send(frame.serialize(), InternetAddress(_hostName), _portNum);
     } else {
-      logger.i(message);
+      Logger().i(message);
     }
   }
 }

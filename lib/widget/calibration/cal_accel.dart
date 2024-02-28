@@ -11,7 +11,7 @@ class CalibrationAccel extends StatefulWidget {
 
 // TODO : 실제 작동하는 캘리브레이션 기능 구현
 class _CalibrationAccelState extends State<CalibrationAccel> {
-  List<String> calImgList = [
+  final List<String> _calImgList = [
     'accel_down.png',
     'accel_up.png',
     'accel_front.png',
@@ -20,17 +20,21 @@ class _CalibrationAccelState extends State<CalibrationAccel> {
     'accel_right.png'
   ];
 
-  double dynamicRatio() {
+  double _dynamicRatio() {
     if(Platform.isAndroid || Platform.isIOS) {
       return MediaQuery.of(context).size.width / (MediaQuery.of(context).size.height);
     } else {
       return MediaQuery.of(context).size.width / (MediaQuery.of(context).size.height * 1.3);
     }
   }
+
+  Widget _noVehicle() {
+    return const Text("기체를 먼저 연결해 주세요");
+  }
   
   @override
   Widget build(BuildContext context) {
-    if(MultiVehicle().activeVehicle() == null) return noVehicle();
+    if(MultiVehicle().activeVehicle() == null) return _noVehicle();
     return Stack(
       children: [
         Column(
@@ -51,7 +55,7 @@ class _CalibrationAccelState extends State<CalibrationAccel> {
                 margin: const EdgeInsets.all(10),
                 child: GridView.count(
                   crossAxisCount: 3,
-                  childAspectRatio: dynamicRatio(),
+                  childAspectRatio: _dynamicRatio(),
                   mainAxisSpacing: 2,
                   crossAxisSpacing: 2,
                   children: List.generate(6, (index) {
@@ -60,7 +64,7 @@ class _CalibrationAccelState extends State<CalibrationAccel> {
                       child: Container(
                         color: Colors.white,
                         margin: const EdgeInsets.all(3),
-                        child: Image.asset('assets/image/accel_cal/${calImgList[index]}'),
+                        child: Image.asset('assets/image/accel_cal/${_calImgList[index]}'),
                       )
                     );
                   }),
@@ -108,8 +112,4 @@ class _CalibrationAccelState extends State<CalibrationAccel> {
       ],
     );
   }
-}
-
-Widget noVehicle() {
-  return const Text("기체를 먼저 연결해 주세요");
 }

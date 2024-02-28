@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 
 class ToolButton extends StatelessWidget {
-  final IconData icon;
-  final Function()? submit;
-  final Color color;
-  final String? title;
-
   const ToolButton({
+    Key? key,
     required this.icon,
     required this.submit,
     required this.color,
-    this.title,
-    Key? key
+    this.title
   }) : super(key: key);
+
+  final IconData    icon;
+  final Function()? submit;
+  final Color       color;
+  final String?     title;
 
   @override
   Widget build(BuildContext context) {

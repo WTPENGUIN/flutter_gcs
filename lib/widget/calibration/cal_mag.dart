@@ -11,7 +11,7 @@ class CalibrationMag extends StatefulWidget {
 
 // TODO : 실제 작동하는 캘리브레이션 기능 구현
 class _CalibrationMagState extends State<CalibrationMag> {
-  List<String> calImgList = [
+  final List<String> _calImgList = [
     'VehicleDownRotate.png',
     'VehicleUpsideDownRotate.png',
     'VehicleNoseDownRotate.png',
@@ -20,7 +20,7 @@ class _CalibrationMagState extends State<CalibrationMag> {
     'VehicleRightRotate.png'
   ];
 
-  double dynamicRatio() {
+  double _dynamicRatio() {
     if(Platform.isAndroid || Platform.isIOS) {
       return MediaQuery.of(context).size.width / (MediaQuery.of(context).size.height);
     } else {
@@ -28,9 +28,13 @@ class _CalibrationMagState extends State<CalibrationMag> {
     }
   }
 
+  Widget _noVehicle() {
+    return const Text("기체를 먼저 연결해 주세요");
+  }
+
   @override
   Widget build(BuildContext context) {
-    if(MultiVehicle().activeVehicle() == null) return noVehicle();
+    if(MultiVehicle().activeVehicle() == null) return _noVehicle();
     return Stack(
       children: [
         Column(
@@ -51,7 +55,7 @@ class _CalibrationMagState extends State<CalibrationMag> {
                 margin: const EdgeInsets.all(10),
                 child: GridView.count(
                   crossAxisCount: 3,
-                  childAspectRatio: dynamicRatio(),
+                  childAspectRatio: _dynamicRatio(),
                   mainAxisSpacing: 2,
                   crossAxisSpacing: 2,
                   children: List.generate(6, (index) {
@@ -60,7 +64,7 @@ class _CalibrationMagState extends State<CalibrationMag> {
                       child: Container(
                         color: Colors.white,
                         margin: const EdgeInsets.all(3),
-                        child: Image.asset('assets/image/mag_cal/${calImgList[index]}'),
+                        child: Image.asset('assets/image/mag_cal/${_calImgList[index]}'),
                       ),
                     );
                   }),
@@ -108,8 +112,4 @@ class _CalibrationMagState extends State<CalibrationMag> {
       ],
     );
   }
-}
-
-Widget noVehicle() {
-  return const Text("기체를 먼저 연결해 주세요");
 }

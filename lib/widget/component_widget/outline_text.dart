@@ -1,33 +1,24 @@
 import 'package:flutter/material.dart';
 
 class OutlineText extends StatelessWidget {
-  final Text child;
-  final double strokeWidth;
-  final Color? strokeColor;
-  final TextOverflow? overflow;
-
-  const OutlineText(
-    this.child, {
-    super.key,
+  const OutlineText({
+    Key? key,
+    required this.child,
     this.strokeWidth = 2,
     this.strokeColor,
-    this.overflow,
-  });
+    this.overflow
+  }) : super(key: key);
 
-  // Option: can add flags
-  // e.g.) read a related state and globally apply if needed
-  // final backgroundProvider = ref.watch(backgroundSelectProvider);
-  // if (backgroundProvider.imagePath.isEmpty) {
-  //   return child;
-  // }
+  final Text          child;
+  final double        strokeWidth;
+  final Color?        strokeColor;
+  final TextOverflow? overflow;
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        // stroke text
         Text(
-          // need to set text scale if needed
           textScaler: child.textScaler,
           child.data!,
           style: TextStyle(

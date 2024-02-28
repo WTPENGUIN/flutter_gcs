@@ -4,10 +4,11 @@ import 'package:geolocator/geolocator.dart';
 
 // CurrentLocation 클래스
 class CurrentLocation {
-  double latitude  = double.nan;
-  double longitude = double.nan;
+  double _latitude  = double.nan;
+  double _longitude = double.nan;
 
-  Logger logger = Logger();
+  double get latitude => _latitude;
+  double get longitude => _longitude;
 
   // 유효한 위치인지 검사
   bool _isValidLocation(double lat, double lng) {
@@ -22,17 +23,17 @@ class CurrentLocation {
     try {
       Position pos = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
 
-      latitude = pos.latitude;
-      longitude = pos.longitude;
+      _latitude = pos.latitude;
+      _longitude = pos.longitude;
 
-      if(!_isValidLocation(latitude, longitude)) {
+      if(!_isValidLocation(_latitude, _longitude)) {
         throw Exception('Wrong Location');
       }
       
       return true;
     } catch(e) {
-      logger.e('$latitude, $longitude');
-      logger.e(e.toString());
+      Logger().e('$_latitude, $_longitude');
+      Logger().e(e.toString());
       return false;
     }
   }

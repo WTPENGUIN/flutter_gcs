@@ -8,7 +8,7 @@ class VehicleInfo extends StatelessWidget {
   const VehicleInfo({Key? key}) : super(key: key);
 
   // 화면 크기에 따른 패딩 크기
-  EdgeInsetsGeometry getPadding(BuildContext context) {
+  EdgeInsetsGeometry _getPadding(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     if(Platform.isAndroid || Platform.isIOS) {
       return EdgeInsets.only(top: (screenSize.height * 0.05), bottom: (screenSize.height * 0.02), left: (screenSize.height * 0.04));
@@ -20,7 +20,7 @@ class VehicleInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: getPadding(context),
+      padding: _getPadding(context),
       color: Colors.white,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -30,10 +30,11 @@ class VehicleInfo extends StatelessWidget {
             child: Selector<MultiVehicle, double?>(
               selector: (context, multiVehicle) => multiVehicle.activeVehicle()?.alt,
               builder: (context, altitude, _) {
-                return StatusWidget(
+                return _StatusWidget(
                   title: "고도",
                   text: (altitude != null) ? altitude.toStringAsFixed(1) : '0.0',
-                  suffix: 'm'
+                  suffix: 'm',
+                  subtext: null,
                 );
               },
             )
@@ -44,10 +45,11 @@ class VehicleInfo extends StatelessWidget {
             child: Selector<MultiVehicle, int?>(
               selector: (context, multiVehicle) => multiVehicle.activeVehicle()?.heading,
               builder: (context, heading, _) {
-                return StatusWidget(
+                return _StatusWidget(
                   title: '방향',
                   text: (heading != null) ? heading.toString() : '0',
-                  suffix: '°'
+                  suffix: '°',
+                  subtext: null,
                 );
               },
             )
@@ -58,10 +60,11 @@ class VehicleInfo extends StatelessWidget {
             child: Selector<MultiVehicle, double?>(
               selector: (context, multiVehicle) => multiVehicle.activeVehicle()?.hSpeed,
               builder: (context, verticalSpeed, _) {
-                return StatusWidget(
+                return _StatusWidget(
                   title: '수평 속도',
                   text: (verticalSpeed != null) ? verticalSpeed.toStringAsFixed(1) : '0.0',
-                  suffix: 'm/s'
+                  suffix: 'm/s',
+                  subtext: null,
                 );
               },
             )
@@ -72,10 +75,11 @@ class VehicleInfo extends StatelessWidget {
             child: Selector<MultiVehicle, double?>(
               selector: (context, multiVehicle) => multiVehicle.activeVehicle()?.vSpeed,
               builder: (context, horizentalSpeed, _) {
-                return StatusWidget(
+                return _StatusWidget(
                   title: '수직 속도',
                   text: (horizentalSpeed != null) ? horizentalSpeed.toStringAsFixed(1) : '0.0',
-                  suffix: 'm/s'
+                  suffix: 'm/s',
+                  subtext: null,
                 );
               },
             )
@@ -86,9 +90,10 @@ class VehicleInfo extends StatelessWidget {
             child: Selector<MultiVehicle, String?>(
               selector: (context, multiVehicle) => multiVehicle.activeVehicle()?.mode,
               builder: (context, mode, _) {
-                return StatusWidget(
+                return _StatusWidget(
                   title: '비행 모드',
                   text: (mode != null) ? mode : '-',
+                  subtext: null,
                 );
               },
             )
@@ -99,8 +104,8 @@ class VehicleInfo extends StatelessWidget {
   }
 }
 
-class StatusWidget extends StatelessWidget {
-  const StatusWidget({
+class _StatusWidget extends StatelessWidget {
+  const _StatusWidget({
     Key? key,
     required this.title,
     required this.text,

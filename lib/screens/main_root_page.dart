@@ -16,11 +16,11 @@ class MainRootWindow extends StatefulWidget {
 }
 
 class _MainRootWindowState extends State<MainRootWindow> {
-  bool isBottomShow = true;
+  bool _isBottomShow = true;
 
   void _toggleBottomShow() {
     setState(() {
-      isBottomShow = !isBottomShow;
+      _isBottomShow = !_isBottomShow;
     });
   }
 
@@ -64,22 +64,22 @@ class _MainRootWindowState extends State<MainRootWindow> {
                 ),
                 // 비디오 위젯
                 Positioned(
-                  bottom: (isBottomShow) ? ((appScreenSize.height / 11) * 2) : 0,
+                  bottom: (_isBottomShow) ? ((appScreenSize.height / 11) * 2) : 0,
                   child: const VideoPage()
                 ),
                 // 기체 정보 위젯 숨기기 버튼
                 Positioned(
-                  bottom: (isBottomShow) ? ((appScreenSize.height / 11) * 2.05) : 10,
+                  bottom: (_isBottomShow) ? ((appScreenSize.height / 11) * 2.05) : 10,
                   right: 10,
                   child: ToolButton(
-                    icon: (isBottomShow) ? Icons.visibility_off : Icons.visibility,
+                    icon: (_isBottomShow) ? Icons.visibility_off : Icons.visibility,
                     submit: _toggleBottomShow,
                     color: Colors.blue,
                   )
                 ),
                 // 기체 정보 위젯
                 Visibility(
-                  visible: isBottomShow,
+                  visible: _isBottomShow,
                   child: Positioned(
                     bottom: 0,
                     left: 0,

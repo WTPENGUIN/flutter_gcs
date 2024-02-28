@@ -7,35 +7,34 @@ import 'package:dart_mavlink/mavlink.dart';
 import 'package:peachgs_flutter/utils/mavlink_protocol.dart';
 import 'package:peachgs_flutter/utils/connection_task.dart';
 
-const String tcpProtocol = 'tcp';
+const String tcpProtocol          = 'tcp';
 const String disconnectTCPMessage = 'TCPDIS';
 
 class TcpTask extends LinkTask {
-  Socket? tcpSocket;
-  final MavlinkProtocol mavlink = MavlinkProtocol();
-  final Logger logger = Logger();
-
-  String hostName = '';
-  int    portNum = 0;  
-
   TcpTask(ReceivePort receivePort) : super(receivePort);
+  
+  Socket? _tcpSocket;
+  final MavlinkProtocol _mavlink = MavlinkProtocol();
+
+  String _hostName = '';
+  int    _portNum = 0;  
 
   @override
   void startTask(String host, int port) async {
-    hostName = host;
-    portNum = port;
+    _hostName = host;
+    _portNum = port;
 
-    tcpSocket = await Socket.connect(host, port);
-    tcpSocket!.listen(
+    _tcpSocket = await Socket.connect(host, port);
+    _tcpSocket!.listen(
       (List<int> data) {
         Uint8List converted = Uint8List.fromList(data);
-        mavlink.parser.parse(converted);
+        _mavlink.parser.parse(converted);
       },
       onDone: () {
-        logger.i('TCP Socket Closed');
+        Logger().i('TCP Socket Closed');
       },
       onError: (error) {
-        logger.e('TCP Socket Error : $error');
+        Logger().e('TCP Socket Error : $error');
       },
       cancelOnError: true
     );
@@ -44,27 +43,27 @@ class TcpTask extends LinkTask {
       processMessage(message);
     });
 
-    logger.i('start tcp task');
+    Logger().i('start tcp task');
   }
 
   @override
   String getProtocol() => tcpProtocol;
 
   @override
-  String getHost() => hostName;
+  String getHost() => _hostName;
 
   @override
-  int getPortNum() => portNum;
+  int getPortNum() => _portNum;
 
   @override
   ReceivePort getMessagePort() => receivePort;
 
   @override
   void stopTask() {
-    if(tcpSocket != null) {
-      tcpSocket!.close();
-      tcpSocket!.destroy();
-      logger.i('stop tcp task');
+    if(_tcpSocket != null) {
+      _tcpSocket!.close();
+      _tcpSocket!.destroy();
+      Logger().i('stop tcp task');
     }
   }
 
@@ -74,9 +73,9 @@ class TcpTask extends LinkTask {
       stopTask();
     } else if(message.runtimeType == MavlinkFrame) {
       MavlinkFrame frame = message as MavlinkFrame;
-      tcpSocket!.write(frame.serialize());
+      _tcpSocket!.write(frame.serialize());
     } else {
-      logger.i(message);
+      Logger().i(message);
     }
   }
 }

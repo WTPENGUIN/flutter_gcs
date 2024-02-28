@@ -20,11 +20,11 @@ class FlyButtons extends StatefulWidget {
 }
 
 class _ToolButtonsState extends State<FlyButtons> {
-  bool isOpen = true;
+  bool _isOpen = true;
 
   void _toggleOpen() {
     setState(() {
-      isOpen = !isOpen;
+      _isOpen = !_isOpen;
     });
   }
 
@@ -39,7 +39,7 @@ class _ToolButtonsState extends State<FlyButtons> {
           children: [
             // 시동 버튼
             Visibility(
-              visible: isOpen,
+              visible: _isOpen,
               child: Selector<MultiVehicle, bool?>(
                 selector: (context, multiVehicle) => multiVehicle.activeVehicle()?.armed,
                 builder: (context, isArmed, _) {
@@ -63,11 +63,11 @@ class _ToolButtonsState extends State<FlyButtons> {
                 }
               )
             ),
-            SizedBox(height: (isOpen) ? 10 : 0),
+            SizedBox(height: (_isOpen) ? 10 : 0),
             // 이륙 버튼
             // TODO : 고도 설정하여 이륙
             Visibility(
-              visible: isOpen,
+              visible: _isOpen,
               child: Selector<MultiVehicle, bool?>(
                 selector: (context, multiVehicle) => multiVehicle.activeVehicle()?.isFly,
                 builder: (context, isFlying, _) {
@@ -87,10 +87,10 @@ class _ToolButtonsState extends State<FlyButtons> {
                 }
               )
             ),
-            SizedBox(height: (isOpen) ? 10 : 0),
+            SizedBox(height: (_isOpen) ? 10 : 0),
             // 착륙 버튼
             Visibility(
-              visible: isOpen,
+              visible: _isOpen,
               child: Selector<MultiVehicle, bool?>(
                 selector: (context, multiVehicle) => multiVehicle.activeVehicle()?.isFly,
                 builder: (context, isFlying, _) {
@@ -110,10 +110,10 @@ class _ToolButtonsState extends State<FlyButtons> {
                 }
               )
             ),
-            SizedBox(height: (isOpen) ? 10 : 0),
+            SizedBox(height: (_isOpen) ? 10 : 0),
             // RTL 버튼
             Visibility(
-              visible: isOpen,
+              visible: _isOpen,
               child: Selector<MultiVehicle, bool?>(
                 selector: (context, multiVehicle) => multiVehicle.activeVehicle()?.isFly,
                 builder: (context, isFlying, _) {
@@ -133,23 +133,23 @@ class _ToolButtonsState extends State<FlyButtons> {
                 }
               )
             ),
-            SizedBox(height: (isOpen) ? 10 : 0),
+            SizedBox(height: (_isOpen) ? 10 : 0),
             // 이동 명령 버튼
             Visibility(
-              visible: isOpen && (widget.buttonState != null),
+              visible: _isOpen && (widget.buttonState != null),
               child: ToolButton(
                 icon: Icons.flag,
                 submit: widget.mapSubmit,
                 color:  (widget.buttonState != null && widget.buttonState!) ? Colors.blue : Colors.grey,
               )
             ),
-            SizedBox(height: (isOpen && (widget.buttonState != null)) ? 10 : 0),
+            SizedBox(height: (_isOpen && (widget.buttonState != null)) ? 10 : 0),
             // 메뉴 열고 닫기 버튼
             ToolButton(
-              icon: isOpen ? Icons.expand_less : Icons.expand_more,
+              icon: _isOpen ? Icons.expand_less : Icons.expand_more,
               submit: _toggleOpen,
               color: Colors.black38,
-              title: isOpen ? '닫기' : '열기',
+              title: _isOpen ? '닫기' : '열기',
             )
           ],
         )

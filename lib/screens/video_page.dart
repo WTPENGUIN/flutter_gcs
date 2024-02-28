@@ -62,13 +62,13 @@ class _VideoPageStete extends State<VideoPage> {
   Widget _readyWidget() {
     return const Center(
       child: OutlineText(
-        Text(
-          '재생 준비 중...',
-          style: TextStyle(color: Colors.white),
-        ),
         strokeWidth: 1,
         strokeColor: Colors.black,
         overflow: TextOverflow.ellipsis,
+        child: Text(
+          '재생 준비 중...',
+          style: TextStyle(color: Colors.white),
+        ),
       ),
     );
   }
@@ -205,7 +205,7 @@ class _VideoPageStete extends State<VideoPage> {
 
     return ResizebleContainerWidget(
       size: Size(screenSize.width * 0.25, screenSize.height * 0.25),
-      position: ResizeHandlePosition.positionUpperRight,
+      position: HandlePosition.positionUpperRight,
       child: Stack(
         children: [
           AbsorbPointer(

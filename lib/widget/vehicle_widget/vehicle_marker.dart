@@ -4,22 +4,22 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:peachgs_flutter/widget/component_widget/outline_text.dart';
 
 class VehicleMarker extends StatelessWidget {
+  const VehicleMarker({
+    Key? key,
+    required this.route,
+    required this.degree,
+    required this.vehicleId,
+    required this.outlineColor,
+    required this.flightMode,
+    required this.armed
+  }) : super(key: key);
+
   final String route;
   final double degree;
   final int    vehicleId;
   final Color  outlineColor;
   final String flightMode;
   final bool   armed;
-
-  const VehicleMarker({
-    required this.route,
-    required this.degree,
-    required this.vehicleId,
-    required this.outlineColor,
-    required this.flightMode,
-    required this.armed,
-    Key? key
-  }) : super(key: key);
 
   double _degreesToRadians(double degrees) {
     const double pi = 3.1415926535897932;
@@ -45,7 +45,10 @@ class VehicleMarker extends StatelessWidget {
           Align(
             alignment: Alignment.bottomCenter,
             child: OutlineText(
-              Text(
+              strokeWidth: 1,
+              strokeColor: outlineColor,
+              overflow: TextOverflow.ellipsis,
+              child: Text(
                 '기체 $vehicleId(${armed ? '시동' : '꺼짐'})',
                 style: const TextStyle(
                   fontWeight: FontWeight.w300,
@@ -53,15 +56,15 @@ class VehicleMarker extends StatelessWidget {
                   color: Colors.white
                 ),
               ),
-              strokeWidth: 1,
-              strokeColor: outlineColor,
-              overflow: TextOverflow.ellipsis,
             ),
           ),
           Align(
             alignment: Alignment.topCenter,
             child: OutlineText(
-              Text(
+              strokeWidth: 1,
+              strokeColor: outlineColor,
+              overflow: TextOverflow.ellipsis,
+              child: Text(
                 flightMode,
                 style: const TextStyle(
                   fontWeight: FontWeight.w300,
@@ -69,9 +72,6 @@ class VehicleMarker extends StatelessWidget {
                   color: Colors.white
                 ),
               ),
-              strokeWidth: 1,
-              strokeColor: outlineColor,
-              overflow: TextOverflow.ellipsis,
             )
           ),
         ],

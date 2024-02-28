@@ -17,18 +17,17 @@ enum MenuPosition {
 
 class OverlayFlexDropDown extends StatefulWidget {
   const OverlayFlexDropDown({
-    super.key,
+    Key? key,
     required this.controller,
     required this.buttonBuilder,
     required this.menuBuilder,
     this.menuPosition = MenuPosition.bottom,
-  });
+  }) : super(key: key);
 
   final OverlayPortalController controller;
-
-  final ButtonBuilder buttonBuilder;
-  final MenuBuilder menuBuilder;
-  final MenuPosition menuPosition;
+  final ButtonBuilder           buttonBuilder;
+  final MenuBuilder             menuBuilder;
+  final MenuPosition            menuPosition;
 
   @override
   State<OverlayFlexDropDown> createState() => _OverlayFlexDropDownState();
@@ -37,7 +36,7 @@ class OverlayFlexDropDown extends StatefulWidget {
 class _OverlayFlexDropDownState extends State<OverlayFlexDropDown> {
   final _link = LayerLink();
 
-  /// width of the button after the widget rendered
+  /// 버튼의 너비
   double? _buttonWidth;
 
   @override
@@ -57,12 +56,12 @@ class _OverlayFlexDropDownState extends State<OverlayFlexDropDown> {
             ),
           );
         },
-        child: widget.buttonBuilder(context, onTap),
+        child: widget.buttonBuilder(context, _onTap),
       ),
     );
   }
 
-  void onTap() {
+  void _onTap() {
     _buttonWidth = context.size?.width;
 
     widget.controller.toggle();
