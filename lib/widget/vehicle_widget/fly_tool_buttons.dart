@@ -202,7 +202,7 @@ class _ToolButtonsState extends State<FlyButtons> {
           ToolButton(
             icon: _isOpen ? Icons.expand_less : Icons.expand_more,
             submit: _toggleOpen,
-            color: Colors.black38,
+            color: Colors.black87,
             title: _isOpen ? '닫기' : '열기',
           )
         ],
@@ -227,7 +227,7 @@ class _ToolButtonsState extends State<FlyButtons> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 150,
+      width: 160,
       color: Colors.transparent,
       child: SingleChildScrollView(
         child: Row(

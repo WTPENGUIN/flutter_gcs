@@ -7,7 +7,7 @@ import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_ti
 import 'package:peachgs_flutter/utils/current_location.dart';
 import 'package:peachgs_flutter/model/multi_vehicle_manage.dart';
 import 'package:peachgs_flutter/widget/vehicle_widget/vehicle_marker.dart';
-import 'package:peachgs_flutter/widget/vehicle_widget/fly_buttons.dart';
+import 'package:peachgs_flutter/widget/vehicle_widget/fly_tool_buttons.dart';
 
 class MapWindowDesktop extends StatefulWidget {
   const MapWindowDesktop({Key? key}) : super(key: key);

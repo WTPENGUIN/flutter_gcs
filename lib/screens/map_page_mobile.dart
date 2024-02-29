@@ -6,7 +6,7 @@ import 'package:flutter_naver_map/flutter_naver_map.dart';
 
 import 'package:peachgs_flutter/utils/current_location.dart';
 import 'package:peachgs_flutter/model/multi_vehicle_manage.dart';
-import 'package:peachgs_flutter/widget/vehicle_widget/fly_buttons.dart';
+import 'package:peachgs_flutter/widget/vehicle_widget/fly_tool_buttons.dart';
 
 class MapWindowMobile extends StatefulWidget {
   const MapWindowMobile({Key? key}) : super(key: key);
@@ -187,7 +187,7 @@ class _MapWindowMobileState extends State<MapWindowMobile> {
               });
             },
           )
-        )
+        ),
       ],
     );
   }

@@ -20,6 +20,7 @@ class AltitudeSlider extends StatefulWidget {
 class _AltitudeSliderState extends State<AltitudeSlider> {
   int _sliderValue = (MultiVehicle().activeVehicle() == null) ? 0 : MultiVehicle().activeVehicle()!.alt.toInt();
 
+  // TODO : 반응형 높이
   double _dynamicHeight() {
     double calHeight = MediaQuery.of(context).size.height * 0.45;
 
@@ -36,7 +37,7 @@ class _AltitudeSliderState extends State<AltitudeSlider> {
       width: 40,
       height: _dynamicHeight(),
       decoration: BoxDecoration(
-        color: Colors.black38,
+        color: Colors.black,
         borderRadius: BorderRadius.circular(40)
       ),
       child: Column(
@@ -86,12 +87,14 @@ class _AltitudeSliderState extends State<AltitudeSlider> {
           Padding(
             padding: const EdgeInsets.only(top: 10),
             child: IconButton(
+              style: IconButton.styleFrom(
+                backgroundColor: Colors.white
+              ),
               onPressed: () {
                 // 상위 위젯에서 전달받은 함수 실행
                 widget.submit!();
                 
                 if(MultiVehicle().activeVehicle() == null) return;
-
                 if(widget.takeOff) {
                   MultiVehicle().activeVehicle()!.takeOff(_sliderValue.toDouble());
                 } else {
@@ -99,7 +102,7 @@ class _AltitudeSliderState extends State<AltitudeSlider> {
                   MultiVehicle().activeVehicle()!.changeAltitude(newAlt);
                 }
               },
-              icon: const Icon(Icons.check, color: Colors.white),
+              icon: const Icon(Icons.check, color: Colors.black),
             )
           )
         ]
