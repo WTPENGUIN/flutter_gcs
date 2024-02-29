@@ -44,6 +44,7 @@ dependencies:
 
   # Application UI
   sidebarx: ^0.16.3            # 사이드바 패키지
+  flutter_xlider: ^3.5.0       # 슬라이더 바 패키지
   flutter_speed_dial: ^7.0.0   # Speed Dial 버튼 패키지
   top_snackbar_flutter: ^3.1.0 # 스낵바 표시 패키지
   flutter_settings_ui: ^3.0.0  # 세팅 페이지를 구축할 수 있는 패키지

@@ -164,7 +164,7 @@ class Vehicle {
     switch (_autopilotType) {
       case mavAutopilotArdupilotmega:
         _ardupilotSetFlightMode("GUIDED"); // 모드 변경
-        arm(true);                  // 시동 걸기
+        arm(true);                         // 시동 걸기
         var command = CommandLong(
           param1: 0.0,
           param2: 0.0,
@@ -215,7 +215,7 @@ class Vehicle {
         _px4SetFlightMode("Land");
         break;
       default:
-        // TODO : 미지원 펌웨어 이륙 명령어 예외 처리
+        // TODO : 미지원 펌웨어 착륙 명령어 예외 처리
     } 
   }
 
@@ -229,8 +229,60 @@ class Vehicle {
         _px4SetFlightMode("Return");
         break;
       default:
-        // TODO : 미지원 펌웨어 이륙 명령어 예외 처리
+        // TODO : 미지원 펌웨어 귀환 명령어 예외 처리
     }     
+  }
+
+  // 기체에 고도 변환 명령어 전송
+  void changeAltitude(double altitude) {
+    switch (_autopilotType) {
+      case mavAutopilotArdupilotmega:
+        var command = SetPositionTargetLocalNed(
+          timeBootMs: 0,
+          x: 0.0,
+          y: 0.0,
+          z: -altitude,
+          vx: 0.0,
+          vy: 0.0,
+          vz: 0.0,
+          afx: 0.0,
+          afy: 0.0,
+          afz: 0.0,
+          yaw: 0.0,
+          yawRate: 0.0,
+          typeMask: 65528, // type_mask = 0xFFF8, QGroundControl 코드 참조
+          targetSystem: _vehicleId,
+          targetComponent: mavCompIdAll,
+          coordinateFrame: mavFrameLocalOffsetNed
+        );
+
+        ConnectionManager link = ConnectionManager();
+        MavlinkFrame mavlinkFrame = MavlinkFrame.v2(0, MavlinkProtocol().getSystemId(), MavlinkProtocol.getComponentId(), command);
+        link.writeMessageLink(mavlinkFrame);
+        break;
+      case mavAutopilotPx4:
+        double newAltRel = _vehicleRelativeAltitude + altitude;
+        var command = CommandLong(
+          param1: -1.0,
+          param2: mavDoRepositionFlagsChangeMode.toDouble(),
+          param3: 0.0,
+          param4: double.nan,
+          param5: double.nan,
+          param6: double.nan,
+          param7: _homeAlt + newAltRel,
+          command: mavCmdDoReposition,
+          targetSystem: _vehicleId,
+          targetComponent: mavCompIdAll,
+          confirmation: 0
+        );
+
+        ConnectionManager link = ConnectionManager();
+        MavlinkFrame mavlinkFrame = MavlinkFrame.v2(0, MavlinkProtocol().getSystemId(), MavlinkProtocol.getComponentId(), command);
+        link.writeMessageLink(mavlinkFrame);
+        break;
+      default:
+        // TODO : 미지원 펌웨어 고도 변환 명령어 예외 처리
+    }
   }
 
   // 기체에 이동 명령어 전송
@@ -273,12 +325,13 @@ class Vehicle {
           targetComponent: mavCompIdAll,
           confirmation: 0
         );
+
         ConnectionManager link = ConnectionManager();
         MavlinkFrame mavlinkFrame = MavlinkFrame.v2(0, MavlinkProtocol().getSystemId(), MavlinkProtocol.getComponentId(), command);
         link.writeMessageLink(mavlinkFrame);
         break;
       default:
-        // TODO : 미지원 펌웨어 비행모드 전환 명령어 예외 처리
+        // TODO : 미지원 펌웨어 이동 명령어 예외 처리
     }
   }
 

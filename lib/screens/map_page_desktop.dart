@@ -156,7 +156,7 @@ class _MapWindowDesktopState extends State<MapWindowDesktop> {
         // 이동 명령 마커 레이어
         MarkerLayer(markers: _gotoMarker),
 
-        //도구 모음 버튼
+        // 도구 모음 버튼
         Align(
           alignment: Alignment.topLeft,
           child: Padding(
@@ -167,8 +167,8 @@ class _MapWindowDesktopState extends State<MapWindowDesktop> {
                 setState(() {
                   _buttonPressed = !_buttonPressed;
                 });
-              },
-            ),
+              }
+            )
           )
         )
       ]

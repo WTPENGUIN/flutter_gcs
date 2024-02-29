@@ -19,8 +19,8 @@ class MultiVehicle extends ChangeNotifier {
   set setActiceId(int number) => _activeVehicle = number;
   int get getActiveId         => _activeVehicle;
 
-  // 3초 동안 하트비트가 없으면 연결이 끊어진 것으로 간주
-  final int _disconnectTime = 3000;
+  // 5초 동안 하트비트가 없으면 연결이 끊어진 것으로 간주
+  final int _disconnectTime = 5000;
 
   // 기체 목록 리스트
   final List<Vehicle> _vehicles = [];
