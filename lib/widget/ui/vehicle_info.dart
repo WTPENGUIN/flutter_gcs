@@ -21,7 +21,10 @@ class VehicleInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: _getPadding(context),
-      color: Colors.white,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10)
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
@@ -83,21 +86,7 @@ class VehicleInfo extends StatelessWidget {
                 );
               },
             )
-          ),
-          const VerticalDivider(thickness: 2, width: 30),
-          Expanded(
-            flex: 1,
-            child: Selector<MultiVehicle, String?>(
-              selector: (context, multiVehicle) => multiVehicle.activeVehicle()?.mode,
-              builder: (context, mode, _) {
-                return _StatusWidget(
-                  title: '비행 모드',
-                  text: (mode != null) ? mode : '-',
-                  subtext: null,
-                );
-              },
-            )
-          ),
+          )
         ],
       ),
     );

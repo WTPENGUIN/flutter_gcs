@@ -8,10 +8,6 @@ Future<List<String>> showLinkCreateModal(BuildContext context) async {
   String selectedProtocol = 'UDP(S)';
   String hostName = '';
   String portNumber = '';
-
-  // 모달 크기 설정
-  double modalHeight = (MediaQuery.of(context).size.height * 0.4 < 284) ? 285 : MediaQuery.of(context).size.height * 0.4;
-  double modalWidth  = (MediaQuery.of(context).size.width  * 0.3 < 355) ? 356 : MediaQuery.of(context).size.width  * 0.3;
   
   return showDialog(
     context: context,
@@ -40,9 +36,13 @@ Future<List<String>> showLinkCreateModal(BuildContext context) async {
             )
           ],
         ),
-        content: SizedBox(
-          height: modalHeight,
-          width: modalWidth,
+        content: Container(
+          constraints: const BoxConstraints(
+            minHeight: 285,
+            minWidth: 355
+          ),
+          height: MediaQuery.of(context).size.height * 0.4,
+          width: MediaQuery.of(context).size.width  * 0.3,
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(8.0),
             child: Form(

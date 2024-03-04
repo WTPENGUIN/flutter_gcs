@@ -11,10 +11,6 @@ Future<String> showVideoModal(BuildContext context) async {
   String url = context.read<AppConfig>().url;
   controller.text = url;
 
-  // 모달 크기 설정
-  double modalHeight = (MediaQuery.of(context).size.height * 0.15 < 151) ? 152 : MediaQuery.of(context).size.height * 0.15;
-  double modalWidth  = (MediaQuery.of(context).size.width  * 0.25 < 480) ? 480 : MediaQuery.of(context).size.width  * 0.25;
-
   return showDialog(
     context: context,
     builder: (context) {
@@ -42,9 +38,13 @@ Future<String> showVideoModal(BuildContext context) async {
             )
           ],
         ),
-        content: SizedBox(
-          height: modalHeight,
-          width: modalWidth,
+        content: Container(
+          constraints: const BoxConstraints(
+            minHeight: 150,
+            minWidth: 480
+          ),
+          height: MediaQuery.of(context).size.height * 0.15,
+          width: MediaQuery.of(context).size.width  * 0.25,
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(8.0),
             child: Form(

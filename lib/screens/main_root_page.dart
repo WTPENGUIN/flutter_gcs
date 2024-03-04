@@ -16,7 +16,7 @@ class MainRootWindow extends StatefulWidget {
 }
 
 class _MainRootWindowState extends State<MainRootWindow> {
-  bool _isBottomShow = true;
+  bool _isBottomShow = false;
 
   void _toggleBottomShow() {
     setState(() {

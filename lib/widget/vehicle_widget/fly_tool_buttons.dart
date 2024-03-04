@@ -23,7 +23,7 @@ class FlyButtons extends StatefulWidget {
 }
 
 class _ToolButtonsState extends State<FlyButtons> {
-  bool _isOpen     = false;
+  bool _isOpen     = true;
   bool _showSlider = false;
   bool _isTakeOff  = false;
 
