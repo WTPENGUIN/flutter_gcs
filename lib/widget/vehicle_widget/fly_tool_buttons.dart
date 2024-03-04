@@ -227,14 +227,14 @@ class _ToolButtonsState extends State<FlyButtons> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 160,
+      width: 200,
       color: Colors.transparent,
       child: SingleChildScrollView(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             _toolButton(),
-            SizedBox(width: (_isOpen) ? 10 : 0),
+            SizedBox(width: (_isOpen) ? 20 : 0),
             _altitudeSlide()
           ],
         )

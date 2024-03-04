@@ -32,8 +32,8 @@ class _AltitudeSliderState extends State<AltitudeSlider> {
   Widget build(BuildContext context) {
     return Container(
       width: 40,
-      constraints: const BoxConstraints(
-        maxHeight: 330
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.5
       ),
       height: MediaQuery.of(context).size.height * 0.5,
       decoration: BoxDecoration(
