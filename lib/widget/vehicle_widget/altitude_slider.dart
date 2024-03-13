@@ -18,24 +18,24 @@ class AltitudeSlider extends StatefulWidget {
 }
 
 class _AltitudeSliderState extends State<AltitudeSlider> {
-  int _sliderValue = (MultiVehicle().activeVehicle() == null) ? 0 : MultiVehicle().activeVehicle()!.alt.toInt();
+  int _initValue = 0;
+  int _sliderValue = 0;
 
-  // TODO : 반응형 높이
-  double _dynamicHeight() {
-    double calHeight = MediaQuery.of(context).size.height * 0.45;
-
-    if(calHeight > 320) {
-      return 320.0;
-    } else {
-      return calHeight;
-    }
+  @override
+  void initState() {
+    super.initState();
+    _initValue = (MultiVehicle().activeVehicle() == null) ? 0 : MultiVehicle().activeVehicle()!.alt.toInt();
+    _sliderValue = _initValue;
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: 40,
-      height: _dynamicHeight(),
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.5
+      ),
+      height: MediaQuery.of(context).size.height * 0.5,
       decoration: BoxDecoration(
         color: Colors.black,
         borderRadius: BorderRadius.circular(40)
@@ -43,6 +43,18 @@ class _AltitudeSliderState extends State<AltitudeSlider> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 10),
+            child: Text(
+              '${_sliderValue}m',
+              style: const TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w300,
+                fontFamily: 'Orbitron',
+                color: Colors.white
+              ),
+            ),
+          ),
           Expanded(
             child: FlutterSlider(
               axis: Axis.vertical,
@@ -78,14 +90,16 @@ class _AltitudeSliderState extends State<AltitudeSlider> {
               rtl: true,
               values: [_sliderValue.toDouble()],
               min: 0,
-              max: 100 + (_sliderValue * 1.5),
+              max: 100 + (_initValue * 1.5),
               onDragging: (_, lowerValue, __) {
-                _sliderValue = lowerValue.toInt();
+                setState(() {
+                  _sliderValue = lowerValue.toInt();
+                });
               },
             )
           ),
           Padding(
-            padding: const EdgeInsets.only(top: 10),
+            padding: const EdgeInsets.only(top: 5),
             child: IconButton(
               style: IconButton.styleFrom(
                 backgroundColor: Colors.white

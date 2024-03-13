@@ -52,6 +52,7 @@ class _MapWindowMobileState extends State<MapWindowMobile> {
               icon: const NOverlayImage.fromAssetImage('assets/image/VehicleIcon.png'),
               size: const Size(70, 70),
               anchor: const NPoint(0.5, 0.5), // 기본 마커는 위로 살짝 올라와 있기 때문에 재조정
+              angle: vehicle.yaw,
               position: NLatLng(vehicle.lat, vehicle.lon),
               caption: NOverlayCaption(
                 text: '기체 ${vehicle.id} (${(vehicle.armed) ? '시동' : '꺼짐'})',
