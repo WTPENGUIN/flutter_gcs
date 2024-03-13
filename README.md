@@ -1,16 +1,19 @@
-# peachgs_flutter
+# ThePeach Drone GCS
 
-A new Flutter project.
+<img src="https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white">
 
-## Getting Started
+Flutter로 개발 중인 Drone 지상 제어 스테이션
 
-This project is a starting point for a Flutter application.
+Mavlink 통신 프로토콜을 사용하는 드론을 제어 및 임무를 부여하는 어플리케이션 개발 프로젝트
 
-A few resources to get you started if this is your first Flutter project:
+## 시작 가이드
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+__Requirements__
+- Flutter 개발 환경([Flutter.dev](https://flutter.dev/))
+   
+   - 내부에서 사용하는 Package의 문제로 인해 Flutter SDK 3.16 버전을 사용해 주십시오.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- (Mobile) Android Studio, XCode
+
+## 주의사항
+- 내부 패키지의 호환성 문제로 인해 Flutter SDK 버전은 3.16을 사용하여 주십시오. 최신 버전 사용 시, 지도가 멈추는 현상이 발생합니다.
