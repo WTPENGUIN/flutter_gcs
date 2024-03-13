@@ -1,10 +1,9 @@
 import 'dart:io';
 import 'dart:convert';
 import 'package:logger/logger.dart';
-import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 
-class AppConfig with ChangeNotifier {
+class AppSetting {
   int    _mavid     = 250;
   String _streamUrl = '';
 
@@ -12,15 +11,15 @@ class AppConfig with ChangeNotifier {
   String get url => _streamUrl;
 
   // 파일 이름
-  static const String _fileName = 'PeachAppSetting.json';
+  static const String _fileName = 'PeachAppConfig.json';
 
   // AppConfig 클래스는 싱글톤 클래스로 관리
-  static AppConfig? _instance;
-  AppConfig._privateConstructor() {
+  static AppSetting? _instance;
+  AppSetting._privateConstructor() {
     // 앱 시작 시 설정 로드
     loadAppConfig();
   }
-  factory AppConfig() => _instance ??= AppConfig._privateConstructor();
+  factory AppSetting() => _instance ??= AppSetting._privateConstructor();
 
   // 설정을 로드하는 메서드
   Future<void> loadAppConfig() async {
@@ -71,23 +70,17 @@ class AppConfig with ChangeNotifier {
     _mavid     = id;
     _streamUrl = url;
     _saveAppConfig();
-
-    notifyListeners();
   }
 
   // Mavlink ID 업데이트 메서드
   void updateMavId(int id) {
     _mavid = id;
     _saveAppConfig();
-
-    notifyListeners();
   }
 
   // Video Streaming URL 업데이트 메서드
   void updateStreamUrl(String url) {
     _streamUrl = url;
     _saveAppConfig();
-
-    notifyListeners();
   }
 }

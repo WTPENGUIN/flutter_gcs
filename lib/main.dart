@@ -11,8 +11,8 @@ import 'package:flutter_naver_map/flutter_naver_map.dart';
 
 import 'package:peachgs_flutter/router.dart';
 import 'package:peachgs_flutter/model/app_setting.dart';
-import 'package:peachgs_flutter/model/multi_vehicle_manage.dart';
-import 'package:peachgs_flutter/utils/connection_manager.dart';
+import 'package:peachgs_flutter/provider/multivehicle.dart';
+import 'package:peachgs_flutter/service/connection/connection_manager.dart';
 
 // 위치 권한 요청
 Future<bool> _getPermission() async {
@@ -100,14 +100,13 @@ void main() async {
   }
 
   // 어플리케이션 세팅 초기화
-  await AppConfig().loadAppConfig();
+  await AppSetting().loadAppConfig();
 
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => MultiVehicle()),
         ChangeNotifierProvider(create: (_) => ConnectionManager()),
-        ChangeNotifierProvider(create: (_) => AppConfig())
       ],
       child: MaterialApp.router(
         routerConfig: router,
