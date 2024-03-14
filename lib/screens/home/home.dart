@@ -26,12 +26,9 @@ class HomeWindow extends StatelessWidget {
           children: [
             Column(
               children: [
-                Expanded(
-                  flex: 1,
-                  child: Container(
-                    color: Colors.transparent,
-                    child: const TopBar(),
-                  )
+                Container(
+                  color: Colors.transparent,
+                  child: const TopBar(),
                 ),
                 Expanded(
                   flex: 10,
@@ -44,7 +41,7 @@ class HomeWindow extends StatelessWidget {
             ),
             const Positioned(
               bottom: 0,
-              child: VideoPage()
+              child: VideoViewer()
             )
           ],
         ),
