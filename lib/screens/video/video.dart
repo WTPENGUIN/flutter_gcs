@@ -6,35 +6,46 @@ import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-import 'package:peachgs_flutter/colors.dart';
 import 'package:peachgs_flutter/model/app_setting.dart';
 import 'package:peachgs_flutter/widget/modal/video_setting.dart';
-import 'package:peachgs_flutter/widget/common_widget/icon_string_button.dart';
 import 'package:peachgs_flutter/widget/common_widget/outline_text.dart';
 import 'package:peachgs_flutter/widget/common_widget/resizable_container.dart';
 
-class VideoViewer extends StatefulWidget {
-  const VideoViewer({Key? key}) : super(key: key);
+class VideoPage extends StatefulWidget {
+  const VideoPage({Key? key}) : super(key: key);
 
   @override
-  State<VideoViewer> createState() => _VideoViewerStete();
+  State<VideoPage> createState() => _VideoPageStete();
 }
 
-class _VideoViewerStete extends State<VideoViewer> {
+class _VideoPageStete extends State<VideoPage> {
   late final WebViewController _webViewController;                               // WebRTC 뷰어
   late final Player            _mediaPlayer     = Player();                      // RTSP 미디어 플레이어
   late final VideoController   _mediaController = VideoController(_mediaPlayer); // RTSP 미디어 플레이어 컨트롤러
 
-  bool   _widgetShow = true; // 비디오 위젯 표시 상태
   bool   _play       = false; // 재생 상태 저장
   bool   _isWebView  = false; // 웹뷰 여부
   String _currentUrl = '';    // 현재 재생중인 url
 
-  // 위젯 보이는 상태 토글
-  void _toggleWidgetShow() {
-    setState(() {
-      _widgetShow = !_widgetShow;
-    });
+  @override
+  void initState() {    
+    super.initState();
+
+    // 설정에 저장된 url 가져오기
+    _currentUrl = AppSetting().url;
+
+    // 모바일의 경우, 웹뷰 컨트롤러 초기화
+    if(_isMobile()) {
+      _webViewController = WebViewController();
+      _webViewController.setJavaScriptMode(JavaScriptMode.unrestricted); // 웹뷰 재생을 위해 자바스크립트 허용
+    }
+
+  }
+
+  @override
+  void dispose() {
+    _mediaPlayer.dispose();
+    super.dispose();
   }
 
   // 모바일 환경 검사
@@ -45,6 +56,30 @@ class _VideoViewerStete extends State<VideoViewer> {
   // 유효한 미디어 URL인지 검사
   bool _isValidMediaURL(String url) {
     return (url.startsWith('http') || url.startsWith('rtsp'));
+  }
+
+  // 재생 중이 아닐 때 표시할 위젯
+  Widget _readyWidget() {
+    return const Center(
+      child: OutlineText(
+        strokeWidth: 1,
+        strokeColor: Colors.black,
+        overflow: TextOverflow.ellipsis,
+        child: Text(
+          '재생 준비 중...',
+          style: TextStyle(color: Colors.white),
+        ),
+      ),
+    );
+  }
+
+  // 재생 중인 미디어 형식에 맞추어 플레이어 위젯 반환
+  Widget _playWidget() {
+    if(_isWebView) {
+      return WebViewWidget(controller: _webViewController);
+    } else {
+      return Video(controller: _mediaController);
+    }
   }
 
   // 재생 상태 변환
@@ -164,31 +199,8 @@ class _VideoViewerStete extends State<VideoViewer> {
     });
   }
 
-  // 재생 중이 아닐 때 표시할 위젯
-  Widget _readyWidget() {
-    return const Center(
-      child: OutlineText(
-        strokeWidth: 1,
-        strokeColor: Colors.black,
-        overflow: TextOverflow.ellipsis,
-        child: Text(
-          '재생 준비 중...',
-          style: TextStyle(color: Colors.white),
-        ),
-      ),
-    );
-  }
-
-  // 재생 중인 미디어 형식에 맞추어 플레이어 위젯 반환
-  Widget _playWidget() {
-    if(_isWebView) {
-      return WebViewWidget(controller: _webViewController);
-    } else {
-      return Video(controller: _mediaController);
-    }
-  }
-
-  Widget _viewer(BuildContext context) {
+  @override
+  Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
 
     return ResizebleContainer(
@@ -204,12 +216,6 @@ class _VideoViewerStete extends State<VideoViewer> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                // 비디오 위젯 숨기기 버튼
-                IconButton(
-                  onPressed: _toggleWidgetShow,
-                  icon: const Icon(Icons.no_photography, color: Colors.white)
-                ),
-                // URL 변경 버튼
                 IconButton(
                   onPressed: () async {
                     var url = await showVideoModal(context);
@@ -232,7 +238,6 @@ class _VideoViewerStete extends State<VideoViewer> {
                   },
                   icon: const Icon(Icons.settings, color: Colors.white),
                 ),
-                // 재생/일시정지 버튼
                 IconButton(
                   onPressed: () { _togglePlay(); },
                   icon: _play ? const Icon(Icons.pause, color: Colors.white) : const Icon(Icons.play_arrow, color: Colors.white)
@@ -243,42 +248,5 @@ class _VideoViewerStete extends State<VideoViewer> {
         ],
       )
     );
-  }
-
-  Widget _hideButton() {
-    return Padding(
-      padding: const EdgeInsets.all(10),
-      child: IconStringButton(
-        icon: Icons.photo_camera,
-        submit: _toggleWidgetShow,
-        color: pBlue
-      )
-    );
-  }
-
-  @override
-  void initState() {    
-    super.initState();
-
-    // 설정에 저장된 url 가져오기
-    _currentUrl = AppSetting().url;
-
-    // 모바일의 경우, 웹뷰 컨트롤러 초기화
-    if(_isMobile()) {
-      _webViewController = WebViewController();
-      _webViewController.setJavaScriptMode(JavaScriptMode.unrestricted); // 웹뷰 재생을 위해 자바스크립트 허용
-    }
-
-  }
-
-  @override
-  void dispose() {
-    _mediaPlayer.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return _widgetShow ? _viewer(context) : _hideButton();
   }
 }
