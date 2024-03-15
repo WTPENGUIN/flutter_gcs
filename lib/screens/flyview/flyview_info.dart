@@ -60,7 +60,7 @@ class _FlyViewInfoState extends State<FlyViewInfo> {
                   builder: (context, id, _) {
                     return Text(
                       (id != null) ? '기체 $id번' : '연결 대기 중',
-                      style: const TextStyle(color: Colors.white, fontSize: 10),
+                      style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)
                     );
                   },
                 )
@@ -81,7 +81,12 @@ class _FlyViewInfoState extends State<FlyViewInfo> {
                       builder: (context, alt, _) {
                         return Text(
                           (alt != null) ? 'Alt : ${alt.toStringAsFixed(1)}m' : 'Alt : 0.0m',
-                          style: const TextStyle(color: Colors.white, fontSize: 12),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontFamily: 'Orbitron',
+                            fontWeight: FontWeight.bold
+                          )
                         );
                       },
                     ),
@@ -90,7 +95,12 @@ class _FlyViewInfoState extends State<FlyViewInfo> {
                       builder: (context, sat, _) {
                         return Text(
                           (sat != null) ? 'Sat : $sat' : 'Sat : 0',
-                          style: const TextStyle(color: Colors.white, fontSize: 12),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontFamily: 'Orbitron',
+                            fontWeight: FontWeight.bold
+                          )
                         );
                       },
                     ),
@@ -98,8 +108,13 @@ class _FlyViewInfoState extends State<FlyViewInfo> {
                       selector: (context, multivehicle) => multivehicle.activeVehicle()?.hSpeed,
                       builder: (context, groundSpeed, _) {
                         return Text(
-                          (groundSpeed != null) ? 'H.Speed : ${groundSpeed.toStringAsFixed(1)}m/s' : 'H.Speed : 0m/s',
-                          style: const TextStyle(color: Colors.white, fontSize: 12),
+                          (groundSpeed != null) ? 'H.S : ${groundSpeed.toStringAsFixed(1)}m/s' : 'H.S : 0m/s',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontFamily: 'Orbitron',
+                            fontWeight: FontWeight.bold
+                          )
                         );
                       },
                     ),
@@ -107,8 +122,13 @@ class _FlyViewInfoState extends State<FlyViewInfo> {
                       selector: (context, multivehicle) => multivehicle.activeVehicle()?.vSpeed,
                       builder: (context, verticalSpeed, _) {
                         return Text(
-                          (verticalSpeed != null) ? 'V.Speed : ${verticalSpeed.toStringAsFixed(1)}m/s' : 'V.Speed : 0m/s',
-                          style: const TextStyle(color: Colors.white, fontSize: 12),
+                          (verticalSpeed != null) ? 'V.S : ${verticalSpeed.toStringAsFixed(1)}m/s' : 'V.S : 0m/s',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontFamily: 'Orbitron',
+                            fontWeight: FontWeight.bold
+                          ),
                         );
                       },
                     ),
@@ -117,7 +137,12 @@ class _FlyViewInfoState extends State<FlyViewInfo> {
                       builder: (context, hdop, _) {
                         return Text(
                           (hdop != null) ? 'HDOP : $hdop' : 'HDOP : 0.0',
-                          style: const TextStyle(color: Colors.white, fontSize: 12),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontFamily: 'Orbitron',
+                            fontWeight: FontWeight.bold
+                          ),
                         );
                       },
                     ),
@@ -126,7 +151,12 @@ class _FlyViewInfoState extends State<FlyViewInfo> {
                       builder: (context, vdop, _) {
                         return Text(
                           (vdop != null) ? 'VDOP : $vdop' : 'VDOP : 0.0',
-                          style: const TextStyle(color: Colors.white, fontSize: 12),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontFamily: 'Orbitron',
+                            fontWeight: FontWeight.bold
+                          ),
                         );
                       },
                     )
