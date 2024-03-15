@@ -8,6 +8,7 @@ import 'package:peachgs_flutter/utils/current_location.dart';
 import 'package:peachgs_flutter/provider/multivehicle.dart';
 import 'package:peachgs_flutter/widget/vehicle_marker.dart';
 import 'package:peachgs_flutter/screens/flyview/flyview_buttons.dart';
+import 'package:peachgs_flutter/screens/flyview/flyview_info.dart';
 
 class FlyViewDesktopPage extends StatefulWidget {
   const FlyViewDesktopPage({Key? key}) : super(key: key);
@@ -23,6 +24,7 @@ class _FlyViewDesktopPageState extends State<FlyViewDesktopPage> {
 
   final CurrentLocation _loc = CurrentLocation();
 
+  // 마커 그리기
   List<Marker> _markers(MultiVehicle manager) {
     List<Marker> markers = [];
     for(var vehicle in MultiVehicle().allVehicles()) {
@@ -55,6 +57,7 @@ class _FlyViewDesktopPageState extends State<FlyViewDesktopPage> {
     return markers;
   }
 
+  // 이동 경로 그리기
   List<Polyline> _route(MultiVehicle manager) {
     List<Polyline> lines = [];
     for(var vehicle in manager.allVehicles()) {
@@ -68,6 +71,12 @@ class _FlyViewDesktopPageState extends State<FlyViewDesktopPage> {
     }
 
     return lines;
+  }
+
+  // 지도 이동
+  void _moveTo(LatLng loc) {
+    var currentZoom = _mapController.camera.zoom;
+    _mapController.move(loc, currentZoom);
   }
 
   @override
@@ -168,6 +177,17 @@ class _FlyViewDesktopPageState extends State<FlyViewDesktopPage> {
                   _buttonPressed = !_buttonPressed;
                 });
               }
+            )
+          )
+        ),
+
+        // 기체 정보
+        Align(
+          alignment: Alignment.bottomRight,
+          child: Padding(
+            padding: const EdgeInsets.all(8),
+            child: FlyViewInfo(
+              moveto: _moveTo
             )
           )
         )

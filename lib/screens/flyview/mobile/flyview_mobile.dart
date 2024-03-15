@@ -7,6 +7,7 @@ import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:peachgs_flutter/utils/current_location.dart';
 import 'package:peachgs_flutter/provider/multivehicle.dart';
 import 'package:peachgs_flutter/screens/flyview/flyview_buttons.dart';
+import 'package:peachgs_flutter/screens/flyview/flyview_info.dart';
 
 class FlyViewMobilePage extends StatefulWidget {
   const FlyViewMobilePage({Key? key}) : super(key: key);
@@ -34,6 +35,17 @@ class _FlyViewMobilePageState extends State<FlyViewMobilePage> {
     return list;
   }
 
+  // 지도 이동
+  void _moveMap(LatLng vehicleLoc) {
+    if(_mapController != null) {
+      var cameraUpdate = NCameraUpdate.withParams(
+        target: NLatLng(vehicleLoc.latitude, vehicleLoc.longitude)
+      );
+      _mapController!.updateCamera(cameraUpdate);
+    }
+  }
+
+  // 지도 마커 그리기
   void _drawVehicle() {
     if(_mapController != null) {
       var vehicleList = _multivehicle.allVehicles();
@@ -189,7 +201,18 @@ class _FlyViewMobilePageState extends State<FlyViewMobilePage> {
             },
           )
         ),
-      ],
+        
+        // 기체 정보
+        Align(
+          alignment: Alignment.bottomRight,
+          child: Padding(
+            padding: const EdgeInsets.all(8),
+            child: FlyViewInfo(
+              moveto: _moveMap
+            )
+          )
+        )
+      ]
     );
   }
 }
