@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:latlong2/latlong.dart';
@@ -18,7 +17,6 @@ class FlyViewMobilePage extends StatefulWidget {
 
 class _FlyViewMobilePageState extends State<FlyViewMobilePage> {
   late final MultiVehicle _multivehicle;
-  late final Timer        _updateLocTimer;
   final CurrentLocation   _loc = CurrentLocation();
 
   NaverMapController? _mapController;
@@ -145,14 +143,13 @@ class _FlyViewMobilePageState extends State<FlyViewMobilePage> {
     super.initState();
 
     _multivehicle = context.read<MultiVehicle>();
-    _updateLocTimer = Timer.periodic(const Duration(milliseconds: 200), (_) {
-      _drawVehicle();
-    });
+    _multivehicle.addListener(_drawVehicle);
   }
 
   @override
   void dispose() {
-    _updateLocTimer.cancel();
+    _multivehicle.removeListener(_drawVehicle);
+    
     super.dispose();
   }
 
