@@ -7,11 +7,13 @@ class AltitudeSlider extends StatefulWidget {
   const AltitudeSlider({
     Key? key,
     required this.takeOff,
-    required this.submit
+    required this.submit,
+    required this.height
   }) : super(key: key);
 
   final bool        takeOff;
   final Function()? submit;
+  final double      height;
 
   @override
   State<AltitudeSlider> createState() => _AltitudeSliderState();
@@ -32,10 +34,10 @@ class _AltitudeSliderState extends State<AltitudeSlider> {
   Widget build(BuildContext context) {
     return Container(
       width: 40,
-      constraints: BoxConstraints(
+      constraints: BoxConstraints( 
         maxHeight: MediaQuery.of(context).size.height * 0.5
       ),
-      height: MediaQuery.of(context).size.height * 0.5,
+      height: (widget.height <= 0.0) ? MediaQuery.of(context).size.height * 0.5 : widget.height,
       decoration: BoxDecoration(
         color: Colors.black,
         borderRadius: BorderRadius.circular(40)

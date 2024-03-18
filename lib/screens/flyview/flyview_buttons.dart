@@ -22,9 +22,21 @@ class FlyViewButtons extends StatefulWidget {
 }
 
 class _FlyViewButtonsState extends State<FlyViewButtons> {
+  final GlobalKey _viewKey = GlobalKey();
   bool _isOpen     = true;
   bool _showSlider = false;
   bool _isTakeOff  = false;
+
+  double _getHeight() {
+    // GlobalKey로 RenderBox 가져오기
+    if(_viewKey.currentContext != null) {
+      RenderBox viewBox = _viewKey.currentContext!.findRenderObject() as RenderBox;
+
+      return viewBox.size.height;
+    } else {
+      return 0.0;
+    }
+  }
 
   void _toggleOpen() {
     setState(() {
@@ -217,7 +229,8 @@ class _FlyViewButtonsState extends State<FlyViewButtons> {
         visible: _showSlider,
         child: AltitudeSlider(
           takeOff: _isTakeOff,
-          submit: _toggleSlider
+          submit: _toggleSlider,
+          height: _getHeight(),
         )
       ),
     );
@@ -226,6 +239,7 @@ class _FlyViewButtonsState extends State<FlyViewButtons> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      key: _viewKey,
       width: 200,
       color: Colors.transparent,
       child: SingleChildScrollView(
