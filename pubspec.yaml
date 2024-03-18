@@ -33,10 +33,10 @@ dependencies:
   
   # Application core
   window_manager: ^0.3.8      # 데스크톱 환경 실행 시, 창 크기 조절
-  provider: ^6.1.1            # provider
-  go_router: ^13.1.0          # 페이지 이동 router
-  logger: ^2.0.2+1            # debug용 logger
-  flutter_svg: ^2.0.9         # SVG 이미지 파일을 위젯으로 사용할 수 있는 패키지
+  provider: ^6.1.2            # provider
+  go_router: ^13.2.1          # 페이지 이동 router
+  logger: ^2.1.0              # debug용 logger
+  flutter_svg: ^2.0.10+1      # SVG 이미지 파일을 위젯으로 사용할 수 있는 패키지
   flutter_dotenv: ^5.1.0      # 실행 환경을 외부 파일로 관리
   geolocator: ^11.0.0         # 현재 사용자의 위치를 가져오는 패키지
   permission_handler: ^11.3.0 # Android, iOS에서 권한을 가져올 수 있는 패키지
