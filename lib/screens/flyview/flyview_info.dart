@@ -18,6 +18,17 @@ class FlyViewInfo extends StatefulWidget {
 }
 
 class _FlyViewInfoState extends State<FlyViewInfo> {
+  // 유효한 위경도 좌표인지 검사
+  bool _isValidLocation(LatLng loc) {
+    double lat = loc.latitude;
+    double lng = loc.longitude;
+
+    bool vaildLat = (lat.isFinite && (lat.abs() <= 90));
+    bool validLng = (lng.isFinite && (lng.abs() <= 180));
+
+    return (vaildLat && validLng);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -40,10 +51,10 @@ class _FlyViewInfoState extends State<FlyViewInfo> {
                   onTap: () {
                     var vehicle = MultiVehicle().activeVehicle();
 
-                    if(vehicle == null) {
-                      return;
-                    } else {
-                      LatLng loc = LatLng(vehicle.lat, vehicle.lon);
+                    if(vehicle == null) return;
+
+                    LatLng loc = LatLng(vehicle.lat, vehicle.lon);
+                    if(_isValidLocation(loc)) {
                       widget.moveto(loc);
                     }
                   },
