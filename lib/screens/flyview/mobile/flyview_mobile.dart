@@ -3,24 +3,25 @@ import 'package:provider/provider.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 
-import 'package:peachgs_flutter/utils/current_location.dart';
+import 'package:peachgs_flutter/utils/location_service.dart';
 import 'package:peachgs_flutter/provider/multivehicle.dart';
 import 'package:peachgs_flutter/screens/flyview/flyview_buttons.dart';
 import 'package:peachgs_flutter/screens/flyview/flyview_info.dart';
 
-class FlyViewMobilePage extends StatefulWidget {
-  const FlyViewMobilePage({Key? key}) : super(key: key);
+class FlyViewMobile extends StatefulWidget {
+  const FlyViewMobile({Key? key}) : super(key: key);
 
   @override
-  State<FlyViewMobilePage> createState() => _FlyViewMobilePageState();
+  State<FlyViewMobile> createState() => _FlyViewMobileState();
 }
 
-class _FlyViewMobilePageState extends State<FlyViewMobilePage> {
+class _FlyViewMobileState extends State<FlyViewMobile> {
   late final MultiVehicle _multivehicle;
-  final CurrentLocation   _loc = CurrentLocation();
+  final LocationService   _loc = LocationService();
+  NaverMapController?     _mapController;
 
-  NaverMapController? _mapController;
-  bool _buttonPressed = false;
+  bool   _buttonPressed = false; // 버튼 누름 상태
+  LatLng _initCoord     = const LatLng(34.610040, 127.20674); // 지도 초기 위치
 
   List<NLatLng> _convert(List<LatLng> coords) {
     List<NLatLng> list = [];
@@ -142,6 +143,11 @@ class _FlyViewMobilePageState extends State<FlyViewMobilePage> {
   void initState() {
     super.initState();
 
+    // 초기 위치 가져오기
+    if(_loc.isGetCoord) {
+      _initCoord = LatLng(_loc.latitude, _loc.longitude);
+    }
+
     _multivehicle = context.read<MultiVehicle>();
     _multivehicle.addListener(_drawVehicle);
   }
@@ -158,26 +164,18 @@ class _FlyViewMobilePageState extends State<FlyViewMobilePage> {
     return Stack(
       children: [
         NaverMap(
-          options: const NaverMapViewOptions(
+          options: NaverMapViewOptions(
             initialCameraPosition: NCameraPosition(
-              target: NLatLng(34.610040, 127.20674),
+              target: NLatLng(_initCoord.latitude, _initCoord.longitude),
               zoom: 15
             ),
             mapType: NMapType.hybrid,
             scaleBarEnable: false,
             logoAlign: NLogoAlign.rightTop,
-            logoMargin: EdgeInsets.only(top: 5, right: 5),
+            logoMargin: const EdgeInsets.only(top: 5, right: 5),
           ),
-          onMapReady: (controller) async {
+          onMapReady: (controller) {
             _mapController = controller;
-            
-            bool isGetCoord = await _loc.getCurrentLocation();
-            if(isGetCoord) {
-              var cameraUpdate = NCameraUpdate.withParams(
-                target: NLatLng(_loc.latitude, _loc.longitude)
-              );
-              _mapController!.updateCamera(cameraUpdate);
-            }
           },
           onMapTapped: (_, latLng) {
             // 지도 클릭 시, 기체 이동 명령 내리기

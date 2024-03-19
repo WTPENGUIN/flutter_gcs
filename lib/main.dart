@@ -12,6 +12,7 @@ import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:peachgs_flutter/router.dart';
 import 'package:peachgs_flutter/model/app_setting.dart';
 import 'package:peachgs_flutter/provider/multivehicle.dart';
+import 'package:peachgs_flutter/utils/location_service.dart';
 import 'package:peachgs_flutter/service/connection/connection_manager.dart';
 
 // 위치 권한 요청
@@ -101,6 +102,9 @@ void main() async {
 
   // 어플리케이션 세팅 초기화
   await AppSetting().loadAppConfig();
+
+  // 위치 얻어오기
+  await LocationService().getCurrentLocation();
 
   runApp(
     MultiProvider(

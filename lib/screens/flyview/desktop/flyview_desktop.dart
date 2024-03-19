@@ -4,25 +4,26 @@ import 'package:latlong2/latlong.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
 
-import 'package:peachgs_flutter/utils/current_location.dart';
+import 'package:peachgs_flutter/utils/location_service.dart';
 import 'package:peachgs_flutter/provider/multivehicle.dart';
 import 'package:peachgs_flutter/widget/vehicle_marker.dart';
 import 'package:peachgs_flutter/screens/flyview/flyview_buttons.dart';
 import 'package:peachgs_flutter/screens/flyview/flyview_info.dart';
 
-class FlyViewDesktopPage extends StatefulWidget {
-  const FlyViewDesktopPage({Key? key}) : super(key: key);
+class FlyViewDesktop extends StatefulWidget {
+  const FlyViewDesktop({Key? key}) : super(key: key);
 
   @override
-  State<FlyViewDesktopPage> createState() => _FlyViewDesktopPageState();
+  State<FlyViewDesktop> createState() => _FlyViewDesktopState();
 }
 
-class _FlyViewDesktopPageState extends State<FlyViewDesktopPage> {
-  late final MapController _mapController;
-  final List<Marker>       _gotoMarker = [];
-  bool _buttonPressed = false;
+class _FlyViewDesktopState extends State<FlyViewDesktop> {
+  final MapController   _mapController = MapController();
+  final List<Marker>    _gotoMarker    = [];
+  final LocationService _loc           = LocationService();
 
-  final CurrentLocation _loc = CurrentLocation();
+  bool   _buttonPressed = false; // 버튼 누름 상태
+  LatLng _initCoord     = const LatLng(34.610040, 127.20674); // 지도 초기 위치
 
   // 마커 그리기
   List<Marker> _markers(MultiVehicle manager) {
@@ -82,8 +83,11 @@ class _FlyViewDesktopPageState extends State<FlyViewDesktopPage> {
   @override
   void initState() {
     super.initState();
-    
-    _mapController = MapController();
+
+    // 초기 위치 가져오기
+    if(_loc.isGetCoord) {
+      _initCoord = LatLng(_loc.latitude, _loc.longitude);
+    }
   }
 
   @override
@@ -96,14 +100,8 @@ class _FlyViewDesktopPageState extends State<FlyViewDesktopPage> {
     return FlutterMap(
       mapController: _mapController,
       options: MapOptions(
-        initialCenter: const LatLng(34.610040, 127.20674),
+        initialCenter: _initCoord,
         initialZoom: 15,
-        onMapReady: () async {
-          bool isGetCoord = await _loc.getCurrentLocation();
-          if(isGetCoord) {
-            _mapController.move(LatLng(_loc.latitude, _loc.longitude), 15);
-          }
-        },
         onTap: (TapPosition position, LatLng point) {
           // 이동 버튼이 눌렸을 때
           if(_buttonPressed) {
