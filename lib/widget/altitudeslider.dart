@@ -34,10 +34,7 @@ class _AltitudeSliderState extends State<AltitudeSlider> {
   Widget build(BuildContext context) {
     return Container(
       width: 40,
-      constraints: BoxConstraints( 
-        maxHeight: MediaQuery.of(context).size.height * 0.5
-      ),
-      height: (widget.height <= 0.0) ? MediaQuery.of(context).size.height * 0.5 : widget.height,
+      height: widget.height,
       decoration: BoxDecoration(
         color: Colors.black,
         borderRadius: BorderRadius.circular(40)
@@ -73,9 +70,9 @@ class _AltitudeSliderState extends State<AltitudeSlider> {
                 )
               ),
               tooltip: FlutterSliderTooltip(
-                direction: FlutterSliderTooltipDirection.right,
+                direction: FlutterSliderTooltipDirection.left,
                 positionOffset: FlutterSliderTooltipPositionOffset(
-                  right: -10
+                  left: -10
                 ),
                 format:(String value) {
                   return '${value}m';

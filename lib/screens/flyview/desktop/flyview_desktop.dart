@@ -18,14 +18,18 @@ class FlyViewDesktop extends StatefulWidget {
 }
 
 class _FlyViewDesktopState extends State<FlyViewDesktop> {
+  final OverlayPortalController _overlayController = OverlayPortalController();
+  double _posTapDx = 0.0;
+  double _posTapDy = 0.0;
+  LatLng _posTapCoord = const LatLng(0, 0);
+
   final MapController   _mapController = MapController();
-  final List<Marker>    _gotoMarker    = [];
   final LocationService _loc           = LocationService();
+  final List<Marker>    _gotoMarker    = [];
 
-  bool   _buttonPressed = false; // 버튼 누름 상태
-  LatLng _initCoord     = const LatLng(34.610040, 127.20674); // 지도 초기 위치
+  LatLng _initCoord   = const LatLng(34.610040, 127.20674); // 지도 초기 위치
 
-  // 마커 그리기
+  // 지도에 현재 연결된 기체들의 마커 리스트 생성
   List<Marker> _markers(MultiVehicle manager) {
     List<Marker> markers = [];
     for(var vehicle in MultiVehicle().allVehicles()) {
@@ -33,6 +37,8 @@ class _FlyViewDesktopState extends State<FlyViewDesktop> {
       double markerLon = vehicle.lon;
 
       if((markerLat == 0) || (markerLon == 0)) continue;
+
+      // 기체 마커 생성하여 리스트에 추가
       markers.add(
         Marker(
           point: LatLng(markerLat, markerLon),
@@ -40,16 +46,17 @@ class _FlyViewDesktopState extends State<FlyViewDesktop> {
           height: 70,
           child: GestureDetector(
             child: VehicleMarker(
-              route: 'assets/image/VehicleIcon.svg',
-              degree: vehicle.yaw,
               vehicleId: vehicle.id,
               flightMode: vehicle.mode,
               armed: vehicle.armed,
+              degree: vehicle.yaw,
               outlineColor: (manager.getActiveId == vehicle.id ? Colors.redAccent : Colors.grey),
             ),
             onTap: () {
-              if(manager.getActiveId == vehicle.id) return;
-              manager.setActiceId = vehicle.id;
+              // 마커를 클릭하면 활성 기체를 변경
+              if(manager.getActiveId != vehicle.id) {
+                manager.setActiceId = vehicle.id;
+              }
             },
           ),
         )
@@ -58,7 +65,7 @@ class _FlyViewDesktopState extends State<FlyViewDesktop> {
     return markers;
   }
 
-  // 이동 경로 그리기
+  // 기체 이동 경로 그리기
   List<Polyline> _route(MultiVehicle manager) {
     List<Polyline> lines = [];
     for(var vehicle in manager.allVehicles()) {
@@ -74,7 +81,7 @@ class _FlyViewDesktopState extends State<FlyViewDesktop> {
     return lines;
   }
 
-  // 지도 이동
+  // 지정한 좌표로 지도 이동
   void _moveTo(LatLng loc) {
     var currentZoom = _mapController.camera.zoom;
     _mapController.move(loc, currentZoom);
@@ -84,7 +91,7 @@ class _FlyViewDesktopState extends State<FlyViewDesktop> {
   void initState() {
     super.initState();
 
-    // 초기 위치 가져오기
+    // 사용자 위치 가져오기
     if(_loc.isGetCoord) {
       _initCoord = LatLng(_loc.latitude, _loc.longitude);
     }
@@ -97,99 +104,123 @@ class _FlyViewDesktopState extends State<FlyViewDesktop> {
 
   @override
   Widget build(BuildContext context) {
-    return FlutterMap(
-      mapController: _mapController,
-      options: MapOptions(
-        initialCenter: _initCoord,
-        initialZoom: 15,
-        onTap: (TapPosition position, LatLng point) {
-          // 이동 버튼이 눌렸을 때
-          if(_buttonPressed) {
-            var currentVehicle = MultiVehicle().activeVehicle();
+    return OverlayPortal(
+      controller: _overlayController,
+      overlayChildBuilder: (_) {
+        return Positioned(
+          top:  _posTapDy,
+          left: _posTapDx,
+          child: Container(
+            width: 150,
+            height: 50,
+            decoration: BoxDecoration(
+              border: Border.all(
+                width: 1,
+                color: Colors.white
+              ),
+              borderRadius: BorderRadius.circular(10),
+              color: Colors.black45
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(10),
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.transparent,
+                  backgroundColor: Colors.black54,
+                  shadowColor: Colors.transparent.withOpacity(0.3),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8)
+                  )
+                ),
+                onPressed: () {
+                  if(_posTapCoord.latitude == 0 || _posTapCoord.longitude == 0) return;
 
-            if(currentVehicle != null) {
-              if(currentVehicle.isFly) {
-                // 이동할 곳 마커 찍기
-                setState(() {
-                  _gotoMarker.clear();
-                  _gotoMarker.add(
-                    Marker(
-                      point: point,
-                      child: const Icon(Icons.location_pin, color: Colors.red),
-                      alignment: Alignment.center
-                    )
-                  );
-                });
-              
-                // 클릭한 포인트로 이동 명령 내리기
-                currentVehicle.goto(point);
-
-                // 버튼 눌리지 않은 상태로 설정
-                setState(() {
-                  _buttonPressed = false;
-                });
-              }
-            }
-          }
-        },
-      ),
-      children: [
-        // 구글 지도 레이어
-        TileLayer(
-          wmsOptions: WMSTileLayerOptions(
-            baseUrl: 'https://mt0.google.com/vt/lyrs=y@221097413&x={x}&y={y}&z={z}',
+                  var activeVehcile = MultiVehicle().activeVehicle();
+                  if(activeVehcile != null) {
+                    activeVehcile.goto(_posTapCoord);
+                  }
+                  _overlayController.toggle();
+                },
+                child: const Text(
+                  "여기로 이동",
+                  style: TextStyle(
+                    color: Colors.white
+                  ),
+                ),
+              ),
+            ),
           ),
-          tileProvider: CancellableNetworkTileProvider(),
-        ),
-
-        // 기체 위치 표시 레이어
-        Consumer<MultiVehicle>(
-          builder: (_, multiManager, __) {
-            return MarkerLayer(
-              markers: _markers(multiManager)
-            );
+        );
+      },
+      child: FlutterMap(
+        mapController: _mapController,
+        options: MapOptions(
+          initialCenter: _initCoord,
+          initialZoom: 15,
+          onTap: (TapPosition tapPosition, LatLng point) {
+            if(MultiVehicle().activeVehicle() == null) return;
+            
+            var activeVehcile = MultiVehicle().activeVehicle();
+            if(activeVehcile!.isFly) {
+              _posTapDx = tapPosition.global.dx;
+              _posTapDy = tapPosition.global.dy;
+              _posTapCoord = point;
+              
+              _overlayController.toggle();
+            }
           },
         ),
+        children: [
+          // 구글 지도 레이어
+          TileLayer(
+            wmsOptions: WMSTileLayerOptions(
+              baseUrl: 'https://mt0.google.com/vt/lyrs=y&hl=kr&x={x}&y={y}&z={z}',
+            ),
+            tileProvider: CancellableNetworkTileProvider(),
+          ),
 
-        // 기체 이동 경로 표시 레이어
-        Consumer<MultiVehicle>(
-          builder: (_, multiManager, __) {
-            return PolylineLayer(
-              polylines: _route(multiManager),
-            );
-          }
-        ),
+          // 기체 위치 표시 레이어
+          Consumer<MultiVehicle>(
+            builder: (_, multiManager, __) {
+              return MarkerLayer(
+                markers: _markers(multiManager)
+              );
+            }
+          ),
 
-        // 이동 명령 마커 레이어
-        MarkerLayer(markers: _gotoMarker),
+          // 기체 이동 경로 표시 레이어
+          Consumer<MultiVehicle>(
+            builder: (_, multiManager, __) {
+              return PolylineLayer(
+                polylines: _route(multiManager),
+              );
+            }
+          ),
 
-        // 도구 모음 버튼
-        Align(
-          alignment: Alignment.topLeft,
-          child: Padding(
-            padding: const EdgeInsets.all(10),
-            child: FlyViewButtons(
-              buttonState: _buttonPressed,
-              mapSubmit: () {
-                setState(() {
-                  _buttonPressed = !_buttonPressed;
-                });
-              }
+          // 이동 명령 마커 레이어
+          MarkerLayer(markers: _gotoMarker),
+
+          // 데스크톱 플라이뷰 도구 모음
+          const Align(
+            alignment: Alignment.topLeft,
+            child: Padding(
+              padding: EdgeInsets.all(5),
+              child: FlyViewButtons()
+            )
+          ),
+
+          // 현재 선택한 기체 정보
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding: const EdgeInsets.all(5),
+              child: FlyViewInfo(
+                moveto: _moveTo
+              )
             )
           )
-        ),
-
-        // 기체 정보
-        Align(
-          alignment: Alignment.bottomRight,
-          child: Padding(
-            padding: const EdgeInsets.all(8),
-            child: FlyViewInfo(
-              moveto: _moveTo
-            )
-          )
-        )
-      ]
+        ],
+      ),
     );
   }
 }

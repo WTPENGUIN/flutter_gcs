@@ -6,20 +6,20 @@ import 'package:peachgs_flutter/widget/common_widget/outline_text.dart';
 class VehicleMarker extends StatelessWidget {
   const VehicleMarker({
     Key? key,
-    required this.route,
-    required this.degree,
     required this.vehicleId,
-    required this.outlineColor,
     required this.flightMode,
-    required this.armed
+    required this.armed,
+    required this.degree,
+    this.translucent = false,
+    this.outlineColor,
   }) : super(key: key);
-
-  final String route;
-  final double degree;
-  final int    vehicleId;
-  final Color  outlineColor;
-  final String flightMode;
-  final bool   armed;
+  
+  final int     vehicleId;    // 기체 번호
+  final String  flightMode;   // 비행 모드
+  final bool    armed;        // 시동 여부
+  final double  degree;       // 기체 Yaw 각도
+  final bool    translucent;  // 반투명 여부
+  final Color?  outlineColor; // 글씨 강조 색깔
 
   double _degreesToRadians(double degrees) {
     const double pi = 3.1415926535897932;
@@ -36,11 +36,12 @@ class VehicleMarker extends StatelessWidget {
             child: Transform.rotate(
               angle: _degreesToRadians(degree),
               child: SvgPicture.asset(
-                route,
+                'assets/image/VehicleIcon.svg',
                 width: 40,
                 height: 40,
-              ),
-            ),
+                colorFilter: ColorFilter.mode(translucent ? const Color.fromRGBO(255, 255, 255, 0.5) : const Color.fromRGBO(255, 255, 255, 1.0), BlendMode.modulate)
+              )
+            )
           ),
           Align(
             alignment: Alignment.bottomCenter,
@@ -54,9 +55,9 @@ class VehicleMarker extends StatelessWidget {
                   fontWeight: FontWeight.w300,
                   fontSize: 10,
                   color: Colors.white
-                ),
-              ),
-            ),
+                )
+              )
+            )
           ),
           Align(
             alignment: Alignment.topCenter,
@@ -70,12 +71,12 @@ class VehicleMarker extends StatelessWidget {
                   fontWeight: FontWeight.w300,
                   fontSize: 12,
                   color: Colors.white
-                ),
-              ),
+                )
+              )
             )
-          ),
-        ],
-      ),
+          )
+        ]
+      )
     );
   }
 }

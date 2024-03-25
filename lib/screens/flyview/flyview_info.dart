@@ -80,7 +80,7 @@ class _FlyViewInfoState extends State<FlyViewInfo> {
             // 오른쪽 정보
             Expanded(
               child: Container(
-                margin: const EdgeInsets.only(left: 15, right: 10),
+                margin: const EdgeInsets.only(left: 10, right: 10),
                 child: GridView.count(
                   crossAxisCount: 2,
                   childAspectRatio: MediaQuery.of(context).size.width / 150,
