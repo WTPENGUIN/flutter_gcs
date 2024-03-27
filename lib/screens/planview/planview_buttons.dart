@@ -118,7 +118,10 @@ class _PlanViewButtonsState extends State<PlanViewButtons> {
         color: Colors.transparent
       ),
       width: 200,
-      child: _toolButton(),
+      child: Padding(
+        padding: const EdgeInsets.only(top: 45),
+        child: _toolButton(),
+      ),
     );
   }
 }

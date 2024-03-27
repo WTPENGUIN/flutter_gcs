@@ -162,12 +162,18 @@ class _FlyViewButtonsState extends State<FlyViewButtons> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Container(
-          decoration: const BoxDecoration(
-            color: Colors.transparent
+        Align(
+          alignment: Alignment.topLeft,
+          child: Container(
+            decoration: const BoxDecoration(
+              color: Colors.transparent
+            ),
+            width: 200,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 45),
+              child: _toolButton(),
+            ),
           ),
-          width: 200,
-          child: _toolButton(),
         ),
         Visibility(
           visible: _isShowSlider,

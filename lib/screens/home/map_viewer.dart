@@ -41,7 +41,7 @@ class _MapViewerState extends State<MapViewer> {
         Align(
           alignment: Alignment.topLeft,
           child: Padding(
-            padding: const EdgeInsets.only(top: 5, left: 110),
+            padding: const EdgeInsets.only(top: 5, left: 5),
             child: IconStringButton(
               icon: Icons.edit_road,
               submit: _toggleView,
