@@ -5,23 +5,23 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:peachgs_flutter/provider/multivehicle.dart';
 
-class FlyViewInfo extends StatefulWidget {
-  const FlyViewInfo({
+class VehicleInfo extends StatefulWidget {
+  const VehicleInfo({
     required this.moveto,
     super.key
   });
 
-  final Function(LatLng loc) moveto;
+  final Function(LatLng coord) moveto;
 
   @override
-  State<FlyViewInfo> createState() => _FlyViewInfoState();
+  State<VehicleInfo> createState() => _VehicleInfoState();
 }
 
-class _FlyViewInfoState extends State<FlyViewInfo> {
+class _VehicleInfoState extends State<VehicleInfo> {
   // 유효한 위경도 좌표인지 검사
-  bool _isValidLocation(LatLng loc) {
-    double lat = loc.latitude;
-    double lng = loc.longitude;
+  bool _isValidLocation(LatLng coord) {
+    double lat = coord.latitude;
+    double lng = coord.longitude;
 
     bool vaildLat = (lat.isFinite && (lat.abs() <= 90));
     bool validLng = (lng.isFinite && (lng.abs() <= 180));

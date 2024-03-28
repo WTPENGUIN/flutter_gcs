@@ -10,7 +10,7 @@ final router = GoRouter(
   routes: [
     GoRoute(
       path: '/',
-      builder:(context, state) => const HomeWindow(),
+      builder:(context, state) => const MainRootPage(),
     ),
     GoRoute(
       path: '/cal',

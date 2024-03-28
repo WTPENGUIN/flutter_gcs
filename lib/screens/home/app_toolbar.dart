@@ -5,11 +5,10 @@ import 'package:peachgs_flutter/colors.dart';
 import 'package:peachgs_flutter/provider/multivehicle.dart';
 import 'package:peachgs_flutter/widget/menu_button.dart';
 import 'package:peachgs_flutter/widget/gps_info.dart';
-//import 'package:peachgs_flutter/widget/remote_id.dart';
 import 'package:peachgs_flutter/widget/flightmode.dart';
 
-class TopBar extends StatelessWidget {
-  const TopBar({Key? key}) : super(key: key);
+class AppToolBar extends StatelessWidget {
+  const AppToolBar({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -36,8 +35,6 @@ class TopBar extends StatelessWidget {
               const GPSWidget(),
               const FlightModeMenu(),
               const Spacer(),
-              // const RemoteIdInfo(),
-              // const SizedBox(width: 20),
               const AppMenu(),
               const SizedBox(width: 20),
             ],

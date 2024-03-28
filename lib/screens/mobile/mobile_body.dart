@@ -5,28 +5,45 @@ import 'package:flutter_naver_map/flutter_naver_map.dart';
 
 import 'package:peachgs_flutter/utils/location_service.dart';
 import 'package:peachgs_flutter/provider/multivehicle.dart';
-import 'package:peachgs_flutter/screens/flyview/flyview_buttons.dart';
-import 'package:peachgs_flutter/screens/flyview/flyview_info.dart';
+import 'package:peachgs_flutter/widget/vehicle_info.dart';
+import 'package:peachgs_flutter/widget/flyview_tools.dart';
+import 'package:peachgs_flutter/widget/planview_tools.dart';
+import 'package:peachgs_flutter/screens/video/video.dart';
 
-class FlyViewMobile extends StatefulWidget {
-  const FlyViewMobile({Key? key}) : super(key: key);
+class MobileBody extends StatefulWidget {
+  const MobileBody({Key? key}) : super(key: key);
 
   @override
-  State<FlyViewMobile> createState() => _FlyViewMobileState();
+  State<MobileBody> createState() => _MobileBodyState();
 }
 
-class _FlyViewMobileState extends State<FlyViewMobile> {
-  final OverlayPortalController _overlayController = OverlayPortalController();
+class _MobileBodyState extends State<MobileBody> {
+  final OverlayPortalController _overlayPortalController = OverlayPortalController();
   double _posTapDx = 0.0;
   double _posTapDy = 0.0;
   LatLng _posTapCoord = const LatLng(0, 0);
 
-  late final MultiVehicle _multivehicle;
-  final LocationService   _loc = LocationService();
   NaverMapController?     _mapController;
+  final LocationService   _loc = LocationService();
+  late final MultiVehicle _multivehicle;
 
-  LatLng _initCoord   = const LatLng(34.610040, 127.20674); // 지도 초기 위치
+  LatLng _initCoord   = const LatLng(36.432383, 127.395036); // 지도 초기 위치
 
+  bool _showFly = true;
+
+  void _setFlyMode() {
+    setState(() {
+      _showFly = true;
+    });
+  }
+
+  void _setPlanMode() {
+    setState(() {
+      _showFly = false;
+    });
+  }
+
+  // LatLng List를 NLatLng List로 변환
   List<NLatLng> _convertPoint(List<LatLng> coords) {
     List<NLatLng> list = [];
     for(LatLng coord in coords) {
@@ -36,16 +53,6 @@ class _FlyViewMobileState extends State<FlyViewMobile> {
     }
 
     return list;
-  }
-
-  // 지정한 좌표로 지도 이동
-  void _moveMap(LatLng vehicleLoc) {
-    if(_mapController != null) {
-      var cameraUpdate = NCameraUpdate.withParams(
-        target: NLatLng(vehicleLoc.latitude, vehicleLoc.longitude)
-      );
-      _mapController!.updateCamera(cameraUpdate);
-    }
   }
 
   // 지도에 현재 연결된 기체들의 마커 그리기
@@ -70,6 +77,7 @@ class _FlyViewMobileState extends State<FlyViewMobile> {
           anchor: const NPoint(0.5, 0.5), // 기본 마커는 위로 살짝 올라와 있기 때문에 재조정
           angle: vehicle.yaw,
           position: NLatLng(vehicle.lat, vehicle.lon),
+          alpha: (vehicle.id == MultiVehicle().getActiveId) ? 1.0 : 0.5, // 활성 기체가 아니면 투명도 적용
           caption: NOverlayCaption(
             text: '기체 ${vehicle.id} (${(vehicle.armed) ? '시동' : '꺼짐'})',
             color: (_multivehicle.getActiveId == vehicle.id) ? Colors.white : Colors.black,
@@ -112,7 +120,18 @@ class _FlyViewMobileState extends State<FlyViewMobile> {
     }
   }
 
+  // 지정한 좌표로 지도 이동
+  void _moveMap(LatLng vehicleLoc) {
+    if(_mapController != null) {
+      var cameraUpdate = NCameraUpdate.withParams(
+        target: NLatLng(vehicleLoc.latitude, vehicleLoc.longitude)
+      );
+      _mapController!.updateCamera(cameraUpdate);
+    }
+  }
+
   // 이동 명령어 함수
+  // TODO : 기체 변환시 마커 레이어 초기화
   void _goto(LatLng coord) {
     var activeVehicle = MultiVehicle().activeVehicle();
 
@@ -167,7 +186,7 @@ class _FlyViewMobileState extends State<FlyViewMobile> {
   @override
   Widget build(BuildContext context) {
     return OverlayPortal(
-      controller: _overlayController,
+      controller: _overlayPortalController,
       overlayChildBuilder: (_) {
         return Positioned(
           top:  _posTapDy,
@@ -198,7 +217,7 @@ class _FlyViewMobileState extends State<FlyViewMobile> {
                   if(_posTapCoord.latitude == 0 || _posTapCoord.longitude == 0) return;
 
                   _goto(_posTapCoord);
-                  _overlayController.toggle();
+                  _overlayPortalController.toggle();
                 },
                 child: const Text(
                   "여기로 이동",
@@ -213,6 +232,7 @@ class _FlyViewMobileState extends State<FlyViewMobile> {
       },
       child: Stack(
         children: [
+          // 네이버 맵 위젯(항상 표시)
           NaverMap(
             options: NaverMapViewOptions(
               initialCameraPosition: NCameraPosition(
@@ -228,34 +248,66 @@ class _FlyViewMobileState extends State<FlyViewMobile> {
               _mapController = controller;
             },
             onMapTapped: (NPoint point, NLatLng latLng) {
-              if(MultiVehicle().activeVehicle() == null) return;
-              
-              var activeVehcile = MultiVehicle().activeVehicle();
-              if(activeVehcile!.isFly) {
-                _posTapDx = point.x;
-                _posTapDy = point.y;
-                _posTapCoord = LatLng(latLng.latitude, latLng.longitude);
-              
-                _overlayController.toggle();
+              // 비행 모드면, 기체 이동 명령 수행
+              if(_showFly) {
+                var activeVehicle = MultiVehicle().activeVehicle();
+                if(activeVehicle != null && activeVehicle.isFly) {
+                  _posTapDx = point.x;
+                  _posTapDy = point.y;
+                  _posTapCoord = LatLng(latLng.latitude, latLng.longitude);
+
+                  _overlayPortalController.toggle();
+                }
               }
             }
           ),
 
-          // 모바일 플라이뷰 도구 모음
-          const Align(
-            alignment: Alignment.topLeft,
-            child: Padding(
-              padding: EdgeInsets.all(5),
-              child: FlyViewButtons()
+          // 비행 모드 도구 모음(비행 모드에서만 표시)
+          Visibility(
+            visible: _showFly,
+            child: FlyViewTools(
+              setPlan: _setPlanMode
             )
           ),
 
-          // 현재 선택한 기체 정보
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: FlyViewInfo(
-              moveto: _moveMap
+          // 임무 모드 도구 모음(비행 모드에서만 표시)
+          Visibility(
+            visible: !_showFly,
+            child: PlanViewTools(
+              setFly: _setFlyMode,
+              mapCenter: () {
+                var currentVehicle = MultiVehicle().activeVehicle();
+
+                if(currentVehicle != null) {
+                  var cameraUpdate = NCameraUpdate.withParams(
+                    target: NLatLng(currentVehicle.lat, currentVehicle.lon)
+                  );
+                  _mapController!.updateCamera(cameraUpdate);
+                }
+              }
             )
+          ),
+
+          // TODO : 임무 경로 표시 레이어(임무 모드에서만 표시)
+
+          // 현재 선택한 기체 정보(비행 모드에서만 표시)
+          Visibility(
+            visible: _showFly,
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: const EdgeInsets.all(5),
+                child: VehicleInfo(
+                  moveto: _moveMap
+                )
+              )
+            )
+          ),
+
+          // 비디오 스트리밍 위젯
+          const Align(
+            alignment: Alignment.bottomLeft,
+            child: VideoViewer(),
           )
         ]
       )
