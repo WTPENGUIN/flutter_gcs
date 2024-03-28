@@ -33,7 +33,7 @@ class _AltitudeSliderState extends State<AltitudeSlider> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 40,
+      width: 50,
       height: widget.height,
       decoration: BoxDecoration(
         color: Colors.black,
@@ -47,7 +47,7 @@ class _AltitudeSliderState extends State<AltitudeSlider> {
             child: Text(
               '${_sliderValue}m',
               style: const TextStyle(
-                fontSize: 10,
+                fontSize: 13,
                 fontWeight: FontWeight.w300,
                 fontFamily: 'Orbitron',
                 color: Colors.white
